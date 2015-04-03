@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/Felix/Desktop/Bukkit 1.8.1/bukkit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Felix/Desktop/Towny.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
