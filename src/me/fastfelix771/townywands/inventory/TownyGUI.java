@@ -6,6 +6,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 public final class TownyGUI {
 	private final String title;
@@ -13,6 +14,7 @@ public final class TownyGUI {
 	private final int slots;
 	private Inventory inv;
 	private final long id;
+	private final ItemStack[] contents;
 	// This pretty nice HashMap contains all the gui id's .___.
 	// i recommend you to do not touch this...its just "public" for the devs who know what they are doing!
 	public static final Map<Long, Inventory> ids = new HashMap<Long, Inventory>();
@@ -53,10 +55,11 @@ public final class TownyGUI {
 	 * @param id
 	 *            is the ID of the gui, it must be unique or it will throw errors!
 	 */
-	public TownyGUI(final Player holder, final String name, final int size, final long id) {
+	public TownyGUI(final Player holder, final String name, final int size, final long id, final ItemStack[] items) {
 		title = name;
 		owner = holder;
 		slots = size;
+		contents = items;
 		if (ids.containsKey(id)) {
 			throw new IllegalArgumentException("ID " + id + " is already used!");
 		}
@@ -75,6 +78,7 @@ public final class TownyGUI {
 	// This just build the inventory and sets the ID, you can ignore it :)
 	private final void build() {
 		inv = Bukkit.createInventory(owner, slots, title);
+		inv.setContents(contents);
 		ids.put(id, inv);
 	}
 

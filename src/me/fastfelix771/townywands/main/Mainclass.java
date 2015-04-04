@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import me.fastfelix771.townywands.commands.CommandListener;
+import me.fastfelix771.townywands.inventory.InvAdmin;
 import me.fastfelix771.townywands.inventory.InvPlayer;
 import me.fastfelix771.townywands.inventory.InvResident;
 import me.fastfelix771.townywands.utils.Metrics;
@@ -22,6 +23,11 @@ public final class Mainclass extends JavaPlugin {
 	public static final PluginManager pm = Bukkit.getPluginManager();
 	public static final BukkitScheduler sh = Bukkit.getScheduler();
 	public static final Plugin towny = pm.getPlugin("Towny");
+	/**
+	 * @description You need to block my listeners if you want to your own guis, because TownyWands would listen on the inventory too and maybe cause trouble with your plugin...
+	 * @usage Set it to false and everything is okay :)
+	 */
+	public static boolean allowlisteners = true;
 
 	@Override
 	public final void onEnable() {
@@ -32,11 +38,13 @@ public final class Mainclass extends JavaPlugin {
 		console.sendMessage("§6[§3TownyWands§6]" + " §aFound towny version §c" + towny.getDescription().getVersion() + " §a!");
 		getCommand("twa").setExecutor(new CommandListener());
 		getCommand("twu").setExecutor(new CommandListener());
+		pm.registerEvents(new PlayerHandler(), this);
 	}
 
 	private final void setupGUIs() {
 		InvPlayer.createGUI();
 		InvResident.createGUI();
+		InvAdmin.createGUI();
 	}
 
 	@Override

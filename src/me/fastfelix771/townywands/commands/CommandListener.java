@@ -1,6 +1,6 @@
 package me.fastfelix771.townywands.commands;
 
-import me.fastfelix771.townywands.inventory.TownyGUI;
+import me.fastfelix771.townywands.main.InventoryHandler;
 import me.fastfelix771.townywands.main.Mainclass;
 import me.fastfelix771.townywands.main.PlayerHandler;
 import me.fastfelix771.townywands.utils.Util;
@@ -19,16 +19,13 @@ public final class CommandListener implements CommandExecutor {
 			final Player p = (Player) sender;
 			if (cmd.getName().equalsIgnoreCase("twa")) {
 				if (p.hasPermission("townywands.gui.admin")) {
-					p.sendMessage("§aWORKS! :D");
-					p.sendMessage("§a" + TownyGUI.getGUI(2).getTitle());
-					p.sendMessage("§a" + TownyGUI.getNextID());
+					InventoryHandler.admin.show(p);
 				} else {
 					Util.sendPermError(p);
 				}
 			} else if (cmd.getName().equalsIgnoreCase("twu")) {
 				if (p.hasPermission("townywands.gui.user")) {
-					p.sendMessage("§aWORKS! :D");
-					p.openInventory(PlayerHandler.getCorrectInventory(p));
+					PlayerHandler.getCorrectGUI(p).show(p);
 				} else {
 					Util.sendPermError(p);
 				}

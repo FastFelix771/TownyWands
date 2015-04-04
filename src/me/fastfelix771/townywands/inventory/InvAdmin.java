@@ -4,14 +4,13 @@ import java.util.ArrayList;
 
 import me.fastfelix771.townywands.utils.Util;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public final class InvPlayer {
+public final class InvAdmin {
 
-	private static InvPlayer instance;
+	private static InvAdmin instance;
 
-	public static final InvPlayer getInstance() {
+	public static final InvAdmin getInstance() {
 		return instance;
 	}
 
@@ -19,8 +18,6 @@ public final class InvPlayer {
 
 	public static final void createGUI() {
 		final ArrayList<ItemStack> items = new ArrayList<ItemStack>();
-		items.add(Util.createItem("§2§lCreate a new town", "", 1, Material.BEACON));
-		gui = new TownyGUI(null, "§6§lPlayer GUI", 18, TownyGUI.getNextID(), Util.list2array(items));
+		gui = new TownyGUI(null, "§6§lAdmin GUI", 18, TownyGUI.getNextID(), Util.list2array(items));
 	}
-
 }

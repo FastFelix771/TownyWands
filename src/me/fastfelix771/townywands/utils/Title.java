@@ -7,13 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.spigotmc.ProtocolInjector;
 import org.spigotmc.ProtocolInjector.PacketTitle;
 import org.spigotmc.ProtocolInjector.PacketTitle.Action;
 
 public final class Title {
 	String message = "";
-	ProtocolInjector.PacketTitle.Action action = null;
+	Action action = null;
 	int in = 0;
 	int out = 0;
 	int stay = 0;
@@ -26,7 +25,7 @@ public final class Title {
 		stay = s;
 	}
 
-	public static final int TITLE_PROTOCOL_VERSION = 18;
+	public static final int TPV = 18;
 	PacketTitle packet = null;
 
 	public void build() {
@@ -50,12 +49,12 @@ public final class Title {
 			for (final Player p : Bukkit.getOnlinePlayers()) {
 				send(p);
 			}
-		} else if (hasTitleSupport(player)) {
+		} else if (is18(player)) {
 			((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
 		}
 	}
 
-	public static boolean hasTitleSupport(final CommandSender sender) {
-		return sender instanceof CraftPlayer && ((CraftPlayer) sender).getHandle().playerConnection.networkManager.getVersion() >= TITLE_PROTOCOL_VERSION;
+	public static boolean is18(final CommandSender sender) {
+		return sender instanceof CraftPlayer && ((CraftPlayer) sender).getHandle().playerConnection.networkManager.getVersion() >= TPV;
 	}
 }
