@@ -1,35 +1,41 @@
 package me.fastfelix771.townywands.commands;
 
+import me.fastfelix771.townywands.inventory.TownyGUI;
+import me.fastfelix771.townywands.main.Mainclass;
+import me.fastfelix771.townywands.main.PlayerHandler;
+import me.fastfelix771.townywands.utils.Util;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-public final class CommandListener implements CommandExecutor, Listener {
+public final class CommandListener implements CommandExecutor {
 
+	// It should be very obvious what this method does...
 	@Override
-	public final boolean onCommand(final CommandSender arg0, final Command arg1, final String arg2, final String[] arg3) {
-
-		return true;
-	}
-
-	//This checks if someone enter the /t gui or /towny gui command without blocking functions of towny by registring the command in the plugin.yml
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public final void onCmd(final PlayerCommandPreprocessEvent e) {
-		final Player p = e.getPlayer();
-		final String cmd = e.getMessage().split(" ")[0].replace("/", "").toLowerCase();
-		final String[]args = cmd.split(" ");
-		if(cmd.equalsIgnoreCase("t") | cmd.equalsIgnoreCase("towny")) {
-			if(args.length == 1) {
-				if(args[0].equalsIgnoreCase("gui")) {
-					e.setCancelled(true); //This prevents towny from throwing errors like "invalid subcommand"
-					
+	public final boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+		if (sender instanceof Player) {
+			final Player p = (Player) sender;
+			if (cmd.getName().equalsIgnoreCase("twa")) {
+				if (p.hasPermission("townywands.gui.admin")) {
+					p.sendMessage("§aWORKS! :D");
+					p.sendMessage("§a" + TownyGUI.getGUI(2).getTitle());
+					p.sendMessage("§a" + TownyGUI.getNextID());
+				} else {
+					Util.sendPermError(p);
+				}
+			} else if (cmd.getName().equalsIgnoreCase("twu")) {
+				if (p.hasPermission("townywands.gui.user")) {
+					p.sendMessage("§aWORKS! :D");
+					p.openInventory(PlayerHandler.getCorrectInventory(p));
+				} else {
+					Util.sendPermError(p);
 				}
 			}
+		} else {
+			Mainclass.console.sendMessage("§4This command is only for players!");
 		}
+		return true;
 	}
 }

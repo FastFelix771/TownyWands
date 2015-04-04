@@ -3,3 +3,10 @@ version: 1.0
 author: FastFelix771
 main: me.fastfelix771.townywands.main.Mainclass
 depend: [Towny]
+commands:
+   twa:
+     description: Opens the TownyWands Admin GUI
+     usage:
+   twu:
+     description: Opens the TownyWands User GUI
+     usage:

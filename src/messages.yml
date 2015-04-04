@@ -1,0 +1,4 @@
+# TownyWands message translation file...obviously...have fun!
+
+# If someone uses a command and does not have the permissions for that, he will get this little error below :)
+noPermissions: "&4&l&nYou do not have permissions for that command!"
