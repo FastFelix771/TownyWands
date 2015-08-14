@@ -1,4 +1,0 @@
-# TownyWands main configuration file, nothing special... youll see
-
-# TownyWands uses the plugin metrics system to collect some usage statistics, of course its 100% anonymous!
-Metrics: true
