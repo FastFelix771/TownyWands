@@ -1,4 +1,4 @@
-# TownyWands - Custom Modular Towny GUI's
+# TownyWands - Custom Towny GUI's
 
 TownyWands is an Bukkit plugin that allows you to create highly customized GUI's (Inventories) that allows you to set custom items and bind commands to it.
 
