@@ -1,0 +1,42 @@
+metrics: true
+inventories: 
+  resident: 
+    name: "&6Resident GUI"
+    command: resgui
+    permission: townywands.gui.resident
+    slots: 18
+    items: 
+      PlotClaimer: 
+        name_de_DE: "&2&lClaiming Werkzeug"
+        name_en_US: "&2&lClaiming Tool"
+        lore_de_DE: 
+          - "&6Klicke um deinen Chunk zu claimen!"
+          - "&6Befehl: &b/t claim"
+        lore_en_US: 
+          - "&6Click to claim your chunk!"
+          - "&6Command: &b/t claim"
+        commands_de_DE: 
+          - t claim
+        commands_en_US: 
+          - t claim
+        itemID: 45
+        metaID: 0
+        slot: 1
+        quantity: 1
+  admin: 
+    name: "&4&lAdmin GUI
+    command: admingui
+    permission: townywands.gui.admin
+    slots: 9
+    items: 
+      BasicInfo: 
+        name_en_US: "&2&lInfopanel"
+        lore_en_US: 
+          - "&6Click to get basic informations about Towny."
+          - "&6Command: &b/townyadmin"
+        commands_en_US: 
+          - townyadmin
+        itemID: 278
+        metaID: 24
+        slot: 4
+        quantity: 1

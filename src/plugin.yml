@@ -1,13 +1,9 @@
 name: TownyWands
-version: 1.1
+version: 1.0.3a
 author: FastFelix771
 main: me.fastfelix771.townywands.main.Mainclass
 depend: [Towny]
-soft-depend:
 commands:
-   twa:
-     description: Opens the TownyWands Admin GUI
-     usage:
-   twu:
-     description: Opens the TownyWands User GUI
-     usage:
+   townywands:
+     description: Basic TownyWands command. Currently useless.
+     usage: This command isnt usable currently.
