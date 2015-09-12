@@ -1,4 +1,4 @@
-# TownyWands Configuration (v1.0.3a)
+# TownyWands - Custom Towny GUI's | Configuration (v1.0.3a)
 # Important Notes:
 # If you dont know what 'metaID' means: its the last part of the full item id, for example: 17:3 , the metaID comes behind the ':', if the item you want to add has no metaID, set it to 0 (zero)
 # Dont enter higher slot values than your inventory supports, so if your GUI has 18 slots, dont use values lower than 1 or higher than 18 or you will get bombed by a ton of errors :D
