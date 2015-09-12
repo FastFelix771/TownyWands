@@ -9,8 +9,8 @@ Soon the will be an Auto-Translator too, you will be able to enable/disable it i
 Here is an complete list of the currently supported languages: 
 (They may not all get auto-translate support later!)
 
-   * AUSTRALIAN_ENGLISH("Australian English", "en_AU"),
-   * AFRIKAANS("Afrikaans", "af_ZA"),
+* AUSTRALIAN_ENGLISH("Australian English", "en_AU"), 
+* AFRIKAANS("Afrikaans", "af_ZA"),
 *	ARABIC("العربية", "ar_SA"),
 *	BULGARIAN("Български", "bg_BG"),
 *	CATALAN("Català", "ca_ES"),
