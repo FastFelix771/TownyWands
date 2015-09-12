@@ -51,6 +51,7 @@ public class Mainclass extends JavaPlugin {
 			try {
 				final Metrics metrics = new Metrics(this);
 				metrics.start();
+				getLogger().log(Level.INFO, "Metrics successful started!");
 			} catch (final IOException e) {
 				getLogger().log(Level.WARNING, "Failed to start plugin metrics! Error: " + e.getLocalizedMessage());
 			}

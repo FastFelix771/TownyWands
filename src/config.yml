@@ -1,10 +1,20 @@
+# TownyWands Configuration (v1.0.3a)
+# Important Notes:
+# If you dont know what 'metaID' means: its the last part of the full item id, for example: 17:3 , the metaID comes behind the ':', if the item you want to add has no metaID, set it to 0 (zero)
+# Dont enter higher slot values than your inventory supports, so if your GUI has 18 slots, dont use values lower than 1 or higher than 18 or you will get bombed by a ton of errors :D
+# If you want to add more languages, just add the fields: name_ , lore_ , commands_ , each followed by your wished langcode, for example: es_ES = Spanish | fr_FR = Francais
+# You can find all supported languages and their langcodes on the GitHub page! :) -> https://github.com/FastFelix771/TownyWands/blob/master/README.md
+# Currently the default configuration is really low, so you need to configurate it yourself a little bit! If you want to send me a nice default template with some languages etc. feel free to contact me on BukkitDev!
 metrics: true
+##### COMING SOON #####
+auto-translate: false
+##### COMING SOON #####
 inventories: 
   resident: 
     name: "&6Resident GUI"
     command: resgui
     permission: townywands.gui.resident
-    slots: 18
+    slots: 9
     items: 
       PlotClaimer: 
         name_de_DE: "&2&lClaiming Werkzeug"
@@ -19,24 +29,47 @@ inventories:
           - t claim
         commands_en_US: 
           - t claim
-        itemID: 45
+        itemID: 17
         metaID: 0
         slot: 1
         quantity: 1
+      Deposit1000: 
+        name_de_DE: "&2&lZahle 1000&6&l$ &2&lein."
+        name_en_US: "&2&lDeposit 1000&6&l$"
+        lore_de_DE: 
+          - "&3Klicke um Geld in die Stadtkasse einzuzahlen."
+          - "&6Befehl: &b/t deposit 1000"
+        lore_en_US: 
+          - "&6Click to deposit money to your townbank."
+          - "&6Command: &b/t deposit 1000"
+        commands_de_DE: 
+          - t deposit 1000
+        commands_en_US: 
+          - t deposit 1000
+        itemID: 41
+        metaID: 0
+        slot: 2
+        quantity: 1
   admin: 
-    name: "&4&lAdmin GUI
-    command: admingui
+    name: "&cAdmin GUI"
+    command: admgui
     permission: townywands.gui.admin
     slots: 9
     items: 
-      BasicInfo: 
-        name_en_US: "&2&lInfopanel"
+      AdminPanel: 
+        name_de_DE: "&c&lAdminpanel"
+        name_en_US: "&c&lAdminpanel"
+        lore_de_DE: 
+          - "&cTowny Administrator Oberfläche"
+          - "&6Befehl: &b/ta"
         lore_en_US: 
-          - "&6Click to get basic informations about Towny."
-          - "&6Command: &b/townyadmin"
+          - "&cTowny Administrator Interface"
+          - "&6Command: &b/ta"
+        commands_de_DE: 
+          - ta
         commands_en_US: 
-          - townyadmin
-        itemID: 278
-        metaID: 24
-        slot: 4
+          - ta
+        itemID: 323
+        metaID: 0
+        slot: 1
         quantity: 1
