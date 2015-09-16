@@ -6,6 +6,7 @@ import java.util.List;
 
 import me.fastfelix771.townywands.lang.Language;
 import net.minecraft.server.v1_8_R1.NBTTagCompound;
+import net.minecraft.server.v1_8_R1.NBTTagList;
 
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
@@ -41,17 +42,9 @@ public class Utils {
 		return Arrays.asList(validCounts).contains(slots);
 	}
 
-	// This stuff is very experimental and needs some reflection, but it works :3
-
 	public static ItemStack setCommands(ItemStack item, final List<String> commands, final Language language) {
 		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		NBTTagCompound tag;
-		if (nms.getTag() != null) {
-			tag = nms.getTag();
-		} else {
-			nms.setTag(new NBTTagCompound());
-			tag = nms.getTag();
-		}
+		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
 
 		final Gson gson = new Gson();
 		final String json = gson.toJson(commands);
@@ -65,13 +58,7 @@ public class Utils {
 	@SuppressWarnings("unchecked")
 	public static List<String> getCommands(final ItemStack item, final Language language) {
 		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		NBTTagCompound tag;
-		if (nms.getTag() != null) {
-			tag = nms.getTag();
-		} else {
-			nms.setTag(new NBTTagCompound());
-			tag = nms.getTag();
-		}
+		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
 
 		if (tag.getString("townywands_commands_" + language.getCode()) != null) {
 			final Gson gson = new Gson();
@@ -84,13 +71,7 @@ public class Utils {
 
 	public static ItemStack setKey(ItemStack item, final String key) {
 		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		NBTTagCompound tag;
-		if (nms.getTag() != null) {
-			tag = nms.getTag();
-		} else {
-			nms.setTag(new NBTTagCompound());
-			tag = nms.getTag();
-		}
+		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
 
 		tag.setString("townywands_key", key);
 
@@ -100,19 +81,24 @@ public class Utils {
 
 	public static String getKey(final ItemStack item) {
 		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		NBTTagCompound tag;
-		if (nms.getTag() != null) {
-			tag = nms.getTag();
-		} else {
-			nms.setTag(new NBTTagCompound());
-			tag = nms.getTag();
-		}
+		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
 
 		if (tag.getString("townywands_key") != null) {
 			return tag.getString("townywands_key");
 		}
 
 		return null;
+	}
+
+	public static ItemStack addEnchantmentGlow(ItemStack item) {
+		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
+		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
+
+		final String enchantments = new NBTTagList().toString();
+		tag.setString("ench", enchantments);
+
+		item = CraftItemStack.asCraftMirror(nms);
+		return item;
 	}
 
 }

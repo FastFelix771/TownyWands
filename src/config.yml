@@ -1,75 +1,21 @@
-# TownyWands - Custom Towny GUI's | Configuration (v1.0.3a)
+# TownyWands - Custom Towny GUI's | Configuration (v1.0.4a)
+# -- Dont change this --
+configVersion: 137
+# -- Dont change this --
 # Important Notes:
 # If you dont know what 'metaID' means: its the last part of the full item id, for example: 17:3 , the metaID comes behind the ':', if the item you want to add has no metaID, set it to 0 (zero)
 # Dont enter higher slot values than your inventory supports, so if your GUI has 18 slots, dont use values lower than 1 or higher than 18 or you will get bombed by a ton of errors :D
 # If you want to add more languages, just add the fields: name_ , lore_ , commands_ , each followed by your wished langcode, for example: es_ES = Spanish | fr_FR = Francais
 # You can find all supported languages and their langcodes on the GitHub page! :) -> https://github.com/FastFelix771/TownyWands/blob/master/README.md
-# Currently the default configuration is really low, so you need to configurate it yourself a little bit! If you want to send me a nice default template with some languages etc. feel free to contact me on BukkitDev!
+# Should TownyWands send some anonymous data to mcstats.org? 
 metrics: true
-##### COMING SOON #####
+# EXPERIMENTAL | If you wish to use auto-translating you only need to provide english text as base for all translations that are possible.
 auto-translate: false
+# EXPERIMENTAL | If the english base-texts are missing, it will throw errors, but the default config contains english texts, so you should be able to use this feature without problems.
+# Commands will not get auto-translated, it will just use the english pattern.
+# The first translation will take some time, then it will save the translated data and re-use it on the next restart if the english entries hasn't changed.
+cpu-threads: 4
+# More threads will allow to parse more inventories at the same time.
 ##### COMING SOON #####
-inventories: 
-  resident: 
-    name: "&6Resident GUI"
-    command: resgui
-    permission: townywands.gui.resident
-    slots: 9
-    items: 
-      PlotClaimer: 
-        name_de_DE: "&2&lClaiming Werkzeug"
-        name_en_US: "&2&lClaiming Tool"
-        lore_de_DE: 
-          - "&6Klicke um deinen Chunk zu claimen!"
-          - "&6Befehl: &b/t claim"
-        lore_en_US: 
-          - "&6Click to claim your chunk!"
-          - "&6Command: &b/t claim"
-        commands_de_DE: 
-          - t claim
-        commands_en_US: 
-          - t claim
-        itemID: 17
-        metaID: 0
-        slot: 1
-        quantity: 1
-      Deposit1000: 
-        name_de_DE: "&2&lZahle 1000&6&l$ &2&lein."
-        name_en_US: "&2&lDeposit 1000&6&l$"
-        lore_de_DE: 
-          - "&3Klicke um Geld in die Stadtkasse einzuzahlen."
-          - "&6Befehl: &b/t deposit 1000"
-        lore_en_US: 
-          - "&6Click to deposit money to your townbank."
-          - "&6Command: &b/t deposit 1000"
-        commands_de_DE: 
-          - t deposit 1000
-        commands_en_US: 
-          - t deposit 1000
-        itemID: 41
-        metaID: 0
-        slot: 2
-        quantity: 1
-  admin: 
-    name: "&cAdmin GUI"
-    command: admgui
-    permission: townywands.gui.admin
-    slots: 9
-    items: 
-      AdminPanel: 
-        name_de_DE: "&c&lAdminpanel"
-        name_en_US: "&c&lAdminpanel"
-        lore_de_DE: 
-          - "&cTowny Administrator Oberfläche"
-          - "&6Befehl: &b/ta"
-        lore_en_US: 
-          - "&cTowny Administrator Interface"
-          - "&6Command: &b/ta"
-        commands_de_DE: 
-          - ta
-        commands_en_US: 
-          - ta
-        itemID: 323
-        metaID: 0
-        slot: 1
-        quantity: 1
+checkForUpdates: true
+##### COMING SOON #####

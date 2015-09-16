@@ -1,9 +1,9 @@
 name: TownyWands
-version: 1.0.3a
+version: 1.0.4a
 author: FastFelix771
 main: me.fastfelix771.townywands.main.Mainclass
 depend: [Towny]
 commands:
    townywands:
-     description: Basic TownyWands command. Currently useless.
-     usage: This command isnt usable currently.
+     description: Provides fuctions for reloading TownyWands & more.
+     usage: /townywands ?

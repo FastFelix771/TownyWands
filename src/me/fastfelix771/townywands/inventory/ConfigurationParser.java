@@ -1,69 +1,69 @@
 package me.fastfelix771.townywands.inventory;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import me.fastfelix771.townywands.lang.Language;
+import me.fastfelix771.townywands.lang.Translator;
 import me.fastfelix771.townywands.main.Mainclass;
 import me.fastfelix771.townywands.utils.DataBundle;
+import me.fastfelix771.townywands.utils.Utf8YamlConfiguration;
 import me.fastfelix771.townywands.utils.Utils;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 public class ConfigurationParser {
 
-	private final YamlConfiguration config;
+	private final Utf8YamlConfiguration config;
 	private final Level lvl;
 	private final boolean async;
 	private boolean error;
+	private final File file;
 
-	public ConfigurationParser(final YamlConfiguration config, final Level loglevel, final boolean async) {
-		if (config == null) {
-			throw new IllegalArgumentException("config cannot be null");
-		}
-		if (loglevel == null) {
-			throw new IllegalArgumentException("loglevel cannot be null");
-		}
+	public ConfigurationParser(final Utf8YamlConfiguration config, final Level loglevel, final boolean async, final File file) {
+		Validate.notNull(config, "config cannot be null");
+		Validate.notNull(loglevel, "loglevel cannot be null");
+		Validate.notNull(file, "file cannot be null!");
 		this.config = config;
 		this.lvl = loglevel;
 		this.async = async;
-		this.error = false;
-	}
-
-	public ConfigurationParser(final YamlConfiguration config, final boolean async) {
-		if (config == null) {
-			throw new IllegalArgumentException("config cannot be null");
-		}
-		this.config = config;
-		this.lvl = Level.INFO;
-		this.async = async;
+		this.file = file;
 		this.error = false;
 	}
 
 	public boolean parse() {
-		final Runnable job = new Runnable() {
+		final ConfigurationSection sec_inventories = config.getConfigurationSection("inventories");
+		final boolean refreshTranslations = config.getBoolean("refresh-Translations");
 
-			@SuppressWarnings("deprecation")
-			@Override
-			public void run() {
+		Validate.notNull(sec_inventories, "Section 'inventories' cannot be null!");
+		Validate.notNull(refreshTranslations, "Boolean 'refresh-Translations' cannot be null!");
+		config.set("refresh-Translations", false);
 
-				final ConfigurationSection sec_inventories = config.getConfigurationSection("inventories");
-				if (sec_inventories == null) {
-					error("ConfigurationSection 'inventories' not found in file '" + config.getName() + "'");
-					return;
-				}
+		final Map<String, Object> inventories = sec_inventories.getValues(false);
 
-				final Map<String, Object> inventories = sec_inventories.getValues(false);
+		for (final String str_name : inventories.keySet()) {
+			final Runnable invJob = new Runnable() {
 
-				for (final String str_name : inventories.keySet()) {
+				@Override
+				public void run() {
+					final long start = System.currentTimeMillis();
+					Bukkit.getConsoleSender().sendMessage(refreshTranslations ? "§cTownyWands | §bSetup and refreshing of inventory §3" + str_name + " §bhas started" : "§cTownyWands | §bSetup of inventory §3" + str_name + " §bhas started");
 					final ConfigurationSection inv = sec_inventories.getConfigurationSection(str_name);
+
+					if (refreshTranslations && !Mainclass.getAutoTranslate()) {
+						error("AutoTranslation is disabled, cannot refresh the translations.");
+					}
 
 					final String name = inv.getString("name"); // Name of the inventory
 					final int slots = inv.getInt("slots"); // Slotcount...obviously
@@ -90,6 +90,7 @@ public class ConfigurationParser {
 
 					// Store some temporary data here.
 					final HashMap<Language, DataBundle> dbs = new HashMap<Language, DataBundle>();
+					boolean saveMe = false;
 
 					for (final String item_name : item_values.keySet()) {
 						final ConfigurationSection i = items.getConfigurationSection(item_name);
@@ -101,6 +102,7 @@ public class ConfigurationParser {
 
 						final int id = i.getInt("itemID");
 						final int metaid = i.getInt("metaID");
+						@SuppressWarnings("deprecation")
 						final Material material = Material.getMaterial(id);
 
 						// Skip to next item if the given material doesnt exist.
@@ -122,6 +124,7 @@ public class ConfigurationParser {
 						}
 
 						final int quantity = i.getInt("quantity");
+						final boolean enchanted = i.getBoolean("enchanted");
 
 						// Create the item itself from the given data and enhance it via the ItemBuilder.
 						for (final Language lang : Language.values()) {
@@ -129,18 +132,55 @@ public class ConfigurationParser {
 							final String langcode = lang.getCode();
 
 							String iname = i.getString("name_" + langcode);
-							final List<String> ilore = i.getStringList("lore_" + langcode);
-							final List<String> icommands = i.getStringList("commands_" + langcode);
+							List<String> ilore = i.getStringList("lore_" + langcode);
+							List<String> icommands = i.getStringList("commands_" + langcode);
+							boolean translate = refreshTranslations;
 
-							// Skip to next language if one or more of the parameters are missing.
+							// Skip to next language if one or more of the parameters are missing and auto-translating is disabled.
 							if (iname == null || ilore == null || icommands == null) {
-								continue;
+								if (!Mainclass.getAutoTranslate()) {
+									continue;
+								}
+								final String engcode = Language.ENGLISH.getCode();
+								iname = i.getString("name_" + engcode);
+								ilore = i.getStringList("lore_" + engcode);
+								icommands = i.getStringList("commands_" + engcode);
+								// Check if english values exist...just to be safe
+								if (iname == null || ilore == null || icommands == null) {
+									continue;
+								}
+								translate = true;
 							}
 
-							// Colorize the name and lore
-							iname = ChatColor.translateAlternateColorCodes('&', iname);
-							for (int i2 = 0; i2 < ilore.size(); i2++) {
-								ilore.set(i2, ChatColor.translateAlternateColorCodes('&', ilore.get(i2)));
+							// Color :3
+							if (!translate) {
+								iname = ChatColor.translateAlternateColorCodes('&', iname);
+								List<String> newLore = new ArrayList<String>();
+								for (String l : ilore) {
+									l = ChatColor.translateAlternateColorCodes('&', l);
+									newLore.add(l);
+								}
+								ilore = newLore;
+								newLore = null;
+							}
+
+							// Lets translate it here & save it. (commands will not get auto-translated...that would be a desaster :D)
+							// ColorCoding doesnt work currently on fresh translated stuff, so i give them some basic color-code after the translation.
+							if (translate) {
+								iname = Translator.translate(Language.ENGLISH, lang, iname);
+								i.set("name_" + langcode, StringEscapeUtils.unescapeJava("&6&l" + iname));
+								iname = "§6§l" + iname;
+								final List<String> saveLore = new ArrayList<String>();
+								for (int ic = 0; ic < ilore.size(); ic++) {
+									String text = ilore.get(ic);
+									text = Translator.translate(Language.ENGLISH, lang, text);
+									saveLore.add(StringEscapeUtils.escapeJava("&2&l" + text));
+									text = "§2§l" + text;
+									ilore.set(ic, text);
+								}
+								i.set("lore_" + langcode, saveLore);
+								i.set("commands_" + langcode, icommands);
+								saveMe = true;
 							}
 
 							DataBundle db = null;
@@ -154,34 +194,44 @@ public class ConfigurationParser {
 
 							// Create the basic item itself and enhance it via the ItemBuilder
 							final ItemStack iitem = new ItemStack(material, quantity, (short) metaid);
-							ItemBuilder.build(db.getCommand(), db.getInventory(), iitem, slot, iname, ilore, icommands, lang);
-
+							ItemBuilder.build(db.getCommand(), db.getInventory(), iitem, slot, iname, ilore, icommands, lang, enchanted);
 						}
 					}
 
 					// Now save all DataBundles and clear the tempstorage.
-					for (final Entry<Language, DataBundle> ent : dbs.entrySet()) {
-						final DataBundle db = ent.getValue();
+					for (final DataBundle db : dbs.values()) {
 						db.save();
 					}
 					dbs.clear();
-
+					final long end = System.currentTimeMillis();
+					if (saveMe) {
+						save();
+					}
+					Bukkit.getConsoleSender().sendMessage(refreshTranslations ? "§cTownyWands | §bSetup and refreshing of inventory §c" + str_name + " §btook §3" + (end - start) + "§bms" : "§cTownyWands | §bSetup of inventory §c" + str_name + " §btook §3" + (end - start) + "§bms");
 				}
-
+			};
+			if (async) {
+				Mainclass.getPool().execute(invJob);
+			} else {
+				invJob.run();
 			}
-
-		};
-
-		if (async) {
-			new Thread(job).start();
-		} else {
-			job.run();
 		}
 
+		if (refreshTranslations) {
+			save();
+		}
 		final boolean err = error;
 		this.error = false; // Resetting error after parsing to make the parser re-usable.
 
 		return err;
+	}
+
+	private void save() {
+		try {
+			config.save(file);
+		} catch (final IOException e) {
+			error("Failed to save configuration file " + file.getName());
+		}
 	}
 
 	private void error(final String message) {
