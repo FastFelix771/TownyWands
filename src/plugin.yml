@@ -1,5 +1,5 @@
 name: TownyWands
-version: 1.0.4a
+version: 1.0.4
 author: FastFelix771
 main: me.fastfelix771.townywands.main.Mainclass
 depend: [Towny]

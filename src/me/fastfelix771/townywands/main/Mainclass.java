@@ -24,11 +24,13 @@ public class Mainclass extends JavaPlugin {
 	private static boolean translate;
 	private static ExecutorService pool;
 	private static int threads;
+	private static File file;
 
 	@Override
 	public void onLoad() {
 		saveDefaultConfig();
 		saveResource("inventories.yml", false);
+		file = new File(getDataFolder().getAbsolutePath() + "/inventories.yml"); // <-- Here we set the file where the inventory configuration is placed in.
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class Mainclass extends JavaPlugin {
 		}
 
 		if (getConfig().get("cpu-threads") == null) {
-			threads = 2;
+			threads = 4;
 		} else {
 			threads = getConfig().getInt("cpu-threads");
 		}
@@ -60,14 +62,7 @@ public class Mainclass extends JavaPlugin {
 
 		pool = Executors.newFixedThreadPool(threads);
 
-		final File file = new File(getDataFolder().getAbsolutePath() + "/inventories.yml");
-		final Utf8YamlConfiguration config = new Utf8YamlConfiguration();
-		try {
-			config.load(new FileInputStream(file));
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-		cp = new ConfigurationParser(config, Level.INFO, true, file);
+		cp = new ConfigurationParser(loadConfig(file), Level.INFO, true, file);
 		getParser().parse();
 	}
 
@@ -79,6 +74,25 @@ public class Mainclass extends JavaPlugin {
 	}
 
 	public static void reload() {
+		Database.clear();
+		cp.setConfig(loadConfig(file));
+		getParser().parse();
+	}
+
+	private static Utf8YamlConfiguration loadConfig(final File file) {
+		final Utf8YamlConfiguration config = new Utf8YamlConfiguration();
+		try {
+			config.load(new FileInputStream(file));
+		} catch (final Exception e) {
+		}
+		return config;
+	}
+
+	public static void checkVersion() {
+		// Coming soon!
+	}
+
+	public static void updateConfig() {
 		// Coming soon!
 	}
 

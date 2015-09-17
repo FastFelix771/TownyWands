@@ -25,7 +25,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ConfigurationParser {
 
-	private final Utf8YamlConfiguration config;
+	private Utf8YamlConfiguration config;
 	private final Level lvl;
 	private final boolean async;
 	private boolean error;
@@ -40,6 +40,10 @@ public class ConfigurationParser {
 		this.async = async;
 		this.file = file;
 		this.error = false;
+	}
+
+	public void setConfig(final Utf8YamlConfiguration config) {
+		this.config = config;
 	}
 
 	public boolean parse() {
