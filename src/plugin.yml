@@ -1,8 +1,8 @@
 name: TownyWands
-version: 1.0.4
+version: 1.0.5
 author: FastFelix771
 main: me.fastfelix771.townywands.main.Mainclass
-depend: [Towny]
+soft-depend: [Towny]
 commands:
    townywands:
      description: Provides fuctions for reloading TownyWands & more.

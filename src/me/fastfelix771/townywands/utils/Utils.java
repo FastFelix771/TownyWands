@@ -1,104 +1,161 @@
 package me.fastfelix771.townywands.utils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import me.fastfelix771.townywands.lang.Language;
-import net.minecraft.server.v1_8_R1.NBTTagCompound;
-import net.minecraft.server.v1_8_R1.NBTTagList;
 
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.google.gson.Gson;
 
 public class Utils {
 
 	private static final Integer[] validCounts = new Integer[] { 9, 18, 27, 36, 45, 54 };
 
-	/**
-	 * @param player
-	 *            the player object you want to turn into a towny resident
-	 * @return a towny resident of the given player
+	/*
+	 * Maybe ill need this snippet sometime...
+	 * public static Resident getResident(final Player player) {
+	 * final String name = player.getName();
+	 * Resident res;
+	 * try {
+	 * res = TownyUniverse.getDataSource().getResident(name);
+	 * } catch (final NotRegisteredException e) {
+	 * res = new Resident(name);
+	 * TownyUniverse.getDataSource().saveResident(res);
+	 * }
+	 * return res;
+	 * }
 	 */
-	public static Resident getResident(final Player player) {
-		final String name = player.getName();
-		Resident res;
-		try {
-			res = TownyUniverse.getDataSource().getResident(name);
-		} catch (final NotRegisteredException e) {
-			res = new Resident(name);
-			TownyUniverse.getDataSource().saveResident(res);
-		}
-		return res;
-	}
 
 	public static boolean isValidSlotCount(final int slots) {
 		return Arrays.asList(validCounts).contains(slots);
 	}
 
 	public static ItemStack setCommands(ItemStack item, final List<String> commands, final Language language) {
-		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
+		try {
+			final Method asNMSCopy = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
+			final Object nms = asNMSCopy.invoke(Reflect.CraftItemStack, item);
+			final Constructor<?> NBTTagCompound = Reflect.getConstructor(Reflect.NBTTagCompound);
+			final Method hasTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("hasTag"));
+			final Method getTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("getTag"));
+			final Method setTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("setTag", Reflect.NBTTagCompound));
+			final Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
+			final Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
+			final Method asCraftMirror = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asCraftMirror", Reflect.ItemStack));
 
-		final Gson gson = new Gson();
-		final String json = gson.toJson(commands);
+			final Gson gson = new Gson();
+			final String json = gson.toJson(commands);
 
-		tag.setString("townywands_commands_" + language.getCode(), json);
+			setString.invoke(tag, "townywands_commands_" + language.getCode(), json);
 
-		item = CraftItemStack.asCraftMirror(nms);
-		return item;
+			if (!(boolean) hasTag.invoke(nms)) {
+				setTag.invoke(nms, tag);
+			}
+
+			item = (ItemStack) asCraftMirror.invoke(null, nms);
+			return item;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public static List<String> getCommands(final ItemStack item, final Language language) {
-		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
+		try {
+			final Method asNMSCopy = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
+			final Object nms = asNMSCopy.invoke(Reflect.CraftItemStack, item);
+			final Constructor<?> NBTTagCompound = Reflect.getConstructor(Reflect.NBTTagCompound);
+			final Method hasTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("hasTag"));
+			final Method getTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("getTag"));
+			final Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
+			final Method getString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("getString", String.class));
 
-		if (tag.getString("townywands_commands_" + language.getCode()) != null) {
-			final Gson gson = new Gson();
-			final List<String> commands = gson.fromJson(tag.getString("townywands_commands_" + language.getCode()), ArrayList.class);
-			return commands;
+			if (getString.invoke(tag, "townywands_commands_" + language.getCode()) != null) {
+				final Gson gson = new Gson();
+				final List<String> commands = gson.fromJson((String) getString.invoke(tag, "townywands_commands_" + language.getCode()), ArrayList.class);
+				return commands;
+			}
+			return null;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return null;
 		}
-
-		return null;
 	}
 
 	public static ItemStack setKey(ItemStack item, final String key) {
-		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
+		try {
+			final Method asNMSCopy = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
+			final Object nms = asNMSCopy.invoke(Reflect.CraftItemStack, item);
+			final Constructor<?> NBTTagCompound = Reflect.getConstructor(Reflect.NBTTagCompound);
+			final Method hasTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("hasTag"));
+			final Method getTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("getTag"));
+			final Method setTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("setTag", Reflect.NBTTagCompound));
+			final Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
+			final Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
+			final Method asCraftMirror = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asCraftMirror", Reflect.ItemStack));
 
-		tag.setString("townywands_key", key);
+			setString.invoke(tag, "townywands_key", key);
 
-		item = CraftItemStack.asCraftMirror(nms);
-		return item;
+			if (!(boolean) hasTag.invoke(nms)) {
+				setTag.invoke(nms, tag);
+			}
+
+			item = (ItemStack) asCraftMirror.invoke(null, nms);
+			return item;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static String getKey(final ItemStack item) {
-		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
+		try {
+			final Method asNMSCopy = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
+			final Object nms = asNMSCopy.invoke(Reflect.CraftItemStack, item);
+			final Constructor<?> NBTTagCompound = Reflect.getConstructor(Reflect.NBTTagCompound);
+			final Method hasTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("hasTag"));
+			final Method getTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("getTag"));
+			final Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
+			final Method getString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("getString", String.class));
 
-		if (tag.getString("townywands_key") != null) {
-			return tag.getString("townywands_key");
+			final String key = (String) getString.invoke(tag, "townywands_key");
+			return key;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return null;
 		}
-
-		return null;
 	}
 
 	public static ItemStack addEnchantmentGlow(ItemStack item) {
-		final net.minecraft.server.v1_8_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
-		final NBTTagCompound tag = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
+		try {
+			final Method asNMSCopy = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
+			final Object nms = asNMSCopy.invoke(Reflect.CraftItemStack, item);
+			final Constructor<?> NBTTagCompound = Reflect.getConstructor(Reflect.NBTTagCompound);
+			final Method hasTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("hasTag"));
+			final Method getTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("getTag"));
+			final Method setTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("setTag", Reflect.NBTTagCompound));
+			final Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
+			final Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
+			final Method asCraftMirror = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asCraftMirror", Reflect.ItemStack));
 
-		final String enchantments = new NBTTagList().toString();
-		tag.setString("ench", enchantments);
+			final String enchantments = Reflect.getConstructor(Reflect.getNMSClass("NBTTagList")).newInstance().toString();
+			setString.invoke(tag, "ench", enchantments);
 
-		item = CraftItemStack.asCraftMirror(nms);
-		return item;
+			if (!(boolean) hasTag.invoke(nms)) {
+				setTag.invoke(nms, tag);
+			}
+
+			item = (ItemStack) asCraftMirror.invoke(null, nms);
+			return item;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

@@ -20,6 +20,10 @@ public class TownyWands implements CommandExecutor {
 			return false;
 		}
 
+		if (args.length > 1) {
+			sender.sendMessage("§cInvalid arguments! Type §a/townywands help §cfor help.");
+		}
+
 		if (args.length == 0) {
 			sender.sendMessage("§6======================================");
 			sender.sendMessage("§bTowny§3Wands §6- §av§c" + Mainclass.getInstance().getDescription().getVersion());
@@ -61,9 +65,6 @@ public class TownyWands implements CommandExecutor {
 				break;
 			}
 
-			if (args.length > 1) {
-				sender.sendMessage("§cInvalid arguments! Type §a/townywands help §cfor help.");
-			}
 		}
 
 		return true;
