@@ -1,4 +1,4 @@
-# TownyWands - Custom Towny GUI's | Configuration (v1.0.4a)
+# TownyWands - Custom Towny GUI's | Configuration (v1.0.6)
 # -- Dont change this --
 configVersion: 137
 # -- Dont change this --
@@ -16,6 +16,5 @@ auto-translate: false
 # The first translation will take some time, then it will save the translated data and re-use it on the next restart if the english entries hasn't changed.
 cpu-threads: 4
 # More threads will allow to parse more inventories at the same time.
-##### COMING SOON #####
+# Should TownyWands check if theres a new version of the plugin? It will NOT download anything, it will just tell you if theres a newer version of the plugin!
 checkForUpdates: true
-##### COMING SOON #####

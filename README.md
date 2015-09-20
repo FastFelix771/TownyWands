@@ -4,10 +4,9 @@ TownyWands is an Bukkit plugin that allows you to create highly customized GUI's
 
 It supports 95% of all Minecraft languages and shows every GUI different to each player, depending on his Minecraft Language!
 
-Soon the will be an Auto-Translator too, you will be able to enable/disable it in the config.
+TownyWands is able to translate the GUI's you have configured before into all languages listed below if you enable the feature in the config.yml!
 
 Here is an complete list of the currently supported languages: 
-(They may not all get auto-translate support later!)
 
 * AUSTRALIAN_ENGLISH("Australian English", "en_AU"), 
 * AFRIKAANS("Afrikaans", "af_ZA"),

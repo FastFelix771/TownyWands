@@ -60,6 +60,11 @@ public class InventoryListener implements Listener {
 		final Player p = (Player) e.getWhoClicked();
 		final ItemStack item = e.getCurrentItem();
 		final Language language = Language.getLanguage(p);
+		final Inventory inv = e.getClickedInventory();
+
+		if (inv == p.getInventory()) {
+			return;
+		}
 
 		if (item == null || item.getType().equals(Material.AIR)) {
 			return;

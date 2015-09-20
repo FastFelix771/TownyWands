@@ -7,11 +7,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
+import me.fastfelix771.townywands.commands.CommandController;
+import me.fastfelix771.townywands.commands.Commands;
 import me.fastfelix771.townywands.inventory.ConfigurationParser;
 import me.fastfelix771.townywands.listeners.InventoryListener;
-import me.fastfelix771.townywands.listeners.TownyWands;
 import me.fastfelix771.townywands.metrics.Metrics;
 import me.fastfelix771.townywands.utils.Database;
+import me.fastfelix771.townywands.utils.Update;
 import me.fastfelix771.townywands.utils.Utf8YamlConfiguration;
 
 import org.bukkit.Bukkit;
@@ -31,13 +33,17 @@ public class Mainclass extends JavaPlugin {
 		saveDefaultConfig();
 		saveResource("inventories.yml", false);
 		file = new File(getDataFolder().getAbsolutePath() + "/inventories.yml"); // <-- Here we set the file where the inventory configuration is placed in.
+		if (getConfig().getBoolean("checkForUpdates")) {
+			final Update update = new Update(this);
+			update.check();
+		}
 	}
 
 	@Override
 	public void onEnable() {
 		instance = this;
 		Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
-		getCommand("townywands").setExecutor(new TownyWands());
+		CommandController.registerCommands(this, new Commands());
 
 		if (getConfig().get("metrics") == null) {
 			metrics(true);
@@ -57,6 +63,7 @@ public class Mainclass extends JavaPlugin {
 			threads = getConfig().getInt("cpu-threads");
 		}
 
+		getLogger().log(Level.INFO, "Update-Checking is " + (getConfig().getBoolean("checkForUpdates") ? "enabled" : "disabled"));
 		getLogger().log(Level.INFO, "Auto-Translation is " + (translate ? "enabled" : "disabled"));
 		getLogger().log(Level.INFO, "Using " + threads + " of " + Runtime.getRuntime().availableProcessors() + " possible threads.");
 

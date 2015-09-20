@@ -211,7 +211,7 @@ public class ConfigurationParser {
 					if (saveMe) {
 						save();
 					}
-					Bukkit.getConsoleSender().sendMessage(refreshTranslations ? "§cTownyWands | §bSetup and refreshing of inventory §c" + str_name + " §btook §3" + (end - start) + "§bms" : "§cTownyWands | §bSetup of inventory §c" + str_name + " §btook §3" + (end - start) + "§bms");
+					Bukkit.getConsoleSender().sendMessage(refreshTranslations ? "§cTownyWands | §bSetup and refreshing of inventory §3" + str_name + " §btook §3" + (end - start) + "§bms" : "§cTownyWands | §bSetup of inventory §3" + str_name + " §btook §3" + (end - start) + "§bms");
 				}
 			};
 			if (async) {

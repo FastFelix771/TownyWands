@@ -6,7 +6,7 @@ import me.fastfelix771.townywands.lang.Language;
 
 public class Database {
 
-	private static final ConcurrentHashMap<String, ConcurrentHashMap<Language, DataBundle>> storage = new ConcurrentHashMap<String, ConcurrentHashMap<Language, DataBundle>>();
+	public static final ConcurrentHashMap<String, ConcurrentHashMap<Language, DataBundle>> storage = new ConcurrentHashMap<String, ConcurrentHashMap<Language, DataBundle>>();
 
 	public static DataBundle get(final String command, final Language language) {
 		if (!contains(command)) {

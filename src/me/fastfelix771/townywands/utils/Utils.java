@@ -124,6 +124,12 @@ public class Utils {
 			final Method getString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("getString", String.class));
 
 			final String key = (String) getString.invoke(tag, "townywands_key");
+
+			// If the item has no key it will return an empty string...that would block 90% of all InventoryClickEvents, so check for it and return null instead.
+			if (key.isEmpty() || key == "" || key == null) {
+				return null;
+			}
+
 			return key;
 		} catch (final Exception e) {
 			e.printStackTrace();
