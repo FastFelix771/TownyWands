@@ -13,6 +13,9 @@ import me.fastfelix771.townywands.inventory.ConfigurationParser;
 import me.fastfelix771.townywands.listeners.InventoryListener;
 import me.fastfelix771.townywands.metrics.Metrics;
 import me.fastfelix771.townywands.utils.Database;
+import me.fastfelix771.townywands.utils.Reflect;
+import me.fastfelix771.townywands.utils.Reflect.Version;
+import me.fastfelix771.townywands.utils.SignGUI;
 import me.fastfelix771.townywands.utils.Update;
 import me.fastfelix771.townywands.utils.Utf8YamlConfiguration;
 
@@ -27,23 +30,30 @@ public class Mainclass extends JavaPlugin {
 	private static ExecutorService pool;
 	private static int threads;
 	private static File file;
+	private static boolean checkUpdates;
+	private static SignGUI signgui;
+	private static boolean bungeecord;
 
 	@Override
 	public void onLoad() {
+		instance = this;
 		saveDefaultConfig();
 		saveResource("inventories.yml", false);
 		file = new File(getDataFolder().getAbsolutePath() + "/inventories.yml"); // <-- Here we set the file where the inventory configuration is placed in.
-		if (getConfig().getBoolean("checkForUpdates")) {
-			final Update update = new Update(this);
-			update.check();
-		}
 	}
 
 	@Override
 	public void onEnable() {
-		instance = this;
 		Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
 		CommandController.registerCommands(this, new Commands());
+
+		// SignGUI is 1.8 only due to some Netty problems, i'll fix that when i get some time for it.
+		if (Reflect.getServerVersion() == Version.v1_8) {
+			signgui = new SignGUI(this);
+			Bukkit.getPluginManager().registerEvents(signgui, this);
+		} else {
+			signgui = null;
+		}
 
 		if (getConfig().get("metrics") == null) {
 			metrics(true);
@@ -63,9 +73,35 @@ public class Mainclass extends JavaPlugin {
 			threads = getConfig().getInt("cpu-threads");
 		}
 
+		if (getConfig().get("checkForUpdates") == null) {
+			checkUpdates = false;
+		} else {
+			checkUpdates = getConfig().getBoolean("checkForUpdates");
+		}
+
+		if (getConfig().get("bungeecord") == null) {
+			bungeecord = false;
+		} else {
+			bungeecord = getConfig().getBoolean("bungeecord");
+		}
+
+		if (bungeecord) {
+			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+		}
+
+		if (checkUpdates) {
+			try {
+				final Update update = new Update(this);
+				update.check();
+			} catch (final Exception e) {
+				getLogger().warning("Failed to check for updates!");
+			}
+		}
+
 		getLogger().log(Level.INFO, "Update-Checking is " + (getConfig().getBoolean("checkForUpdates") ? "enabled" : "disabled"));
 		getLogger().log(Level.INFO, "Auto-Translation is " + (translate ? "enabled" : "disabled"));
 		getLogger().log(Level.INFO, "Using " + threads + " of " + Runtime.getRuntime().availableProcessors() + " possible threads.");
+		getLogger().log(Level.INFO, "SignGUI's does " + (Reflect.getServerVersion() == Version.v1_8 ? "work on this version!" : "not work on this version!"));
 
 		pool = Executors.newFixedThreadPool(threads);
 
@@ -82,6 +118,7 @@ public class Mainclass extends JavaPlugin {
 
 	public static void reload() {
 		Database.clear();
+		getInstance().reloadConfig();
 		cp.setConfig(loadConfig(file));
 		getParser().parse();
 	}
@@ -95,12 +132,12 @@ public class Mainclass extends JavaPlugin {
 		return config;
 	}
 
-	public static void checkVersion() {
-		// Coming soon!
+	public static SignGUI getSignGUI() {
+		return signgui;
 	}
 
-	public static void updateConfig() {
-		// Coming soon!
+	public boolean getBungeecord() {
+		return bungeecord;
 	}
 
 	public static Mainclass getInstance() {

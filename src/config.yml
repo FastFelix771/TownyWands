@@ -1,20 +1,62 @@
-# TownyWands - Custom Towny GUI's | Configuration (v1.0.6)
-# -- Dont change this --
+# TownyWands - Custom Towny GUI's | Written and maintained by FastFelix771, C.E.O of the UnityGaming Network. | http://www.unitygaming.de
+
+# If you change the value below, it will reset your config. Don't do it.
 configVersion: 137
-# -- Dont change this --
+
 # Important Notes:
 # If you dont know what 'metaID' means: its the last part of the full item id, for example: 17:3 , the metaID comes behind the ':', if the item you want to add has no metaID, set it to 0 (zero)
 # Dont enter higher slot values than your inventory supports, so if your GUI has 18 slots, dont use values lower than 1 or higher than 18 or you will get bombed by a ton of errors :D
 # If you want to add more languages, just add the fields: name_ , lore_ , commands_ , each followed by your wished langcode, for example: es_ES = Spanish | fr_FR = Francais
 # You can find all supported languages and their langcodes on the GitHub page! :) -> https://github.com/FastFelix771/TownyWands/blob/master/README.md
 # Should TownyWands send some anonymous data to mcstats.org? 
+
 metrics: true
-# EXPERIMENTAL | If you wish to use auto-translating you only need to provide english text as base for all translations that are possible.
+# If you wish to use auto-translating you only need to provide english text as base for all translations that are possible.
 auto-translate: false
-# EXPERIMENTAL | If the english base-texts are missing, it will throw errors, but the default config contains english texts, so you should be able to use this feature without problems.
-# Commands will not get auto-translated, it will just use the english pattern.
+
+# If the english base-texts are missing, it will throw errors, but the default config contains english texts, so you should be able to use this feature without problems.
 # The first translation will take some time, then it will save the translated data and re-use it on the next restart if the english entries hasn't changed.
 cpu-threads: 4
+
 # More threads will allow to parse more inventories at the same time.
 # Should TownyWands check if theres a new version of the plugin? It will NOT download anything, it will just tell you if theres a newer version of the plugin!
 checkForUpdates: true
+
+# If you have a BungeeCord Proxy connected to this server, you can enable this feature to make /bungeetp working!
+bungeecord: false
+
+
+## HOW DOES THE COMMANDS WORK ##
+# This will become a tiny How-To that i'll update and enhance with the newer versions. =)
+# 
+# /vsign {playername} t new {data}
+#
+# /vsign creates a virtual SignGUI that allows TownyWands to handle user-input for its GUI's! 
+#
+# The parameter {data} will be replaced with the stuff the user typed on the sign gui. (/vsign ONLY!)
+#
+# There are all parameters that you can use on ALL commands & console commands listed below:
+#
+#   {playername} = Player's name.
+#	{uuid} = Player's UUID.
+#	{health} = Player's health.
+#	{world} = Name of the player's world.
+#	{hunger} = Player's foodlevel.
+#	{saturation} = Player's saturationlevel.
+#	{displayname} = Player's displayname.
+#
+#
+# =========================
+#
+# /bungeetp {playername} myLobbyServer
+#
+# /bungeetp teleports the given player to another server inside your bungeecord network.
+#
+# The second parameter means the server the user should connect to, please type in the exact name from your bungeecord config to prevent errors!
+#
+#
+# =========================
+#
+# /gui - This command isnt done yet and will get explained here as soon as it has its full function!
+#
+################################

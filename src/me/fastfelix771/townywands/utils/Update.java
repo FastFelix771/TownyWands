@@ -15,6 +15,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import me.fastfelix771.townywands.utils.Reflect.Version;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,13 +48,13 @@ public class Update {
 		final JSONArray array = (JSONArray) JSONValue.parse(data);
 
 		if (array.isEmpty()) {
-			send("Cannot find ID of plugin " + plugin.getName());
+			send("Cannot find ID of plugin " + plugin.getName() + "!");
 			return;
 		}
 
 		final JSONObject json = (JSONObject) array.get(0);
 
-		final long id = (long) json.get("id");
+		final long id = Long.parseLong(json.get("id").toString());
 		Validate.notNull(id);
 		this.id = id;
 		this.canCheck = true;
@@ -61,7 +63,7 @@ public class Update {
 	public Result check() {
 		while (!canCheck) {
 		}
-		send("Checking for updates for plugin " + plugin.getName());
+		send("Checking for updates for plugin " + plugin.getName() + "!");
 
 		final String data = httpRequest(BASE_URL + id, 10);
 		Validate.notNull(data);
@@ -87,6 +89,10 @@ public class Update {
 			result = new Result(State.UPDATE_FOUND, latestVersion, latestURL, gameVersion);
 		} else {
 			result = new Result(State.ERROR, latestVersion, latestURL, gameVersion);
+		}
+
+		if (Version.fromString("v" + result.getGameVersion().replace(".", "_")) != Reflect.getServerVersion()) {
+			result = new Result(State.NO_UPDATE, latestVersion, latestURL, gameVersion);
 		}
 
 		Validate.notNull(result);

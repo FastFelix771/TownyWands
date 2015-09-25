@@ -15,31 +15,43 @@ inventories:
         lore_en_US: 
           - "&6Click to claim your chunk!"
           - "&6Command: &b/t claim"
-        commands_de_DE: 
-          - t claim
-        commands_en_US: 
+        commands: 
           - t claim
         itemID: 17
         metaID: 0
         slot: 1
         quantity: 1
         enchanted: false
-      Deposit1000: 
-        name_de_DE: "&2&lZahle 1000&6&l$ &2&lein."
-        name_en_US: "&2&lDeposit 1000&6&l$"
+      DepositMoney: 
+        name_de_DE: "&2&lGeld einzahlen"
+        name_en_US: "&2&lDeposit money"
         lore_de_DE: 
           - "&3Klicke um Geld in die Stadtkasse einzuzahlen."
-          - "&6Befehl: &b/t deposit 1000"
+          - "&6Gebe die Menge in die darauf folgende GUI ein!"
         lore_en_US: 
           - "&6Click to deposit money to your townbank."
-          - "&6Command: &b/t deposit 1000"
-        commands_de_DE: 
-          - t deposit 1000
-        commands_en_US: 
-          - t deposit 1000
+          - "&6Enter the amount in the GUI that will open!"
+        console_commands: 
+          - vsign {playername} t deposit {data}
         itemID: 41
         metaID: 0
-        slot: 2
+        slot: 7
+        quantity: 1
+        enchanted: false
+      WithDrawMoney: 
+        name_de_DE: "&2&lGeld abheben."
+        name_en_US: "&2&lWithdraw money"
+        lore_de_DE: 
+          - "&3Klicke um Geld von der Stadtkasse abzuheben."
+          - "&6Gebe die Menge in die darauf folgende GUI ein!"
+        lore_en_US: 
+          - "&6Click to withdraw money from your townbank."
+          - "&6Enter the amount in the GUI that will open!"
+        console_commands: 
+          - vsign {playername} t withdraw {data}
+        itemID: 42
+        metaID: 0
+        slot: 8
         quantity: 1
         enchanted: false
   admin: 
@@ -57,9 +69,7 @@ inventories:
         lore_en_US: 
           - "&cTowny Administrator Panel"
           - "&6Command: &b/ta"
-        commands_de_DE: 
-          - ta
-        commands_en_US: 
+        commands: 
           - ta
         itemID: 323
         metaID: 0

@@ -1,16 +1,18 @@
 package me.fastfelix771.townywands.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.fastfelix771.townywands.lang.Language;
+import me.fastfelix771.townywands.main.Mainclass;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import com.google.gson.Gson;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 
 public class Utils {
 
@@ -35,7 +37,11 @@ public class Utils {
 		return Arrays.asList(validCounts).contains(slots);
 	}
 
-	public static ItemStack setCommands(ItemStack item, final List<String> commands, final Language language) {
+	public enum Type {
+		CONSOLE, PLAYER;
+	}
+
+	public static ItemStack setCommands(ItemStack item, final List<String> commands, final Type type) {
 		try {
 			final Method asNMSCopy = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
 			final Object nms = asNMSCopy.invoke(Reflect.CraftItemStack, item);
@@ -47,10 +53,13 @@ public class Utils {
 			final Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
 			final Method asCraftMirror = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asCraftMirror", Reflect.ItemStack));
 
-			final Gson gson = new Gson();
-			final String json = gson.toJson(commands);
+			final String json = JSONArray.toJSONString(commands); // Needed to switch from Gson to plain JSON to be backwards-compatible to 1.6.4
 
-			setString.invoke(tag, "townywands_commands_" + language.getCode(), json);
+			if (type == Type.PLAYER) {
+				setString.invoke(tag, "townywands_commands", json);
+			} else if (type == Type.CONSOLE) {
+				setString.invoke(tag, "townywands_console_commands", json);
+			}
 
 			if (!(boolean) hasTag.invoke(nms)) {
 				setTag.invoke(nms, tag);
@@ -65,7 +74,7 @@ public class Utils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<String> getCommands(final ItemStack item, final Language language) {
+	public static List<String> getCommands(final ItemStack item, final Type type) {
 		try {
 			final Method asNMSCopy = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
 			final Object nms = asNMSCopy.invoke(Reflect.CraftItemStack, item);
@@ -75,11 +84,21 @@ public class Utils {
 			final Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
 			final Method getString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("getString", String.class));
 
-			if (getString.invoke(tag, "townywands_commands_" + language.getCode()) != null) {
-				final Gson gson = new Gson();
-				final List<String> commands = gson.fromJson((String) getString.invoke(tag, "townywands_commands_" + language.getCode()), ArrayList.class);
-				return commands;
+			// Needed to switch from Gson to plain JSON to be backwards-compatible to 1.6.4
+			if (type == Type.PLAYER) {
+				if (getString.invoke(tag, "townywands_commands") != null) {
+					final List<String> commands = (List<String>) JSONValue.parse((String) getString.invoke(tag, "townywands_commands"));
+					return commands;
+				}
 			}
+
+			if (type == Type.CONSOLE) {
+				if (getString.invoke(tag, "townywands_console_commands") != null) {
+					final List<String> commands = (List<String>) JSONValue.parse((String) getString.invoke(tag, "townywands_console_commands"));
+					return commands;
+				}
+			}
+
 			return null;
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -161,6 +180,47 @@ public class Utils {
 		} catch (final Exception e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	// I need to do this on the NBT way to be backwards-compatible to 1.7 and lower.
+	public static ItemStack hideFlags(ItemStack item) {
+		try {
+			final Method asNMSCopy = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
+			final Object nms = asNMSCopy.invoke(Reflect.CraftItemStack, item);
+			final Constructor<?> NBTTagCompound = Reflect.getConstructor(Reflect.NBTTagCompound);
+			final Method hasTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("hasTag"));
+			final Method getTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("getTag"));
+			final Method setTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("setTag", Reflect.NBTTagCompound));
+			final Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
+			final Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
+			final Method asCraftMirror = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asCraftMirror", Reflect.ItemStack));
+
+			setString.invoke(tag, "HideFlags", "1");
+
+			if (!(boolean) hasTag.invoke(nms)) {
+				setTag.invoke(nms, tag);
+			}
+
+			item = (ItemStack) asCraftMirror.invoke(null, nms);
+			return item;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static void bungeeConnect(final Player player, final String servername) {
+		if (Mainclass.getInstance().getBungeecord()) {
+			final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			final DataOutputStream dout = new DataOutputStream(bout);
+			try {
+				dout.writeUTF("Connect");
+				dout.writeUTF(servername);
+				player.sendPluginMessage(Mainclass.getInstance(), "BungeeCord", bout.toByteArray());
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

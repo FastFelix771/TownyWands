@@ -27,9 +27,10 @@ public class ConfigurationParser {
 
 	private Utf8YamlConfiguration config;
 	private final Level lvl;
-	private final boolean async;
-	private boolean error;
+	private final boolean async;// Adde consolen commands für jedes item!
+	private boolean error;// Und ein paar spielerbezogene variablen wie {uuid} , {username} undso, damit man consolen-commands auch brauchen kann! Und diese dem Config-How to beifügen.
 	private final File file;
+	private final List<String> tokens;
 
 	public ConfigurationParser(final Utf8YamlConfiguration config, final Level loglevel, final boolean async, final File file) {
 		Validate.notNull(config, "config cannot be null");
@@ -40,6 +41,11 @@ public class ConfigurationParser {
 		this.async = async;
 		this.file = file;
 		this.error = false;
+		this.tokens = new ArrayList<String>();
+	}
+
+	public Utf8YamlConfiguration getConfig() {
+		return config;
 	}
 
 	public void setConfig(final Utf8YamlConfiguration config) {
@@ -127,30 +133,43 @@ public class ConfigurationParser {
 							continue;
 						}
 
+						if (i.get("console_commands") == null && i.get("commands") == null) {
+							error("Item '" + item_name + "' is wrong configured! The field 'commands' and 'console_commands' doesnt exist!");
+							continue;
+						}
+
+						List<String> commands = new ArrayList<String>();
+						List<String> console_commands = new ArrayList<String>();
+
+						if (i.get("console_commands") != null) {
+							console_commands = i.getStringList("console_commands");
+						}
+
+						if (i.get("commands") != null) {
+							commands = i.getStringList("commands");
+						}
+
 						final int quantity = i.getInt("quantity");
 						final boolean enchanted = i.getBoolean("enchanted");
 
-						// Create the item itself from the given data and enhance it via the ItemBuilder.
 						for (final Language lang : Language.values()) {
 
 							final String langcode = lang.getCode();
 
 							String iname = i.getString("name_" + langcode);
 							List<String> ilore = i.getStringList("lore_" + langcode);
-							List<String> icommands = i.getStringList("commands_" + langcode);
 							boolean translate = refreshTranslations;
 
 							// Skip to next language if one or more of the parameters are missing and auto-translating is disabled.
-							if (iname == null || ilore == null || icommands == null) {
+							if (iname == null || ilore == null) {
 								if (!Mainclass.getAutoTranslate()) {
 									continue;
 								}
 								final String engcode = Language.ENGLISH.getCode();
 								iname = i.getString("name_" + engcode);
 								ilore = i.getStringList("lore_" + engcode);
-								icommands = i.getStringList("commands_" + engcode);
 								// Check if english values exist...just to be safe
-								if (iname == null || ilore == null || icommands == null) {
+								if (iname == null || ilore == null) {
 									continue;
 								}
 								translate = true;
@@ -183,7 +202,6 @@ public class ConfigurationParser {
 									ilore.set(ic, text);
 								}
 								i.set("lore_" + langcode, saveLore);
-								i.set("commands_" + langcode, icommands);
 								saveMe = true;
 							}
 
@@ -198,7 +216,7 @@ public class ConfigurationParser {
 
 							// Create the basic item itself and enhance it via the ItemBuilder
 							final ItemStack iitem = new ItemStack(material, quantity, (short) metaid);
-							ItemBuilder.build(db.getCommand(), db.getInventory(), iitem, slot, iname, ilore, icommands, lang, enchanted);
+							ItemBuilder.build(db.getCommand(), db.getInventory(), iitem, slot, iname, ilore, commands, console_commands, enchanted);
 						}
 					}
 
@@ -211,6 +229,7 @@ public class ConfigurationParser {
 					if (saveMe) {
 						save();
 					}
+					tokens.add(str_name);
 					Bukkit.getConsoleSender().sendMessage(refreshTranslations ? "§cTownyWands | §bSetup and refreshing of inventory §3" + str_name + " §btook §3" + (end - start) + "§bms" : "§cTownyWands | §bSetup of inventory §3" + str_name + " §btook §3" + (end - start) + "§bms");
 				}
 			};
@@ -228,6 +247,10 @@ public class ConfigurationParser {
 		this.error = false; // Resetting error after parsing to make the parser re-usable.
 
 		return err;
+	}
+
+	public List<String> getInventoryTokens() {
+		return tokens;
 	}
 
 	private void save() {

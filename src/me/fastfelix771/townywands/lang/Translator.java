@@ -1,17 +1,14 @@
 package me.fastfelix771.townywands.lang;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-import net.md_5.bungee.api.ChatColor;
-
+import org.bukkit.ChatColor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  * @description This class manages the translation of TownyWands GUI's! (EXPERIMENTAL)
@@ -65,7 +62,7 @@ public class Translator {
 			}
 			input.close();
 			translated = response.toString();
-		} catch (final IOException e) {
+		} catch (final Exception e) {
 			return null;
 		}
 
@@ -73,7 +70,7 @@ public class Translator {
 			final JSONObject json = (JSONObject) new JSONParser().parse(translated);
 			final JSONObject data = (JSONObject) json.get("responseData");
 			translated = data.get("translatedText").toString();
-		} catch (final ParseException e) {
+		} catch (final Exception e) {
 			return null;
 		}
 

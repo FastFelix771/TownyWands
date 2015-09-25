@@ -1,11 +1,13 @@
 package me.fastfelix771.townywands.listeners;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.fastfelix771.townywands.lang.Language;
 import me.fastfelix771.townywands.utils.DataBundle;
 import me.fastfelix771.townywands.utils.Database;
 import me.fastfelix771.townywands.utils.Utils;
+import me.fastfelix771.townywands.utils.Utils.Type;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -59,12 +61,6 @@ public class InventoryListener implements Listener {
 	public void onInvClick(final InventoryClickEvent e) {
 		final Player p = (Player) e.getWhoClicked();
 		final ItemStack item = e.getCurrentItem();
-		final Language language = Language.getLanguage(p);
-		final Inventory inv = e.getClickedInventory();
-
-		if (inv == p.getInventory()) {
-			return;
-		}
 
 		if (item == null || item.getType().equals(Material.AIR)) {
 			return;
@@ -81,19 +77,47 @@ public class InventoryListener implements Listener {
 			return;
 		}
 
-		List<String> commands = null;
+		List<String> commands = new ArrayList<String>();
+		List<String> console_commands = new ArrayList<String>();
 
-		if (Utils.getCommands(item, language) != null) {
-			commands = Utils.getCommands(item, language);
-		} else if (Utils.getCommands(item, Language.ENGLISH) != null) {
-			commands = Utils.getCommands(item, Language.ENGLISH);
-		} else {
-			Bukkit.getConsoleSender().sendMessage("§cTownyWands | Could not find any commands for item §r" + item.getItemMeta().getDisplayName());
-			return;
+		if (Utils.getCommands(item, Type.PLAYER) != null) {
+			commands = Utils.getCommands(item, Type.PLAYER);
 		}
 
-		for (final String cmd : commands) {
+		if (Utils.getCommands(item, Type.CONSOLE) != null) {
+			console_commands = Utils.getCommands(item, Type.CONSOLE);
+		}
+
+		for (String cmd : commands) {
+			if (cmd.replace(" ", "").isEmpty()) {
+				continue;
+			}
+
+			cmd = cmd.replace("{playername}", p.getName());
+			cmd = cmd.replace("{uuid}", p.getUniqueId().toString());
+			cmd = cmd.replace("{health}", String.valueOf(p.getHealth()));
+			cmd = cmd.replace("{world}", p.getWorld().getName());
+			cmd = cmd.replace("{hunger}", String.valueOf(p.getFoodLevel()));
+			cmd = cmd.replace("{saturation}", String.valueOf(p.getSaturation()));
+			cmd = cmd.replace("{displayname}", p.getDisplayName());
+
 			Bukkit.dispatchCommand(p, cmd);
+		}
+
+		for (String cmd : console_commands) {
+			if (cmd.replace(" ", "").isEmpty()) {
+				continue;
+			}
+
+			cmd = cmd.replace("{playername}", p.getName());
+			cmd = cmd.replace("{uuid}", p.getUniqueId().toString());
+			cmd = cmd.replace("{health}", String.valueOf(p.getHealth()));
+			cmd = cmd.replace("{world}", p.getWorld().getName());
+			cmd = cmd.replace("{hunger}", String.valueOf(p.getFoodLevel()));
+			cmd = cmd.replace("{saturation}", String.valueOf(p.getSaturation()));
+			cmd = cmd.replace("{displayname}", p.getDisplayName());
+
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 		}
 
 	}

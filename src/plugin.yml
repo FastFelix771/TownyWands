@@ -1,5 +1,5 @@
 name: TownyWands
-version: 1.0.6
+version: 1.0.8
 author: FastFelix771
 main: me.fastfelix771.townywands.main.Mainclass
 soft-depend: [Towny, Vault, PermissionsEx, Essentials]
@@ -9,4 +9,10 @@ commands:
      usage: /townywands ?
    gui:
      description: Creation and changing of GUIs
-     usage: /townywands ?
+     usage: /gui help
+   vsign:
+     description: Creates a virtual Sign and executes commands from the given input.
+     usage: /vsign playername command {data}
+   bungeetp:
+     description: Teleports a player to another server in your bungeecord network.
+     usage: /bungeetp playername servername
