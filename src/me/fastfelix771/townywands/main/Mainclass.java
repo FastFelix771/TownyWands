@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Mainclass extends JavaPlugin {
 
+	private static final long CONFIG_VERSION = 241; // Configuration Version.
 	private static Mainclass instance;
 	private static ConfigurationParser cp;
 	private static boolean translate;
@@ -46,6 +47,27 @@ public class Mainclass extends JavaPlugin {
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
 		CommandController.registerCommands(this, new Commands());
+
+		if (getConfig().get("configVersion") != null) {
+			final long version = getConfig().getLong("configVersion");
+
+			// If the version has changed, update the config!
+			if (!(CONFIG_VERSION == version)) {
+				final File config = new File(getDataFolder().getAbsolutePath() + "/" + "config.yml");
+				if (file != null) {
+					final boolean success = config.renameTo(new File(getDataFolder().getAbsolutePath() + "/" + "config_" + version + ".yml"));
+					if (!success) {
+						getLogger().warning("Failed to update configuration! Continue using the old one...");
+						getLogger().warning("You should try to delete the older config files with numbers behind the name!");
+					} else {
+						// If everything was fine, save the newest config and reload it.
+						saveDefaultConfig();
+						reloadConfig();
+					}
+				}
+			}
+
+		}
 
 		// SignGUI is 1.8 only due to some Netty problems, i'll fix that when i get some time for it.
 		if (Reflect.getServerVersion() == Version.v1_8) {

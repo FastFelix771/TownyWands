@@ -104,7 +104,7 @@ public class Commands {
 		final String servername = args[1];
 
 		try {
-			Utils.bungeeConnect(player, servername); //If bungeecord is disabled the method will do nothing.
+			Utils.bungeeConnect(player, servername); // If bungeecord is disabled the method will do nothing.
 		} catch (final Exception e) {
 			e.printStackTrace();
 			sender.sendMessage("Failed to teleport " + player.getName() + " to server " + servername);

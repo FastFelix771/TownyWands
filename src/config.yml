@@ -1,7 +1,7 @@
 # TownyWands - Custom Towny GUI's | Written and maintained by FastFelix771, C.E.O of the UnityGaming Network. | http://www.unitygaming.de
 
 # If you change the value below, it will reset your config. Don't do it.
-configVersion: 137
+configVersion: 241
 
 # Important Notes:
 # If you dont know what 'metaID' means: its the last part of the full item id, for example: 17:3 , the metaID comes behind the ':', if the item you want to add has no metaID, set it to 0 (zero)
