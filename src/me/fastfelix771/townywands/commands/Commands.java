@@ -9,10 +9,12 @@ import me.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
 import me.fastfelix771.townywands.lang.Language;
 import me.fastfelix771.townywands.main.Mainclass;
 import me.fastfelix771.townywands.utils.Database;
+import me.fastfelix771.townywands.utils.Utf8YamlConfiguration;
 import me.fastfelix771.townywands.utils.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class Commands {
@@ -24,6 +26,7 @@ public class Commands {
 		sender.sendMessage("§6======================================");
 		sender.sendMessage("§bTowny§3Wands §6- §av§c" + Mainclass.getInstance().getDescription().getVersion());
 		sender.sendMessage("§2Created by §6FastFelix771");
+		sender.sendMessage("§cIf you need help, use §a/townywands help");
 		sender.sendMessage("§6======================================");
 	}
 
@@ -113,9 +116,42 @@ public class Commands {
 
 	}
 
+	@CommandHandler(name = "fakecmd", description = "Teleports a player to another server in your bungeecord network.", usage = "/fakecmd playername commandToExecute", permission = "townywands.cmd.fakecmd", permissionMessage = "§cYou are missing the permission §atownywands.cmd.fakecmd§c!")
+	public void fakecmd(final CommandSender sender, final String[] args) {
+		if (args.length < 1 || Bukkit.getPlayerExact(args[0]) == null) {
+			return;
+		}
+
+		final Player player = Bukkit.getPlayerExact(args[0]);
+		final StringBuffer sb = new StringBuffer();
+
+		for (int i = 1; i < args.length; i++) {
+			final String arg = args[i];
+			sb.append(arg + " ");
+		}
+
+		String fakeCommand = sb.toString();
+		fakeCommand = fakeCommand.substring(0, fakeCommand.length() - 1);
+		fakeCommand = "/" + fakeCommand;
+
+		player.chat(fakeCommand);
+
+	}
+
 	@CommandHandler(name = "gui", description = "Creation and changing of GUIs", usage = "/gui help", permission = "townywands.cmd.gui", permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui§c!")
 	public void gui(final CommandSender sender, final String[] args) {
-		sender.sendMessage("Patience my Padawan, this will feature will be added soon!"); // :o funny, isn't it? No? Hm :(
+		/*
+		 * Ehh...im working on...complex idea
+		 * sender.sendMessage("§6======================================");
+		 * sender.sendMessage("§2All available §b/gui §2commands: (Examples)");
+		 * sender.sendMessage("§b/gui create §3<§bname§3>");
+		 * sender.sendMessage("§b/gui set title");
+		 * sender.sendMessage("§b/gui set command");
+		 * sender.sendMessage("§b/gui set permission");
+		 * sender.sendMessage("§b/gui set slots");
+		 * sender.sendMessage("§b/gui delete §3<§bname§3>");
+		 * sender.sendMessage("§6======================================");
+		 */
 	}
 
 	@SubCommandHandler(name = "list", parent = "gui", permission = "townywands.cmd.gui.list", permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui.list§c!")
@@ -124,6 +160,31 @@ public class Commands {
 		sender.sendMessage("§bTowny§3Wands §6- §aGUI's");
 		Mainclass.getParser().getInventoryTokens().forEach(token -> sender.sendMessage("§b§l" + token + " §3§l- §r" + Database.get(Mainclass.getParser().getConfig().getConfigurationSection("inventories").getConfigurationSection(token).getString("command"), Language.ENGLISH).getInventory().getTitle()));
 		sender.sendMessage("§6======================================");
+	}
+
+	@SubCommandHandler(name = "list", parent = "gui", permission = "townywands.cmd.gui.create", permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui.create§c!")
+	public void gui_create(final CommandSender sender, final String[] args) {
+		if (args.length == 0) {
+			sender.sendMessage("§cYou need to specify an name for the gui!");
+			return;
+		}
+
+		final String name = args[0];
+
+		if (Mainclass.getParser().getInventoryTokens().contains(name)) {
+			sender.sendMessage("§cA gui with this name already exists!");
+			return;
+		}
+
+		final Utf8YamlConfiguration config = Mainclass.getParser().getConfig();
+
+		final ConfigurationSection inv = config.getConfigurationSection("inventories").createSection(name);
+
+		// Set some defaults here
+		inv.set("command", "open-" + name);
+		inv.set("permission", "townywands.gui." + name);
+		inv.set("slots", 9);
+
 	}
 
 }

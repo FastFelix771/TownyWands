@@ -1,27 +1,38 @@
 refresh-Translations: false
 inventories: 
   resident: 
-    name: "&6Resident GUI"
+    name: "&6Resident Menu"
     command: resgui
     permission: townywands.gui.resident
-    slots: 9
+    slots: 18
     items: 
-      PlotClaimer: 
-        name_de_DE: "&2&lClaiming Werkzeug"
-        name_en_US: "&2&lClaiming Tool"
-        lore_de_DE: 
-          - "&6Klicke um deinen Chunk zu claimen!"
-          - "&6Befehl: &b/t claim"
-        lore_en_US: 
-          - "&6Click to claim your chunk!"
-          - "&6Command: &b/t claim"
+      TownStatus: 
+        name_de_DE: "&b&lStadt Status"
+        name_en_US: "&b&lTown Status"
+        lore_en_US: []
         commands: 
-          - t claim
-        itemID: 17
+          - town
+        itemID: 340
         metaID: 0
         slot: 1
         quantity: 1
         enchanted: false
+        
+      OnlineList: 
+        name_de_DE: "&2&lAnwesende Bewohner"
+        name_en_US: "&2&lOnline Residents"
+        lore_de_DE: 
+          - "&3Zeigt eine Liste aller Bewohner die gerade online sind."
+        lore_en_US: 
+          - "&6Shows an list of all currently online residents."
+        commands: 
+          - town online
+        itemID: 339
+        metaID: 0
+        slot: 2
+        quantity: 1
+        enchanted: false
+        
       DepositMoney: 
         name_de_DE: "&2&lGeld einzahlen"
         name_en_US: "&2&lDeposit money"
@@ -29,23 +40,214 @@ inventories:
           - "&3Klicke um Geld in die Stadtkasse einzuzahlen."
           - "&6Gebe die Menge in die darauf folgende GUI ein!"
         lore_en_US: 
-          - "&6Click to deposit money to your townbank."
+          - "&3Click to deposit money to your townbank."
           - "&6Enter the amount in the GUI that will open!"
         console_commands: 
           - vsign {playername} t deposit {data}
         itemID: 41
         metaID: 0
-        slot: 7
+        slot: 8
         quantity: 1
         enchanted: false
+        
+      EnterTownChat: 
+        name_de_DE: "&b&lStadtchat"
+        name_en_US: "&3&lTownchat"
+        lore_de_DE: 
+          - "&3Betrete den Stadtchat."
+        lore_en_US: 
+          - "&6Enter your towns Townchat."
+        console_commands: 
+          - fakecmd {playername} nc
+        itemID: 403
+        metaID: 0
+        slot: 4
+        quantity: 1
+        enchanted: false
+        
+      EnterNationChat: 
+        name_de_DE: "&6&lNationschat"
+        name_en_US: "&3&lNationchat"
+        lore_de_DE: 
+          - "&3Betrete den Nationschat."
+        lore_en_US: 
+          - "&6Enter your nations Nationchat."
+        console_commands: 
+          - fakecmd {playername} nc
+        itemID: 403
+        metaID: 0
+        slot: 5
+        quantity: 1
+        enchanted: false
+        
+      EnterGlobalChat: 
+        name_de_DE: "&2&lGlobaler Chat"
+        name_en_US: "&3&lGlobalchat"
+        lore_de_DE: 
+          - "&3Kehre in den globalen chat zurück."
+        lore_en_US: 
+          - "&6Return to global chat."
+        console_commands: 
+          - fakecmd {playername} g
+        itemID: 403
+        metaID: 0
+        slot: 6
+        quantity: 1
+        enchanted: false
+        
+      LeaveTown: 
+        name_de_DE: "&c&lStadt verlassen!"
+        name_en_US: "&c&lLeave Town!"
+        lore_en_US: []
+        commands: 
+          - town leave
+        itemID: 327
+        metaID: 0
+        slot: 9
+        quantity: 1
+        enchanted: false
+        
+      ResidentStatus: 
+        name_de_DE: "&2&lEinwohner Status"
+        name_en_US: "&2&lResident Status"
+        lore_en_US: []
+        commands: 
+          - resident
+        itemID: 340
+        metaID: 0
+        slot: 10
+        quantity: 1
+        enchanted: false
+        
+      AddFriend: 
+        name_de_DE: "&2&lFreund hinzufügen"
+        name_en_US: "&2&lAdd Friend"
+        lore_en_US: []
+        console_commands: 
+          - "vsign {playername} resident friend add {data}"
+        itemID: 386
+        metaID: 0
+        slot: 17
+        quantity: 1
+        enchanted: false
+        
+      RemoveFriend: 
+        name_de_DE: "&c&lFreund entfernen"
+        name_en_US: "&c&lRemove Friend"
+        lore_en_US: []
+        console_commands: 
+          - "vsign {playername} resident friend remove {data}"
+        itemID: 386
+        metaID: 0
+        slot: 18
+        quantity: 1
+        enchanted: false
+        
+      TogglePlotPVP: 
+        name_de_DE: "&6&lPvP - &cAn&6/&aAus"
+        name_en_US: "&6&lPvP - &cOn&6/&aOff"
+        lore_de_DE: 
+          - "&6Ändere den Plot auf dem du gerade stehst."
+        lore_en_US: 
+          - "&6Change the plot, you are currently standing on."
+        commands: 
+          - plot toggle pvp
+        itemID: 340
+        metaID: 0
+        slot: 12
+        quantity: 1
+        enchanted: true
+        
+      TogglePlotFire: 
+        name_de_DE: "&6&lFeuer - &cAn&6/&aAus"
+        name_en_US: "&6&lFire - &cOn&6/&aOff"
+        lore_de_DE: 
+          - "&6Ändere den Plot auf dem du gerade stehst."
+        lore_en_US: 
+          - "&6Change the plot, you are currently standing on."
+        commands: 
+          - plot toggle fire
+        itemID: 340
+        metaID: 0
+        slot: 13
+        quantity: 1
+        enchanted: true
+        
+      TogglePlotMobs: 
+        name_de_DE: "&6&lMonster - &cAn&6/&aAus"
+        name_en_US: "&6&lMonsters - &cOn&6/&aOff"
+        lore_de_DE: 
+          - "&6Ändere den Plot auf dem du gerade stehst."
+        lore_en_US: 
+          - "&6Change the plot, you are currently standing on."
+        commands: 
+          - plot toggle mobs
+        itemID: 340
+        metaID: 0
+        slot: 14
+        quantity: 1
+        enchanted: true
+
+  mayor: 
+    name: "&bMayor Menu"
+    command: mayor
+    permission: townywands.gui.mayor
+    slots: 18
+    items: 
+      TownStatus: 
+        name_de_DE: "&3&lStatus deiner Stadt"
+        name_en_US: "&3&lYour towns status"
+        lore_en_US: []
+        commands: 
+          - town
+        itemID: 340
+        metaID: 0
+        slot: 1
+        quantity: 1
+        enchanted: false
+        
+      InviteGuy: 
+        name_de_DE: "&2&lSpieler einladen"
+        name_en_US: "&2&lInvite player"
+        lore_de_DE: 
+          - "&6Lade einen Spieler in deine Stadt ein."
+          - "&6Gebe den Namen in die darauf folgende GUI ein!"
+        lore_en_US: 
+          - "&6Invite a player to join your town!"
+          - "&6Enter the name in the GUI that will open!"
+        console_commands: 
+          - vsign {playername} town add {data}
+        itemID: 386
+        metaID: 0
+        slot: 2
+        quantity: 1
+        enchanted: false
+        
+      KickGuy: 
+        name_de_DE: "&c&lSpieler rauswerfen"
+        name_en_US: "&c&lKick player"
+        lore_de_DE: 
+          - "&6Werfe einen Spieler aus deiner Stadt raus."
+          - "&6Gebe den Namen in die darauf folgende GUI ein!"
+        lore_en_US: 
+          - "&6Kick a player from your town."
+          - "&6Enter the name in the GUI that will open!"
+        console_commands: 
+          - vsign {playername} town kick {data}
+        itemID: 386
+        metaID: 0
+        slot: 3
+        quantity: 1
+        enchanted: false
+        
       WithDrawMoney: 
-        name_de_DE: "&2&lGeld abheben."
+        name_de_DE: "&2&lGeld abheben"
         name_en_US: "&2&lWithdraw money"
         lore_de_DE: 
           - "&3Klicke um Geld von der Stadtkasse abzuheben."
           - "&6Gebe die Menge in die darauf folgende GUI ein!"
         lore_en_US: 
-          - "&6Click to withdraw money from your townbank."
+          - "&3Click to withdraw money from your townbank."
           - "&6Enter the amount in the GUI that will open!"
         console_commands: 
           - vsign {playername} t withdraw {data}
@@ -54,8 +256,147 @@ inventories:
         slot: 8
         quantity: 1
         enchanted: false
+        
+      DeleteTown: 
+        name_de_DE: "&c&lStadt löschen!"
+        name_en_US: "&c&lDelete town!"
+        lore_en_US: []
+        commands: 
+          - town delete
+        itemID: 327
+        metaID: 0
+        slot: 9
+        quantity: 1
+        enchanted: false
+        
+      TogglePVP: 
+        name_de_DE: "&6&lPvP - &cAn&6/&aAus"
+        name_en_US: "&6&lPvP - &cOn&6/&aOff"
+        lore_en_US: []
+        commands: 
+          - town toggle pvp
+        itemID: 340
+        metaID: 0
+        slot: 16
+        quantity: 1
+        enchanted: true
+        
+      ToggleFire: 
+        name_de_DE: "&6&lFeuer - &cAn&6/&aAus"
+        name_en_US: "&6&lFire - &cOn&6/&aOff"
+        lore_en_US: []
+        commands: 
+          - town toggle fire
+        itemID: 340
+        metaID: 0
+        slot: 17
+        quantity: 1
+        enchanted: true
+        
+      ToggleMobs: 
+        name_de_DE: "&6&lMonster - &cAn&6/&aAus"
+        name_en_US: "&6&lMonsters - &cOn&6/&aOff"
+        lore_en_US: []
+        commands: 
+          - town toggle mobs
+        itemID: 340
+        metaID: 0
+        slot: 18
+        quantity: 1
+        enchanted: true
+        
+      SetBoard: 
+        name_de_DE: "&b&lSetze schwarzes Brett"
+        name_en_US: "&b&lSet town board"
+        lore_de_DE: 
+          - "&3Ändere das schwarze Brett deiner Stadt!"
+        lore_en_US: 
+          - "&3Change your towns message board!"
+        console_commands: 
+          - vsign {playername} town set board {data}
+        itemID: 323
+        metaID: 0
+        slot: 11
+        quantity: 1
+        enchanted: false
+        
+      SetName: 
+        name_de_DE: "&2&lÄndere Stadtnamen"
+        name_en_US: "&2&lChange townname"
+        lore_de_DE: 
+          - "&aGebe deiner Stadt einen neuen Namen!"
+        lore_en_US: 
+          - "&aGive your town a new name!"
+        console_commands: 
+          - vsign {playername} town set name {data}
+        itemID: 386
+        metaID: 0
+        slot: 10
+        quantity: 1
+        enchanted: false
+        
+      AddAssistant: 
+        name_de_DE: "&2&lFüge Assistenten hinzu"
+        name_en_US: "&2&lPromote resident to assistant."
+        lore_de_DE: 
+          - "&6Gebe einem Spieler erweiterte Stadtrechte!"
+        lore_en_US: 
+          - "&6Grant a player advanced town permissions!"
+        console_commands: 
+          - vsign {playername} town rank add {data} assistant
+        itemID: 91
+        metaID: 0
+        slot: 13
+        quantity: 1
+        enchanted: false
+        
+      RemoveAssistant: 
+        name_de_DE: "&c&lEntferne Assistenten"
+        name_en_US: "&c&lDemote assistant to resident."
+        lore_de_DE: 
+          - "&6Nehme einem Assistenten seine Rechte!"
+        lore_en_US: 
+          - "&6Take an assistant his permissions!"
+        console_commands: 
+          - vsign {playername} town rank remove {data} assistant
+        itemID: 86
+        metaID: 0
+        slot: 14
+        quantity: 1
+        enchanted: false
+        
+      AddHelper: 
+        name_de_DE: "&2&lFüge Helfer hinzu"
+        name_en_US: "&2&lPromote resident to helper."
+        lore_de_DE: 
+          - "&6Gebe einem Spieler hilfreiche Stadtrechte!"
+        lore_en_US: 
+          - "&6Grant a player helpful town permissions!"
+        console_commands: 
+          - vsign {playername} town rank add {data} helper
+        itemID: 91
+        metaID: 0
+        slot: 5
+        quantity: 1
+        enchanted: false
+        
+      RemoveHelper: 
+        name_de_DE: "&c&lEntferne Helfer"
+        name_en_US: "&c&lDemote helper to resident."
+        lore_de_DE: 
+          - "&6Nehme einem Helfer seine Rechte!"
+        lore_en_US: 
+          - "&6Take an helper his permissions!"
+        console_commands: 
+          - vsign {playername} town rank remove {data} helper
+        itemID: 86
+        metaID: 0
+        slot: 6
+        quantity: 1
+        enchanted: false
+        
   admin: 
-    name: "&cAdmin GUI"
+    name: "&cAdmin Menu"
     command: admgui
     permission: townywands.gui.admin
     slots: 9
@@ -64,15 +405,62 @@ inventories:
         name_de_DE: "&c&lAdminpanel"
         name_en_US: "&c&lAdminpanel"
         lore_de_DE: 
-          - "&cTowny Administrator Panel"
-          - "&6Befehl: &b/ta"
+          - "&6Towny Admin Panel"
         lore_en_US: 
-          - "&cTowny Administrator Panel"
-          - "&6Command: &b/ta"
+          - "&6Towny Admin Panel"
         commands: 
-          - ta
+          - townyadmin
         itemID: 323
         metaID: 0
         slot: 1
         quantity: 1
         enchanted: true
+        
+      ToggleModeDebug: 
+        name_de_DE: "&6&lDebug - &cAn&6/&aAus"
+        name_en_US: "&6&lDebug - &cOn&6/&aOff"
+        lore_en_US: []
+        commands: 
+          - townyadmin toggle debug
+        itemID: 340
+        metaID: 0
+        slot: 9
+        quantity: 1
+        enchanted: true
+        
+      ToggleModeDevMode: 
+        name_de_DE: "&6&lDevMode - &cAn&6/&aAus"
+        name_en_US: "&6&lDevMode - &cOn&6/&aOff"
+        lore_en_US: []
+        commands: 
+          - townyadmin toggle devmode
+        itemID: 340
+        metaID: 0
+        slot: 8
+        quantity: 1
+        enchanted: true
+        
+      ToggleModeWar: 
+        name_de_DE: "&6&lKrieg - &cAn&6/&aAus"
+        name_en_US: "&6&lWar - &cOn&6/&aOff"
+        lore_en_US: []
+        commands: 
+          - townyadmin toggle war
+        itemID: 340
+        metaID: 0
+        slot: 6
+        quantity: 1
+        enchanted: true
+        
+      ToggleModeNeutral: 
+        name_de_DE: "&6&lNeutral - &aAn&6/&cAus"
+        name_en_US: "&6&lNeutral - &aOn&6/&cOff"
+        lore_en_US: []
+        commands: 
+          - townyadmin toggle neutral
+        itemID: 340
+        metaID: 0
+        slot: 5
+        quantity: 1
+        enchanted: true
+        

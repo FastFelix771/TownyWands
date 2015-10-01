@@ -133,9 +133,9 @@ public class Mainclass extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		instance = null;
 		cp = null;
 		Database.clear();
+		instance = null;
 	}
 
 	public static void reload() {

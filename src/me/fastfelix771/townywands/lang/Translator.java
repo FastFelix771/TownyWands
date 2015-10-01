@@ -4,8 +4,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.ChatColor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,6 +19,7 @@ import org.json.simple.parser.JSONParser;
 public class Translator {
 
 	private static final String USER_AGENT = "Mozilla/5.0";
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	public static String translate(final Language from, final Language to, final String inputText) {
 		String text = inputText;
@@ -25,7 +27,7 @@ public class Translator {
 		text = ChatColor.stripColor(text);
 		text = text.replaceAll("&[0-9a-fklmnor]", ""); // Destroy colorcodes, because it doesnt work currently and decreases the translation quality.
 		text = ChatColor.stripColor(text);
-		final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
+		final byte[] bytes = text.getBytes(UTF8);
 		if (bytes.length > 500) {
 			return null;
 			// MyMemory currently doesnt accept utf8-strings wich are bigger than 500 bytes.
@@ -74,7 +76,7 @@ public class Translator {
 			return null;
 		}
 
-		return translated;
+		return StringEscapeUtils.unescapeJava(translated);
 	}
 
 }

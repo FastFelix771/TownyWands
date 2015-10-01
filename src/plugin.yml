@@ -1,8 +1,8 @@
 name: TownyWands
-version: 1.0.9
+version: 2.0.0
 author: FastFelix771
 main: me.fastfelix771.townywands.main.Mainclass
-soft-depend: [Towny, Vault, PermissionsEx, Essentials]
+soft-depend: [Towny, TownyChat, Vault, PermissionsEx, Essentials, WorldEdit, WorldGuard]
 commands:
    townywands:
      description: Provides basic features.
@@ -16,3 +16,6 @@ commands:
    bungeetp:
      description: Teleports a player to another server in your bungeecord network.
      usage: /bungeetp playername servername
+   fakecmd:
+     description: Let players execute fake commands, wich most alias plugins and TownyChat uses.
+     usage: /fakecmd playername commandToExecute
