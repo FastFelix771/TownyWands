@@ -40,7 +40,7 @@ public class Mainclass extends JavaPlugin {
 		instance = this;
 		saveDefaultConfig();
 		saveResource("inventories.yml", false);
-		file = new File(getDataFolder().getAbsolutePath() + "/inventories.yml"); // <-- Here we set the file where the inventory configuration is placed in.
+		file = new File(getDataFolder().getAbsolutePath() + "/inventories.yml");
 	}
 
 	@Override

@@ -2,32 +2,30 @@ package me.fastfelix771.townywands.commands;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 import me.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import me.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
 import me.fastfelix771.townywands.lang.Language;
 import me.fastfelix771.townywands.main.Mainclass;
 import me.fastfelix771.townywands.utils.Database;
-import me.fastfelix771.townywands.utils.Utf8YamlConfiguration;
+import me.fastfelix771.townywands.utils.Invoker;
 import me.fastfelix771.townywands.utils.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class Commands {
 
-	private static final List<String> commands = Arrays.asList("help", "?", "reload");
+	private static final List<String> commands = Arrays.asList("§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §areload", "§c/gui §alist");
 
 	@CommandHandler(name = "townywands", description = "Provides basic features.", usage = "/townywands ?", permission = "townywands.cmd.townywands", permissionMessage = "§cYou are missing the permission §atownywands.cmd.townywands§c!", aliases = { "tws" })
 	public void townywands(final CommandSender sender, final String[] args) {
-		sender.sendMessage("§6======================================");
+		sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
 		sender.sendMessage("§bTowny§3Wands §6- §av§c" + Mainclass.getInstance().getDescription().getVersion());
 		sender.sendMessage("§2Created by §6FastFelix771");
 		sender.sendMessage("§cIf you need help, use §a/townywands help");
-		sender.sendMessage("§6======================================");
+		sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
 	}
 
 	@SubCommandHandler(name = "reload", parent = "townywands", permission = "townywands.cmd.reload", permissionMessage = "§cYou are missing the permission §atownywands.cmd.reload§c!")
@@ -38,20 +36,21 @@ public class Commands {
 
 	@SubCommandHandler(name = "help", parent = "townywands", permission = "townywands.cmd.help", permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
 	public void townywands_help(final CommandSender sender, final String[] args) {
-		sender.sendMessage("§6======================================");
+		sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
 		sender.sendMessage("§bTowny§3Wands §6- §aCommands");
-		sender.sendMessage("§2/townywands");
-		commands.forEach(command -> sender.sendMessage("§2/townywands §b" + command));
-		sender.sendMessage("§6======================================");
+
+		for (int i = 0; i < commands.size(); i++) {
+			final StringBuilder sb = new StringBuilder();
+			sb.append(commands.get(i));
+			sender.sendMessage(sb.toString());
+		}
+
+		sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
 	}
 
 	@SubCommandHandler(name = "?", parent = "townywands", permission = "townywands.cmd.help", permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
 	public void townywands_help2(final CommandSender sender, final String[] args) {
-		sender.sendMessage("§6======================================");
-		sender.sendMessage("§bTowny§3Wands §6- §aCommands");
-		sender.sendMessage("§2/townywands");
-		commands.forEach(command -> sender.sendMessage("§2/townywands §b" + command));
-		sender.sendMessage("§6======================================");
+		townywands_help(sender, args);
 	}
 
 	@CommandHandler(name = "vsign", description = "Creates a virtual Sign and executes commands from the given input.", usage = "/vsign playername command {data}", permission = "townywands.cmd.vsign", permissionMessage = "§cYou are missing the permission §atownywands.cmd.vsign§c!")
@@ -66,25 +65,25 @@ public class Commands {
 		}
 
 		final Player player = Bukkit.getPlayerExact(args[0]);
-		final StringBuffer buffer = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 
 		for (int i = 1; i < args.length; i++) {
 			final String arg = args[i];
-			buffer.append(arg + " ");
+			sb.append(arg + " ");
 		}
 
-		Mainclass.getSignGUI().open(player, new Consumer<String[]>() {
+		Mainclass.getSignGUI().open(player, new Invoker<String[]>() {
 
 			@Override
-			public void accept(final String[] lines) {
-				final StringBuffer data = new StringBuffer();
+			public void invoke(final String[] lines) {
+				final StringBuilder data = new StringBuilder();
 				for (final String line : lines) {
 					if (!line.isEmpty()) {
 						data.append(line);
 					}
 				}
 
-				String command = buffer.toString();
+				String command = sb.toString();
 				command = command.substring(0, command.length() - 1);
 				command = command.replace("{data}", data.toString());
 
@@ -123,7 +122,7 @@ public class Commands {
 		}
 
 		final Player player = Bukkit.getPlayerExact(args[0]);
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 
 		for (int i = 1; i < args.length; i++) {
 			final String arg = args[i];
@@ -142,7 +141,7 @@ public class Commands {
 	public void gui(final CommandSender sender, final String[] args) {
 		/*
 		 * Ehh...im working on...complex idea
-		 * sender.sendMessage("§6======================================");
+		 * sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
 		 * sender.sendMessage("§2All available §b/gui §2commands: (Examples)");
 		 * sender.sendMessage("§b/gui create §3<§bname§3>");
 		 * sender.sendMessage("§b/gui set title");
@@ -150,41 +149,44 @@ public class Commands {
 		 * sender.sendMessage("§b/gui set permission");
 		 * sender.sendMessage("§b/gui set slots");
 		 * sender.sendMessage("§b/gui delete §3<§bname§3>");
-		 * sender.sendMessage("§6======================================");
+		 * sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
 		 */
+		sender.sendMessage("Not yet implemented!");
 	}
 
 	@SubCommandHandler(name = "list", parent = "gui", permission = "townywands.cmd.gui.list", permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui.list§c!")
 	public void gui_list(final CommandSender sender, final String[] args) {
-		sender.sendMessage("§6======================================");
+		sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
 		sender.sendMessage("§bTowny§3Wands §6- §aGUI's");
-		Mainclass.getParser().getInventoryTokens().forEach(token -> sender.sendMessage("§b§l" + token + " §3§l- §r" + Database.get(Mainclass.getParser().getConfig().getConfigurationSection("inventories").getConfigurationSection(token).getString("command"), Language.ENGLISH).getInventory().getTitle()));
-		sender.sendMessage("§6======================================");
+
+		for (int i = 0; i < Mainclass.getParser().getInventoryTokens().size(); i++) {
+			final String token = Mainclass.getParser().getInventoryTokens().get(i);
+			sender.sendMessage("§b§l" + token + " §3§l- §r" + Database.get(Mainclass.getParser().getConfig().getConfigurationSection("inventories").getConfigurationSection(token).getString("command"), Language.ENGLISH).getInventory().getTitle());
+		}
+
+		sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
 	}
 
-	@SubCommandHandler(name = "list", parent = "gui", permission = "townywands.cmd.gui.create", permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui.create§c!")
+	@SubCommandHandler(name = "create", parent = "gui", permission = "townywands.cmd.gui.create", permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui.create§c!")
 	public void gui_create(final CommandSender sender, final String[] args) {
-		if (args.length == 0) {
-			sender.sendMessage("§cYou need to specify an name for the gui!");
-			return;
-		}
-
-		final String name = args[0];
-
-		if (Mainclass.getParser().getInventoryTokens().contains(name)) {
-			sender.sendMessage("§cA gui with this name already exists!");
-			return;
-		}
-
-		final Utf8YamlConfiguration config = Mainclass.getParser().getConfig();
-
-		final ConfigurationSection inv = config.getConfigurationSection("inventories").createSection(name);
-
-		// Set some defaults here
-		inv.set("command", "open-" + name);
-		inv.set("permission", "townywands.gui." + name);
-		inv.set("slots", 9);
-
+		/*
+		 * if (args.length == 0) {
+		 * sender.sendMessage("§cYou need to specify an name for the gui!");
+		 * return;
+		 * }
+		 * final String name = args[0];
+		 * if (Mainclass.getParser().getInventoryTokens().contains(name)) {
+		 * sender.sendMessage("§cA gui with this name already exists!");
+		 * return;
+		 * }
+		 * final Utf8YamlConfiguration config = Mainclass.getParser().getConfig();
+		 * final ConfigurationSection inv = config.getConfigurationSection("inventories").createSection(name);
+		 * // Set some defaults here
+		 * inv.set("command", "open-" + name);
+		 * inv.set("permission", "townywands.gui." + name);
+		 * inv.set("slots", 9);
+		 */
+		sender.sendMessage("Not yet implemented!");
 	}
 
 }

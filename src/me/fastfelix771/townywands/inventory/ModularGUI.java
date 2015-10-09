@@ -1,33 +1,51 @@
 package me.fastfelix771.townywands.inventory;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import me.fastfelix771.townywands.lang.Language;
+import me.fastfelix771.townywands.utils.DataBundle;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Inventory;
 
 // This class will enhance the managing of GUIs soon!
+@SuppressWarnings("unused")
 public class ModularGUI {
 
 	private final String internalName;
-	private final String title;
-	private final int slots;
 	private final String command;
 	private final String permission;
-	private final Language language;
+	private ConcurrentHashMap<Language, Inventory> guis;
+	private final DataBundle data;
 
-	// maybe...? need to checkout the other classes...this class could compress down the InventoryBuilder and ItemBuilder into this one class :3
-	private final ItemStack[] items;
-
-	public ModularGUI(final String internalName, final String title, final String commandToOpen, final String permissionToOpen, final int slots, final Language lang, final ItemStack[] contents) {
-		Validate.noNullElements(new Object[] { internalName, title, commandToOpen, permissionToOpen, slots, lang, contents }, "ModularGUI values cannot be null!");
+	// Add a language list.
+	public ModularGUI(final String internalName, final String command, final String permission) {
+		Validate.noNullElements(new Object[] { internalName, command, permission }, "ModularGUI values cannot be null!");
 
 		this.internalName = internalName;
-		this.title = title;
-		this.command = commandToOpen;
-		this.permission = permissionToOpen;
-		this.slots = slots;
-		this.language = lang;
-		this.items = contents;
+		this.command = command;
+		this.permission = permission;
+		this.data = new DataBundle(command, permission, null, null);
+	}
+
+	public DataBundle getData() {
+		return this.data;
+	}
+
+	public void add(final Inventory inventory, final Language language) {
+
+	}
+
+	public Inventory get(final Language language) {
+		return null;
+	}
+
+	public String getCommand() {
+		return this.command;
+	}
+
+	public String getPermission() {
+		return this.permission;
 	}
 
 }

@@ -58,7 +58,7 @@ inventories:
         lore_en_US: 
           - "&6Enter your towns Townchat."
         console_commands: 
-          - fakecmd {playername} nc
+          - fakecmd {playername} tc
         itemID: 403
         metaID: 0
         slot: 4

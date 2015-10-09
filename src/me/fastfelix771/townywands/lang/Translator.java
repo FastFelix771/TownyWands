@@ -58,7 +58,7 @@ public class Translator {
 
 			// Now parse the input, we got from it.
 			String line;
-			final StringBuffer response = new StringBuffer();
+			final StringBuilder response = new StringBuilder();
 			while ((line = input.readLine()) != null) {
 				response.append(line);
 			}

@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -24,29 +23,29 @@ public final class SignGUI implements Listener, Runnable {
 	 *         This class in licensed under GPLv3
 	 *         For more information look at http://www.gnu.org/licenses/gpl-3.0
 	 */
-	// Thanks @Janhektor for this awesome class, i've modified it a "little bit" to allow better integration into TownyWands.
+	// Thanks @Janhektor for this awesome class, i've modified it a "little bit" to allow better integration into TownyWands and compatibility to Java 7.
 
 	private final JavaPlugin plugin;
-	private final ConcurrentHashMap<UUID, Consumer<String[]>> inputResults;
+	private final ConcurrentHashMap<UUID, Invoker<String[]>> inputResults;
 
 	public SignGUI(final JavaPlugin plugin) {
 		this.plugin = plugin;
-		this.inputResults = new ConcurrentHashMap<UUID, Consumer<String[]>>();
+		this.inputResults = new ConcurrentHashMap<UUID, Invoker<String[]>>();
 		Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, this, 0L, 20 * 3L);
 
 	}
 
 	/**
 	 * Use this method to read the SignInput from a player
-	 * The accept()-method of your consumer will be called, when the player close the sign
+	 * The invoke()-method of your consumer will be called, when the player close the sign
 	 * 
 	 * @return boolean successful
 	 * @param p
 	 *            - The Player, who have to type an input
 	 * @param result
-	 *            - The consumer (String[]) for the result; String[] contains strings for 4 lines
+	 *            - The invoker (String[]) for the result; String[] contains strings for 4 lines
 	 */
-	public boolean open(final Player p, final Consumer<String[]> result) {
+	public boolean open(final Player p, final Invoker<String[]> result) {
 		inputResults.put(p.getUniqueId(), result);
 		try {
 			final Class<?> packetClass = Reflect.getNMSClass("PacketPlayOutOpenSignEditor");
@@ -89,7 +88,7 @@ public final class SignGUI implements Listener, Runnable {
 						lines[i] = (String) getText.invoke(chatComponent);
 					}
 					if (inputResults.containsKey(p.getUniqueId())) {
-						inputResults.get(p.getUniqueId()).accept(lines);
+						inputResults.get(p.getUniqueId()).invoke(lines);
 						inputResults.remove(p.getUniqueId());
 					}
 				}

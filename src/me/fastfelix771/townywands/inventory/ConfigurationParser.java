@@ -210,7 +210,7 @@ public class ConfigurationParser {
 							if (dbs.containsKey(lang)) {
 								db = dbs.get(lang);
 							} else {
-								db = InventoryBuilder.build(ChatColor.translateAlternateColorCodes('&', name), command, permission, slots, lang);
+								db = InventoryBuilder.build(name, command, permission, slots, lang);
 								dbs.put(lang, db);
 							}
 
