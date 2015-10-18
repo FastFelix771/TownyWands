@@ -142,6 +142,7 @@ public class Mainclass extends JavaPlugin {
 		Database.clear();
 		getInstance().reloadConfig();
 		cp.setConfig(loadConfig(file));
+		getParser().getInventoryTokens().clear();
 		getParser().parse();
 	}
 

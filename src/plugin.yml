@@ -1,5 +1,5 @@
 name: TownyWands
-version: 2.0.1
+version: 2.0.2
 author: FastFelix771
 main: me.fastfelix771.townywands.main.Mainclass
 soft-depend: [Towny, TownyChat, Vault, PermissionsEx, Essentials, WorldEdit, WorldGuard]

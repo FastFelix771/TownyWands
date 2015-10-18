@@ -3,8 +3,8 @@ package me.fastfelix771.townywands.listeners;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.fastfelix771.townywands.inventory.ModularGUI;
 import me.fastfelix771.townywands.lang.Language;
-import me.fastfelix771.townywands.utils.DataBundle;
 import me.fastfelix771.townywands.utils.Database;
 import me.fastfelix771.townywands.utils.Utils;
 import me.fastfelix771.townywands.utils.Utils.Type;
@@ -26,28 +26,27 @@ public class InventoryListener implements Listener {
 		final String command = e.getMessage().substring(1, e.getMessage().length());
 		final Player p = e.getPlayer();
 
-		// If the given command isnt connected to an inventory, do nothing.
 		if (!Database.contains(command)) {
 			return;
 		}
 		e.setCancelled(true);
 
 		final Language lang = Language.getLanguage(p);
-		DataBundle db = null;
+		final ModularGUI gui = Database.get(command);
+		Inventory inv = null;
 
-		if (Database.containsData(command, lang)) {
-			db = Database.get(command, lang);
+		if (gui.contains(lang)) {
+			inv = gui.get(lang);
 		} else {
-			if (!Database.containsData(command, Language.ENGLISH)) {
-				p.sendMessage("§cTownyWans | §aThere is no GUI registered in your language nor the default one (ENGLISH), please report this to an administrator!");
+			if (!gui.contains(Language.ENGLISH)) {
+				p.sendMessage("§cTownyWands | §aThere is no GUI registered in your language nor the default one (§6ENGLISH§a)!");
+				p.sendMessage("§cPlease report this to an administrator!");
 				return;
 			}
-			db = Database.get(command, Language.ENGLISH);
+			inv = gui.get(Language.ENGLISH);
 		}
 
-		final String permission = db.getPermission();
-		final Inventory inv = db.getInventory();
-
+		final String permission = gui.getPermission();
 		if (!p.hasPermission(permission)) {
 			p.sendMessage("§cYou are missing the permission '§a" + permission + "§c'.");
 			return;

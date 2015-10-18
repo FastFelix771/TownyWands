@@ -5,9 +5,8 @@ import java.util.List;
 
 import me.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import me.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
-import me.fastfelix771.townywands.lang.Language;
+import me.fastfelix771.townywands.inventory.ModularGUI;
 import me.fastfelix771.townywands.main.Mainclass;
-import me.fastfelix771.townywands.utils.Database;
 import me.fastfelix771.townywands.utils.Invoker;
 import me.fastfelix771.townywands.utils.Utils;
 
@@ -161,7 +160,7 @@ public class Commands {
 
 		for (int i = 0; i < Mainclass.getParser().getInventoryTokens().size(); i++) {
 			final String token = Mainclass.getParser().getInventoryTokens().get(i);
-			sender.sendMessage("§b§l" + token + " §3§l- §r" + Database.get(Mainclass.getParser().getConfig().getConfigurationSection("inventories").getConfigurationSection(token).getString("command"), Language.ENGLISH).getInventory().getTitle());
+			sender.sendMessage(new StringBuilder("§b§l ").append(token).append(" §6§l- §3 ").append("/").append(ModularGUI.fromName(token).getCommand()).toString());
 		}
 
 		sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");

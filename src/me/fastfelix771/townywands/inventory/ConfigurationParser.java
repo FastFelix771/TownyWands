@@ -3,7 +3,6 @@ package me.fastfelix771.townywands.inventory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -11,9 +10,10 @@ import java.util.logging.Level;
 import me.fastfelix771.townywands.lang.Language;
 import me.fastfelix771.townywands.lang.Translator;
 import me.fastfelix771.townywands.main.Mainclass;
-import me.fastfelix771.townywands.utils.DataBundle;
+import me.fastfelix771.townywands.utils.Database;
 import me.fastfelix771.townywands.utils.Utf8YamlConfiguration;
 import me.fastfelix771.townywands.utils.Utils;
+import me.fastfelix771.townywands.utils.Utils.Type;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.Validate;
@@ -21,7 +21,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class ConfigurationParser {
 
@@ -99,7 +101,7 @@ public class ConfigurationParser {
 					final Map<String, Object> item_values = items.getValues(false);
 
 					// Store some temporary data here.
-					final HashMap<Language, DataBundle> dbs = new HashMap<Language, DataBundle>();
+					final ModularGUI gui = new ModularGUI(str_name, command, permission);
 					boolean saveMe = false;
 
 					for (final String item_name : item_values.keySet()) {
@@ -205,26 +207,38 @@ public class ConfigurationParser {
 								saveMe = true;
 							}
 
-							DataBundle db = null;
+							Inventory iinv = null;
 
-							if (dbs.containsKey(lang)) {
-								db = dbs.get(lang);
+							if (gui.contains(lang)) {
+								iinv = gui.get(lang);
 							} else {
-								db = InventoryBuilder.build(name, command, permission, slots, lang);
-								dbs.put(lang, db);
+								iinv = Bukkit.createInventory(null, slots, ChatColor.translateAlternateColorCodes('&', name));
+								gui.add(lang, iinv);
 							}
 
-							// Create the basic item itself and enhance it via the ItemBuilder
-							final ItemStack iitem = new ItemStack(material, quantity, (short) metaid);
-							ItemBuilder.build(db.getCommand(), db.getInventory(), iitem, slot, iname, ilore, commands, console_commands, enchanted);
+							// Create the item itself, configurate it and add it to the GUI.
+							ItemStack iitem = new ItemStack(material, quantity, (short) metaid);
+							final ItemMeta meta = iitem.getItemMeta();
+							meta.setDisplayName(iname);
+							meta.setLore(ilore);
+							iitem.setItemMeta(meta);
+
+							iitem = Utils.setCommands(iitem, commands, Type.PLAYER);
+							iitem = Utils.setCommands(iitem, console_commands, Type.CONSOLE);
+							iitem = Utils.setKey(iitem, command);
+
+							if (enchanted) {
+								iitem = Utils.addEnchantmentGlow(iitem);
+							}
+
+							iitem = Utils.hideFlags(iitem);
+							iinv.setItem(slot, iitem);
+
 						}
 					}
 
-					// Now save all DataBundles and clear the tempstorage.
-					for (final DataBundle db : dbs.values()) {
-						db.save();
-					}
-					dbs.clear();
+					Database.add(command, gui);
+
 					final long end = System.currentTimeMillis();
 					if (saveMe) {
 						save();

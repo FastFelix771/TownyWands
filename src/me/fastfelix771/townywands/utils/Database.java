@@ -1,14 +1,23 @@
 package me.fastfelix771.townywands.utils;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.fastfelix771.townywands.inventory.ModularGUI;
 import me.fastfelix771.townywands.lang.Language;
+
+import org.bukkit.inventory.Inventory;
 
 public class Database {
 
-	public static final ConcurrentHashMap<String, ConcurrentHashMap<Language, DataBundle>> storage = new ConcurrentHashMap<String, ConcurrentHashMap<Language, DataBundle>>();
+	private static final ConcurrentHashMap<String, ModularGUI> storage = new ConcurrentHashMap<String, ModularGUI>();
 
-	public static DataBundle get(final String command, final Language language) {
+	public static List<ModularGUI> guiList() {
+		return Arrays.asList(storage.values().toArray(new ModularGUI[storage.values().size()]));
+	}
+
+	public static Inventory get(final String command, final Language language) {
 		if (!contains(command)) {
 			return null;
 		}
@@ -16,28 +25,27 @@ public class Database {
 		return storage.get(command).get(language);
 	}
 
-	public static void add(final String command, final DataBundle db) {
+	public static ModularGUI get(final String command) {
 		if (!contains(command)) {
-			final ConcurrentHashMap<Language, DataBundle> map = new ConcurrentHashMap<Language, DataBundle>();
-			map.put(db.getLanguage(), db);
-			storage.put(command, map);
-			return;
+			return null;
 		}
 
-		storage.get(command).put(db.getLanguage(), db);
-
+		return storage.get(command);
 	}
 
-	public static boolean containsData(final String command, final Language language) {
-		if (!contains(command)) {
-			return false;
-		}
-
-		return storage.get(command).containsKey(language);
+	public static void add(final String command, final ModularGUI gui) {
+		storage.putIfAbsent(command, gui);
 	}
 
 	public static boolean contains(final String command) {
 		return storage.containsKey(command);
+	}
+
+	public static boolean contains(final String command, final Language language) {
+		if (!contains(command)) {
+			return false;
+		}
+		return get(command).get(language) != null;
 	}
 
 	public static void remove(final String command) {
