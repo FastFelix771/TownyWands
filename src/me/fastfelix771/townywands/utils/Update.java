@@ -106,8 +106,8 @@ public class Update {
         this.download(url, filename);
     }
 
-    private void download(final String url_str, final String fileName) {
-        OutputStream out = null;
+    private void download(final String url_str, final String fileName) { // On 1.8, send a fancy JSON message that works as "DOWNLOAD" Button. This should not violate Curse's Rules as it still requires the user to start the download-process.
+        OutputStream out = null; // On 1.7 or lower, just send the URL to the latest download.
         URLConnection conn = null;
         InputStream in = null;
 
@@ -225,7 +225,7 @@ public class Update {
 
     }
 
-    private enum State {
+    public enum State {
         UPDATE_FOUND, NO_UPDATE, ERROR;
     }
 }

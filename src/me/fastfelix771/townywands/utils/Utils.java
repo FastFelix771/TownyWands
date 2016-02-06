@@ -187,7 +187,7 @@ public class Utils {
     }
 
     public static void bungeeConnect(final Player player, final String servername) {
-        if (TownyWands.getInstance().getBungeecord()) {
+        if (TownyWands.isBungeecord()) {
             final ByteArrayOutputStream bout = new ByteArrayOutputStream();
             final DataOutputStream dout = new DataOutputStream(bout);
             try {

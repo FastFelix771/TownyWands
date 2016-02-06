@@ -71,7 +71,7 @@ public class ConfigurationParser {
                     Bukkit.getConsoleSender().sendMessage(refreshTranslations ? "§cTownyWands | §bSetup and refreshing of inventory §3" + str_name + " §bhas started" : "§cTownyWands | §bSetup of inventory §3" + str_name + " §bhas started");
                     final ConfigurationSection inv = sec_inventories.getConfigurationSection(str_name);
 
-                    if (refreshTranslations && !TownyWands.getAutoTranslate()) ConfigurationParser.this.error("AutoTranslation is disabled, cannot refresh the translations.");
+                    if (refreshTranslations && !TownyWands.isAutotranslate()) ConfigurationParser.this.error("AutoTranslation is disabled, cannot refresh the translations.");
 
                     final String name = inv.getString("name"); // Name of the inventory
                     final int slots = inv.getInt("slots"); // Slotcount...obviously
@@ -161,7 +161,7 @@ public class ConfigurationParser {
 
                             // Skip to next language if one or more of the parameters are missing and auto-translating is disabled.
                             if ((iname == null) || (ilore == null)) {
-                                if (!TownyWands.getAutoTranslate()) continue;
+                                if (!TownyWands.isAutotranslate()) continue;
                                 final String engcode = Language.ENGLISH.getCode();
                                 iname = i.getString("name_" + engcode);
                                 ilore = i.getStringList("lore_" + engcode);
