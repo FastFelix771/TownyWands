@@ -1,59 +1,53 @@
 package me.fastfelix771.townywands.utils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.HashMap;
+import java.util.Set;
 import me.fastfelix771.townywands.inventory.ModularGUI;
 import me.fastfelix771.townywands.lang.Language;
-
 import org.bukkit.inventory.Inventory;
+import com.google.common.collect.Sets;
 
+// This class should be renamed to Cache... 
+// That crap will be removed too, when i implement the Ingame Editors. (IF i implement them.. its a crap ton of work! - probably...)
 public class Database {
 
-	private static final ConcurrentHashMap<String, ModularGUI> storage = new ConcurrentHashMap<String, ModularGUI>();
+    private static final HashMap<String, ModularGUI> storage = new HashMap<>();
 
-	public static List<ModularGUI> guiList() {
-		return Arrays.asList(storage.values().toArray(new ModularGUI[storage.values().size()]));
-	}
+    public static Set<ModularGUI> guiList() {
+        return Sets.newHashSet(storage.values());
+    }
 
-	public static Inventory get(final String command, final Language language) {
-		if (!contains(command)) {
-			return null;
-		}
+    public static Inventory get(final String command, final Language language) {
+        if (!contains(command)) return null;
 
-		return storage.get(command).get(language);
-	}
+        return storage.get(command).get(language);
+    }
 
-	public static ModularGUI get(final String command) {
-		if (!contains(command)) {
-			return null;
-		}
+    public static ModularGUI get(final String command) {
+        if (!contains(command)) return null;
 
-		return storage.get(command);
-	}
+        return storage.get(command);
+    }
 
-	public static void add(final String command, final ModularGUI gui) {
-		storage.putIfAbsent(command, gui);
-	}
+    public static void add(final String command, final ModularGUI gui) {
+        if (!storage.containsKey(command)) storage.put(command, gui);
+    }
 
-	public static boolean contains(final String command) {
-		return storage.containsKey(command);
-	}
+    public static boolean contains(final String command) {
+        return storage.containsKey(command);
+    }
 
-	public static boolean contains(final String command, final Language language) {
-		if (!contains(command)) {
-			return false;
-		}
-		return get(command).get(language) != null;
-	}
+    public static boolean contains(final String command, final Language language) {
+        if (!contains(command)) return false;
+        return get(command).get(language) != null;
+    }
 
-	public static void remove(final String command) {
-		storage.remove(command);
-	}
+    public static void remove(final String command) {
+        storage.remove(command);
+    }
 
-	public static void clear() {
-		storage.clear();
-	}
+    public static void clear() {
+        storage.clear();
+    }
 
 }

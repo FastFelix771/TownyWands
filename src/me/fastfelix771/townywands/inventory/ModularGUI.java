@@ -1,91 +1,80 @@
 package me.fastfelix771.townywands.inventory;
 
+import java.util.EnumMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import me.fastfelix771.townywands.lang.Language;
-import me.fastfelix771.townywands.main.Mainclass;
+import me.fastfelix771.townywands.main.TownyWands;
 import me.fastfelix771.townywands.utils.Database;
-
-import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 
+// IDEA! Ingame Inventory & Item Editor... that would allow new ways of storage and would not need a ConfigurationParser anymore!
+// /modify <key> <value> - ex. /modify enchanted true , this would modify the item in the players hand. Use the NBT Tricks to store most data.
+// This could become difficult with multi-language GUIs...
+// Other great IDEA! I should stop filling my code with notes.. that spoilers every guy on GitHub ._.
+
+@EqualsAndHashCode(
+    exclude = "guis")
+@RequiredArgsConstructor
 public class ModularGUI implements Cloneable {
 
-	public final String internalName;
-	private String command;
-	private String permission;
-	private final ConcurrentHashMap<Language, Inventory> guis;
+    @NonNull
+    public final String internalName;
+    @Getter
+    @Setter
+    @NonNull
+    private String command;
+    @Getter
+    @Setter
+    @NonNull
+    private String permission;
+    private final EnumMap<Language, Inventory> guis = new EnumMap<>(Language.class);
 
-	public ModularGUI(final String internalName, final String command, final String permission) {
-		Validate.noNullElements(new Object[] { internalName, command, permission }, "ModularGUI values cannot be null!");
+    public static ModularGUI fromName(@NonNull String internalName) {
+        for (final ModularGUI gui : Database.guiList())
+            if (gui.internalName.equalsIgnoreCase(internalName)) return gui;
+        return null;
+    }
 
-		this.guis = new ConcurrentHashMap<Language, Inventory>();
-		this.internalName = internalName;
-		this.command = command;
-		this.permission = permission;
-	}
+    public void add(@NonNull Language language, @NonNull Inventory inventory) {
+        if (!guis.containsKey(language)) this.guis.put(language, inventory);
+        else Bukkit.getConsoleSender().sendMessage("");
+    }
 
-	public static ModularGUI fromName(final String internalName) {
-		for (final ModularGUI gui : Database.guiList()) {
-			if (gui.internalName.equalsIgnoreCase(internalName)) {
-				return gui;
-			}
-		}
-		return null;
-	}
+    public void addAll(@NonNull Map<Language, Inventory> inventories) {
+        this.guis.putAll(inventories);
+    }
 
-	public void add(final Language language, final Inventory inventory) {
-		this.guis.putIfAbsent(language, inventory);
-	}
+    public void remove(@NonNull Language... languages) {
+        for (int i = 0; i < languages.length; i++) {
+            final Language language = languages[i];
+            if (this.contains(language)) this.guis.remove(language);
+        }
+    }
 
-	public void addAll(final Map<Language, Inventory> inventories) {
-		this.guis.putAll(inventories);
-	}
+    public boolean contains(@NonNull Language language) {
+        return (this.get(language) != null);
+    }
 
-	public void remove(final Language... languages) {
-		for (int i = 0; i < languages.length; i++) {
-			final Language language = languages[i];
-			if (this.contains(language)) {
-				this.guis.remove(language);
-			}
-		}
-	}
+    public Inventory get(@NonNull Language language) {
+        return (this.guis.containsKey(language) ? this.guis.get(language) : null);
+    }
 
-	public boolean contains(final Language language) {
-		return (this.get(language) != null);
-	}
+    public ConfigurationSection getSection() {
+        return TownyWands.getParser().getConfig().getConfigurationSection("inventories").getConfigurationSection(this.internalName);
+    }
 
-	public Inventory get(final Language language) {
-		return (this.guis.containsKey(language) ? this.guis.get(language) : null);
-	}
-
-	public void setCommand(final String command) {
-		this.command = command;
-	}
-
-	public void setPermission(final String permission) {
-		this.permission = permission;
-	}
-
-	public String getCommand() {
-		return this.command;
-	}
-
-	public String getPermission() {
-		return this.permission;
-	}
-
-	public ConfigurationSection getSection() {
-		return Mainclass.getParser().getConfig().getConfigurationSection("inventories").getConfigurationSection(this.internalName);
-	}
-
-	@Override
-	public ModularGUI clone() {
-		final ModularGUI gui = new ModularGUI(this.internalName, this.command, this.permission);
-		gui.addAll(this.guis);
-		return gui;
-	}
+    @Override
+    public ModularGUI clone() {
+        final ModularGUI gui = new ModularGUI(this.internalName, this.command, this.permission);
+        gui.addAll(this.guis);
+        return gui;
+    }
 
 }

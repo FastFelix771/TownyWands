@@ -6,6 +6,6 @@ package me.fastfelix771.townywands.utils;
  */
 public interface Invoker<T> {
 
-	public void invoke(T parameter);
+    public void invoke(T parameter);
 
 }
