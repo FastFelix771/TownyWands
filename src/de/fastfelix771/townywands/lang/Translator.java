@@ -1,4 +1,4 @@
-package me.fastfelix771.townywands.lang;
+package de.fastfelix771.townywands.lang;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

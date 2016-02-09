@@ -1,8 +1,8 @@
-package me.fastfelix771.townywands.lang;
+package de.fastfelix771.townywands.lang;
 
 import java.lang.reflect.Field;
-import me.fastfelix771.townywands.utils.Reflect;
 import org.bukkit.entity.Player;
+import de.fastfelix771.townywands.utils.Reflect;
 
 public enum Language {
 

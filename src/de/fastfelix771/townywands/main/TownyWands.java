@@ -1,36 +1,34 @@
-package me.fastfelix771.townywands.main;
+package de.fastfelix771.townywands.main;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import lombok.Getter;
-import lombok.NonNull;
-import me.fastfelix771.townywands.commands.CommandController;
-import me.fastfelix771.townywands.commands.Commands;
-import me.fastfelix771.townywands.inventory.ConfigurationParser;
-import me.fastfelix771.townywands.listeners.InventoryListener;
-import me.fastfelix771.townywands.metrics.Metrics;
-import me.fastfelix771.townywands.utils.Database;
-import me.fastfelix771.townywands.utils.Reflect;
-import me.fastfelix771.townywands.utils.Reflect.Version;
-import me.fastfelix771.townywands.utils.SignGUI;
-import me.fastfelix771.townywands.utils.Update;
-import me.fastfelix771.townywands.utils.Update.Result;
-import me.fastfelix771.townywands.utils.Update.State;
-import me.fastfelix771.townywands.utils.Utf8YamlConfiguration;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import de.fastfelix771.townywands.commands.CommandController;
+import de.fastfelix771.townywands.commands.Commands;
+import de.fastfelix771.townywands.inventory.ConfigurationParser;
+import de.fastfelix771.townywands.listeners.InventoryListener;
+import de.fastfelix771.townywands.metrics.Metrics;
+import de.fastfelix771.townywands.utils.Database;
+import de.fastfelix771.townywands.utils.Reflect;
+import de.fastfelix771.townywands.utils.Reflect.Version;
+import de.fastfelix771.townywands.utils.SignGUI;
+import de.fastfelix771.townywands.utils.Update;
+import de.fastfelix771.townywands.utils.Update.Result;
+import de.fastfelix771.townywands.utils.Update.State;
 
 public final class TownyWands extends JavaPlugin implements Listener {
 
-    private static final long CONFIG_VERSION = 746; // Configuration Version.
+    private static final long CONFIG_VERSION = 363; // Configuration Version.
     @Getter
     private static TownyWands instance;
     @Getter
@@ -84,8 +82,7 @@ public final class TownyWands extends JavaPlugin implements Listener {
 
         }
 
-        // SignGUI is 1.8 only due to some Netty problems, i'll fix that when i get some time for it. //TODO: fix it via. Reflection.
-        if (Reflect.getServerVersion() == Version.v1_8) {
+        if (Reflect.getServerVersion() == Version.v1_8 || Reflect.getServerVersion() == Version.v1_7) {
             signGUI = new SignGUI(this);
             Bukkit.getPluginManager().registerEvents(signGUI, this);
         }
@@ -123,7 +120,7 @@ public final class TownyWands extends JavaPlugin implements Listener {
 
         pool = Executors.newFixedThreadPool(threads);
 
-        parser = new ConfigurationParser(loadConfig(file), Level.INFO, true, file);
+        parser = new ConfigurationParser(YamlConfiguration.loadConfiguration(file), Level.INFO, true, file);
         getParser().parse();
     }
 
@@ -137,19 +134,9 @@ public final class TownyWands extends JavaPlugin implements Listener {
     public static void reload() {
         Database.clear();
         getInstance().reloadConfig();
-        parser.setConfig(loadConfig(file));
+        parser.setConfig(YamlConfiguration.loadConfiguration(file));
         getParser().getInventoryTokens().clear();
         getParser().parse();
-    }
-
-    private static Utf8YamlConfiguration loadConfig(@NonNull File file) {
-        final Utf8YamlConfiguration config = new Utf8YamlConfiguration();
-        try {
-            config.load(new FileInputStream(file));
-        }
-        catch (final Exception e) {
-        }
-        return config;
     }
 
     private void metrics(final boolean bool) {

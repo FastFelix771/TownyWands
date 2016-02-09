@@ -1,4 +1,4 @@
-package me.fastfelix771.townywands.utils;
+package de.fastfelix771.townywands.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -14,13 +14,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import me.fastfelix771.townywands.utils.Reflect.Version;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import de.fastfelix771.townywands.utils.Reflect.Version;
 
 /**
  * This UpdateChecker shouldn't hurt the ToS of CurseForge as it only uses their API.

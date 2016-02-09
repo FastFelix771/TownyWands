@@ -1,4 +1,4 @@
-package me.fastfelix771.townywands.utils;
+package de.fastfelix771.townywands.utils;
 
 /**
  * @description This is a replacement for Java 8's Consumer to keep the plugin backwards-compatible.

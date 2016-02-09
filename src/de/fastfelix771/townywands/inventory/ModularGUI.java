@@ -1,4 +1,4 @@
-package me.fastfelix771.townywands.inventory;
+package de.fastfelix771.townywands.inventory;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import me.fastfelix771.townywands.lang.Language;
-import me.fastfelix771.townywands.main.TownyWands;
-import me.fastfelix771.townywands.utils.Database;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
+import de.fastfelix771.townywands.lang.Language;
+import de.fastfelix771.townywands.main.TownyWands;
+import de.fastfelix771.townywands.utils.Database;
 
 // IDEA! Ingame Inventory & Item Editor... that would allow new ways of storage and would not need a ConfigurationParser anymore!
 // /modify <key> <value> - ex. /modify enchanted true , this would modify the item in the players hand. Use the NBT Tricks to store most data.

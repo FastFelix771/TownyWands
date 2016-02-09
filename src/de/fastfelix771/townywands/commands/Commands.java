@@ -1,20 +1,19 @@
-package me.fastfelix771.townywands.commands;
+package de.fastfelix771.townywands.commands;
 
 import java.util.Arrays;
 import java.util.List;
-import me.fastfelix771.townywands.commands.CommandController.CommandHandler;
-import me.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
-import me.fastfelix771.townywands.inventory.ModularGUI;
-import me.fastfelix771.townywands.main.TownyWands;
-import me.fastfelix771.townywands.utils.Invoker;
-import me.fastfelix771.townywands.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import de.fastfelix771.townywands.commands.CommandController.CommandHandler;
+import de.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
+import de.fastfelix771.townywands.main.TownyWands;
+import de.fastfelix771.townywands.utils.Invoker;
+import de.fastfelix771.townywands.utils.Utils;
 
 public class Commands {
 
-    private static final List<String> commands = Arrays.asList("§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §areload", "§c/gui §alist");
+    private static final List<String> commands = Arrays.asList("§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §areload");
 
     @CommandHandler(
         name = "townywands",
@@ -156,45 +155,15 @@ public class Commands {
     }
 
     @CommandHandler(
-        name = "gui",
-        description = "Creation and changing of GUIs",
-        usage = "/gui help",
-        permission = "townywands.cmd.gui",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui§c!")
-    public void gui(final CommandSender sender, final String[] args) {
-        /*
-         * Ehh...im working on...complex idea sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰"); sender.sendMessage("§2All available §b/gui §2commands: (Examples)"); sender.sendMessage("§b/gui create §3<§bname§3>"); sender.sendMessage("§b/gui set title"); sender.sendMessage("§b/gui set command"); sender.sendMessage("§b/gui set permission"); sender.sendMessage("§b/gui set slots"); sender.sendMessage("§b/gui delete §3<§bname§3>"); sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
-         */
-        sender.sendMessage("Not yet implemented!");
-    }
+        // TODO: register command to plugin.yml
+        name = "modify",
+        permission = "townywands.cmd.modify",
+        permissionMessage = "§cYou are missing the permission §atownywands.cmd.modify§c!")
+    public void modify(Player sender, String[] args) {
+        // Command to control item behaivour with the new ItemWrapper.
+        // TODO: Create a full-featured but simple /modify help menu.
+        // TODO: Create a modify system via SubCommandHandlers.
 
-    @SubCommandHandler(
-        name = "list",
-        parent = "gui",
-        permission = "townywands.cmd.gui.list",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui.list§c!")
-    public void gui_list(final CommandSender sender, final String[] args) {
-        sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
-        sender.sendMessage("§bTowny§3Wands §6- §aGUI's");
-
-        for (int i = 0; i < TownyWands.getParser().getInventoryTokens().size(); i++) {
-            final String token = TownyWands.getParser().getInventoryTokens().get(i);
-            sender.sendMessage(new StringBuilder("§b§l ").append(token).append(" §6§l- §3 ").append("/").append(ModularGUI.fromName(token).getCommand()).toString());
-        }
-
-        sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
-    }
-
-    @SubCommandHandler(
-        name = "create",
-        parent = "gui",
-        permission = "townywands.cmd.gui.create",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui.create§c!")
-    public void gui_create(final CommandSender sender, final String[] args) {
-        /*
-         * if (args.length == 0) { sender.sendMessage("§cYou need to specify an name for the gui!"); return; } final String name = args[0]; if (Mainclass.getParser().getInventoryTokens().contains(name)) { sender.sendMessage("§cA gui with this name already exists!"); return; } final Utf8YamlConfiguration config = Mainclass.getParser().getConfig(); final ConfigurationSection inv = config.getConfigurationSection("inventories").createSection(name); // Set some defaults here inv.set("command", "open-" + name); inv.set("permission", "townywands.gui." + name); inv.set("slots", 9);
-         */
-        sender.sendMessage("Not yet implemented!");
     }
 
 }

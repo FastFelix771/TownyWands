@@ -1,4 +1,4 @@
-package me.fastfelix771.townywands.inventory;
+package de.fastfelix771.townywands.inventory;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,51 +6,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import me.fastfelix771.townywands.lang.Language;
-import me.fastfelix771.townywands.lang.Translator;
-import me.fastfelix771.townywands.main.TownyWands;
-import me.fastfelix771.townywands.utils.Database;
-import me.fastfelix771.townywands.utils.Utf8YamlConfiguration;
-import me.fastfelix771.townywands.utils.Utils;
-import me.fastfelix771.townywands.utils.Utils.Type;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import de.fastfelix771.townywands.lang.Language;
+import de.fastfelix771.townywands.lang.Translator;
+import de.fastfelix771.townywands.main.TownyWands;
+import de.fastfelix771.townywands.utils.Database;
+import de.fastfelix771.townywands.utils.Utils;
 
+@RequiredArgsConstructor
 public class ConfigurationParser {
 
-    private Utf8YamlConfiguration config;
+    @Getter
+    @Setter
+    @NonNull
+    private FileConfiguration config;
     private final Level lvl;
     private final boolean async;// Adde consolen commands für jedes item!
     private boolean error;// Und ein paar spielerbezogene variablen wie {uuid} , {username} undso, damit man consolen-commands auch brauchen kann! Und diese dem Config-How to beifügen.
-    private final File file;
-    private final List<String> tokens;
-
-    public ConfigurationParser(final Utf8YamlConfiguration config, final Level loglevel, final boolean async, final File file) {
-        Validate.notNull(config, "config cannot be null");
-        Validate.notNull(loglevel, "loglevel cannot be null");
-        Validate.notNull(file, "file cannot be null!");
-        this.config = config;
-        this.lvl = loglevel;
-        this.async = async;
-        this.file = file;
-        this.error = false;
-        this.tokens = new ArrayList<String>();
-    }
-
-    public Utf8YamlConfiguration getConfig() {
-        return this.config;
-    }
-
-    public void setConfig(final Utf8YamlConfiguration config) {
-        this.config = config;
-    }
+    @NonNull
+    private File file;
+    private final List<String> tokens = new ArrayList<>();
 
     public boolean parse() {
         final ConfigurationSection sec_inventories = this.config.getConfigurationSection("inventories");
@@ -141,12 +128,12 @@ public class ConfigurationParser {
                             continue;
                         }
 
-                        List<String> commands = new ArrayList<String>();
-                        List<String> console_commands = new ArrayList<String>();
+                        String[] commands = null;
+                        String[] console_commands = null;
 
-                        if (i.get("console_commands") != null) console_commands = i.getStringList("console_commands");
+                        if (i.get("console_commands") != null) console_commands = i.getStringList("console_commands").toArray(new String[i.getStringList("console_commands").size()]);
 
-                        if (i.get("commands") != null) commands = i.getStringList("commands");
+                        if (i.get("commands") != null) commands = i.getStringList("commands").toArray(new String[i.getStringList("commands").size()]);
 
                         final int quantity = i.getInt("quantity");
                         final boolean enchanted = i.getBoolean("enchanted");
@@ -209,20 +196,21 @@ public class ConfigurationParser {
                             }
 
                             // Create the item itself, configurate it and add it to the GUI.
-                            ItemStack iitem = new ItemStack(material, quantity, (short) metaid);
-                            final ItemMeta meta = iitem.getItemMeta();
-                            meta.setDisplayName(iname);
-                            meta.setLore(ilore);
-                            iitem.setItemMeta(meta);
+                            ItemWrapper wrapper = ItemWrapper.wrap(new ItemStack(material));
 
-                            iitem = Utils.setCommands(iitem, commands, Type.PLAYER);
-                            iitem = Utils.setCommands(iitem, console_commands, Type.CONSOLE);
-                            iitem = Utils.setKey(iitem, command);
+                            wrapper.setAmount(quantity);
+                            wrapper.setMetaID((short) metaid);
+                            wrapper.setDisplayName(iname);
+                            wrapper.setLore(ilore);
 
-                            if (enchanted) iitem = Utils.addEnchantmentGlow(iitem);
+                            if (commands != null && commands.length > 0) wrapper.setValue("commands", commands);
+                            if (console_commands != null && console_commands.length > 0) wrapper.setValue("console_commands", console_commands);
 
-                            iitem = Utils.hideFlags(iitem);
-                            iinv.setItem(slot, iitem);
+                            wrapper.setValue("key", command);
+                            wrapper.setEnchanted(enchanted);
+                            wrapper.hideFlags(true);
+
+                            iinv.setItem(slot, wrapper.getItem());
 
                         }
                     }

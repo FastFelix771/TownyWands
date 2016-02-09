@@ -1,11 +1,11 @@
-package me.fastfelix771.townywands.utils;
+package de.fastfelix771.townywands.utils;
 
 import java.util.HashMap;
 import java.util.Set;
-import me.fastfelix771.townywands.inventory.ModularGUI;
-import me.fastfelix771.townywands.lang.Language;
 import org.bukkit.inventory.Inventory;
 import com.google.common.collect.Sets;
+import de.fastfelix771.townywands.inventory.ModularGUI;
+import de.fastfelix771.townywands.lang.Language;
 
 // This class should be renamed to Cache... 
 // That crap will be removed too, when i implement the Ingame Editors. (IF i implement them.. its a crap ton of work! - probably...)

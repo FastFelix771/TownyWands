@@ -1,4 +1,4 @@
-package me.fastfelix771.townywands.commands;
+package de.fastfelix771.townywands.commands;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
