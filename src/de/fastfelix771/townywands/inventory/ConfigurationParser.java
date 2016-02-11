@@ -1,7 +1,6 @@
 package de.fastfelix771.townywands.inventory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.lang.Translator;
+import de.fastfelix771.townywands.main.ConfigManager;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Database;
 import de.fastfelix771.townywands.utils.Utils;
@@ -239,12 +239,7 @@ public class ConfigurationParser {
     }
 
     private void save() {
-        try {
-            this.config.save(this.file);
-        }
-        catch (final IOException e) {
-            this.error("Failed to save configuration file " + this.file.getName());
-        }
+        ConfigManager.saveConfig(config, file);
     }
 
     private void error(final String message) {

@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.bukkit.entity.Player;
-import de.fastfelix771.townywands.utils.Invoker;
 import de.fastfelix771.townywands.utils.Reflect;
+import de.fastfelix771.townywands.utils.ReturningInvoker;
 
 public class NettyUtils {
 
@@ -49,17 +49,17 @@ public class NettyUtils {
     }
 
     @SneakyThrows
-    public static void addHandler(@NonNull final String addAfter, @NonNull final String handlerName, @NonNull final Player target, @NonNull final Class<?> packetClass, @NonNull final Invoker<Object> invoker, final boolean dropPacket) {
+    public static void addHandler(@NonNull final String addAfter, @NonNull final String handlerName, @NonNull final Player target, @NonNull final Class<?> packetClass, @NonNull final ReturningInvoker<Object, Boolean> invoker, boolean dropOnError) {
         switch (Reflect.getServerVersion()) {
             case UNKNOWN:
                 break;
             case v1_7:
                 Object pipeline17 = getPipeline(target);
-                Reflect.getMethod(pipeline17.getClass().getMethod("addAfter", String.class, String.class, Reflect.getClass("net.minecraft.util.io.netty.channel.ChannelHandler"))).invoke(pipeline17, addAfter, handlerName, new MessageToMessageDecoder_1_7(invoker, packetClass, dropPacket));
+                Reflect.getMethod(pipeline17.getClass().getMethod("addAfter", String.class, String.class, Reflect.getClass("net.minecraft.util.io.netty.channel.ChannelHandler"))).invoke(pipeline17, addAfter, handlerName, new MessageToMessageDecoder_1_7(invoker, packetClass, dropOnError));
                 break;
             case v1_8:
                 Object pipeline18 = getPipeline(target);
-                Reflect.getMethod(pipeline18.getClass().getMethod("addAfter", String.class, String.class, Reflect.getClass("io.netty.channel.ChannelHandler"))).invoke(pipeline18, addAfter, handlerName, new MessageToMessageDecoder_1_8(invoker, packetClass, dropPacket));
+                Reflect.getMethod(pipeline18.getClass().getMethod("addAfter", String.class, String.class, Reflect.getClass("io.netty.channel.ChannelHandler"))).invoke(pipeline18, addAfter, handlerName, new MessageToMessageDecoder_1_8(invoker, packetClass, dropOnError));
                 break;
             default:
                 break;

@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import de.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import de.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
+import de.fastfelix771.townywands.main.Debug;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Invoker;
 import de.fastfelix771.townywands.utils.Utils;
@@ -65,6 +66,23 @@ public class Commands {
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
     public void townywands_help2(final CommandSender sender, final String[] args) {
         this.townywands_help(sender, args);
+    }
+
+    @SubCommandHandler(
+        name = "debug",
+        parent = "townywands",
+        permission = "townywands.cmd.debug",
+        permissionMessage = "§cYou are missing the permission §atownywands.cmd.debug§c!")
+    public void townywands_debug(final CommandSender sender, final String[] args) {
+        if (sender instanceof Player) {
+            if (Debug.players.contains(((Player) sender).getUniqueId())) Debug.players.remove(((Player) sender).getUniqueId());
+            else Debug.players.add(((Player) sender).getUniqueId());
+            sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.players.contains(((Player) sender).getUniqueId())).toLowerCase()));
+            return;
+        }
+        Debug.console = Debug.console ? false : true;
+        sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.console).toLowerCase()));
+
     }
 
     @CommandHandler(

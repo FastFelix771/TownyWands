@@ -28,7 +28,8 @@ import de.fastfelix771.townywands.utils.Update.State;
 
 public final class TownyWands extends JavaPlugin implements Listener {
 
-    private static final long CONFIG_VERSION = 363; // Configuration Version.
+    @SuppressWarnings("unused")
+    private static final int CONFIG_VERSION = 988; // Configuration Version.
     @Getter
     private static TownyWands instance;
     @Getter
@@ -45,13 +46,18 @@ public final class TownyWands extends JavaPlugin implements Listener {
     @Getter
     private static boolean bungeecord;
     private static Result updateResult; // temporary only!
+    @SuppressWarnings("unused")
+    private static boolean spigot;
+    @Getter
+    private static boolean protocolLibEnabled;
 
     @Override
     public void onLoad() {
         instance = this;
-        this.saveDefaultConfig();
-        this.saveResource("inventories.yml", false);
+        getDataFolder().mkdirs();
+        ConfigManager.saveResource("config.yml", new File(this.getDataFolder().getAbsolutePath() + "/config.yml"), false);
         file = new File(this.getDataFolder().getAbsolutePath() + "/inventories.yml");
+        ConfigManager.saveResource("inventories.yml", file, false);
     }
 
     @Override
@@ -60,27 +66,11 @@ public final class TownyWands extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
         CommandController.registerCommands(this, new Commands());
 
-        if (this.getConfig().get("configVersion") != null) {
-            final long version = this.getConfig().getLong("configVersion");
+        /*
+         * This feature is temporary disabled, it will be back and working in the next update! if (this.getConfig().get("configVersion") != null) { final int version = this.getConfig().getInt("configVersion"); /* // If the version has changed, update the config! if (!(CONFIG_VERSION == version)) { final File config = new File(this.getDataFolder().getAbsolutePath() + "/" + "config.yml"); if (file != null && file.exists()) { final boolean success = config.renameTo(new File(this.getDataFolder().getAbsolutePath() + "/" + "config_" + version + ".yml")); if (!success) { this.getLogger().warning("Failed to update configuration! Continue using the old one..."); this.getLogger().warning("You should try to delete the older config files with numbers behind the name!"); } else { // If everything was fine, save the newest config and reload it. this.saveDefaultConfig(); this.reloadConfig(); } } } }
+         */
 
-            // If the version has changed, update the config!
-            if (!(CONFIG_VERSION == version)) {
-                final File config = new File(this.getDataFolder().getAbsolutePath() + "/" + "config.yml");
-                if (file != null) {
-                    final boolean success = config.renameTo(new File(this.getDataFolder().getAbsolutePath() + "/" + "config_" + version + ".yml"));
-                    if (!success) {
-                        this.getLogger().warning("Failed to update configuration! Continue using the old one...");
-                        this.getLogger().warning("You should try to delete the older config files with numbers behind the name!");
-                    }
-                    else {
-                        // If everything was fine, save the newest config and reload it.
-                        this.saveDefaultConfig();
-                        this.reloadConfig();
-                    }
-                }
-            }
-
-        }
+        protocolLibEnabled = Bukkit.getPluginManager().getPlugin("ProtocolLib") != null && Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
 
         if (Reflect.getServerVersion() == Version.v1_8 || Reflect.getServerVersion() == Version.v1_7) {
             signGUI = new SignGUI(this);
@@ -103,9 +93,12 @@ public final class TownyWands extends JavaPlugin implements Listener {
         if (this.getConfig().get("bungeecord") == null) bungeecord = false;
         else bungeecord = this.getConfig().getBoolean("bungeecord");
 
+        if (this.getConfig().get("spigot") == null) spigot = false;
+        else spigot = this.getConfig().getBoolean("spigot");
+
         if (bungeecord) this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-        if (checkUpdates) try {
+        if (checkUpdates) try { // Make async.
             final Update update = new Update(this);
             updateResult = update.check();
         }
@@ -117,10 +110,12 @@ public final class TownyWands extends JavaPlugin implements Listener {
         this.getLogger().log(Level.INFO, "Auto-Translation is " + (autotranslate ? "enabled" : "disabled"));
         this.getLogger().log(Level.INFO, "Using " + threads + " of " + Runtime.getRuntime().availableProcessors() + " threads.");
         this.getLogger().log(Level.INFO, "SignGUI's does " + (signGUI != null ? "work on this version!" : "not work on this version!"));
+        if (protocolLibEnabled) this.getLogger().log(Level.INFO, "Using ProtocolLib instead of TownyWands' internal methods to modify packets.");
+        // TODO: Add a spigot notification
 
         pool = Executors.newFixedThreadPool(threads);
 
-        parser = new ConfigurationParser(YamlConfiguration.loadConfiguration(file), Level.INFO, true, file);
+        parser = new ConfigurationParser(ConfigManager.loadConfig(file), Level.INFO, true, file);
         getParser().parse();
     }
 
@@ -151,12 +146,16 @@ public final class TownyWands extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
+    public void onJoin(PlayerJoinEvent e) { // Temporary event listener, the updater class needs some enhancements.
         Player p = e.getPlayer();
         if ((p.isOp() || p.hasPermission("townywands.msg.update")) && (checkUpdates && updateResult != null && (updateResult.getState() == State.UPDATE_FOUND))) {
             p.sendMessage("§4!UPDATE! §6-> TownyWands has found an update!");
             p.sendMessage("§4!UPDATE! §6-> You are currently on version §c" + getDescription().getVersion());
-            p.sendMessage("§4!UPDATE! §6-> Download latest: §a" + updateResult.getLatestDownload());
+            if (Reflect.getServerVersion() != Version.v1_8) {
+                p.sendMessage("§4!UPDATE! §6-> Download latest: §a" + updateResult.getLatestDownload());
+                return;
+            }
+
         }
     }
 

@@ -1,7 +1,7 @@
-# TownyWands - Custom Towny GUI's | Written and maintained by FastFelix771, C.E.O of the UnityGaming Network. | http://www.unitygaming.de
+# TownyWands - Customizable modular GUI's | Written and maintained by FastFelix771, CEO of the UnityGaming Network. | https://www.unitygaming.de
 
 # If you change the value below, it will reset your config. Don't do it.
-configVersion: 363
+configVersion: 988
 
 # Important Notes:
 # If you dont know what 'metaID' means: its the last part of the full item id, for example: 17:3 , the metaID comes behind the ':', if the item you want to add has no metaID, set it to 0 (zero)
@@ -25,6 +25,9 @@ checkForUpdates: true
 # If you have a BungeeCord Proxy connected to this server, you can enable this feature to make /bungeetp working!
 bungeecord: false
 
+# If you are running a spigot server, set this to true! Currently, this variable is useless.
+spigot: false
+
 
 ## HOW DOES THE COMMANDS WORK ##
 # This will become a tiny How-To that i'll update and enhance with the newer versions. =)
@@ -39,10 +42,7 @@ bungeecord: false
 #
 #   {playername} = Player's name.
 #	{uuid} = Player's UUID.
-#	{health} = Player's health.
 #	{world} = Name of the player's world.
-#	{hunger} = Player's foodlevel.
-#	{saturation} = Player's saturationlevel.
 #	{displayname} = Player's displayname.
 #
 #
@@ -54,9 +54,6 @@ bungeecord: false
 #
 # The second parameter means the server the user should connect to, please type in the exact name from your bungeecord config to prevent errors!
 #
-#
 # =========================
-#
-# /gui - This command isnt done yet and will get explained here as soon as it has its full function!
 #
 ################################
