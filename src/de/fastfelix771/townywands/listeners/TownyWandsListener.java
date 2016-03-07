@@ -7,14 +7,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
 import de.fastfelix771.townywands.inventory.ModularGUI;
 import de.fastfelix771.townywands.lang.Language;
+import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Database;
+import de.fastfelix771.townywands.utils.Reflect;
+import de.fastfelix771.townywands.utils.Reflect.Version;
+import de.fastfelix771.townywands.utils.Updater.State;
 
-public class InventoryListener implements Listener {
+public class TownyWandsListener implements Listener {
 
     @EventHandler
     public void onCommand(final PlayerCommandPreprocessEvent e) {
@@ -92,6 +97,21 @@ public class InventoryListener implements Listener {
             }
         }
 
+    }
+    
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        if(!TownyWands.isUpdateCheckingEnabled()|| TownyWands.getUpdateResult() == null || TownyWands.getUpdateResult().getState() != State.UPDATE_FOUND) return;
+        Player p = e.getPlayer();
+        if ((p.isOp() || p.hasPermission("townywands.msg.update"))) {
+            p.sendMessage("§4!UPDATE! §6-> TownyWands has found an update!");
+            p.sendMessage("§4!UPDATE! §6-> You are currently on version §c" + TownyWands.getInstance().getDescription().getVersion());
+            if (Reflect.getServerVersion() != Version.v1_8) {
+                p.sendMessage("§4!UPDATE! §6-> Download latest: §a" + TownyWands.getUpdateResult().getLatestURL());
+                return;
+            }
+
+        }
     }
 
 }

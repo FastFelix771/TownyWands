@@ -19,8 +19,7 @@ import de.fastfelix771.townywands.utils.Database;
 // This could become difficult with multi-language GUIs...
 // Other great IDEA! I should stop filling my code with notes.. that spoilers every guy on GitHub ._.
 
-@EqualsAndHashCode(
-    exclude = "guis")
+@EqualsAndHashCode(exclude = "guis")
 @RequiredArgsConstructor
 public class ModularGUI implements Cloneable {
 

@@ -6,24 +6,52 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.YamlRepresenter;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import de.fastfelix771.townywands.utils.Reflect;
 
+/**
+ * Utility class which guarantees UTF-8 loading & saving of YamlConfigurations!
+ * @author FastFelix771
+ */
 public final class ConfigManager {
 
     @SneakyThrows
-    public static FileConfiguration loadConfig(@NonNull File file) {
+    public static YamlConfiguration loadYAML(@NonNull File file) {
         if (!file.exists()) return null;
         return YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
     }
 
     @SneakyThrows
-    public static void saveConfig(@NonNull FileConfiguration config, @NonNull File file) {
-        String data = config.saveToString(); // Custom saveToString! ALLOW_UNICODE scheint zu spacken.
+    public static void saveYAML(@NonNull YamlConfiguration config, @NonNull File file) {
+
+        Method buildHeader = Reflect.getMethod(config.getClass().getDeclaredMethod("buildHeader"));
+
+        DumperOptions yamlOptions = (DumperOptions) Reflect.getField(config.getClass().getDeclaredField("yamlOptions")).get(config);
+        YamlRepresenter yamlRepresenter = (YamlRepresenter) Reflect.getField(config.getClass().getDeclaredField("yamlRepresenter")).get(config);
+        Yaml yaml = (Yaml) Reflect.getField(config.getClass().getDeclaredField("yaml")).get(config);
+
+        yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        yamlOptions.setIndent(config.options().indent());
+        yamlOptions.setAllowUnicode(true);
+
+        String configHeader = (String) buildHeader.invoke(config);
+        String yamlDump = yaml.dump(config.getValues(false));
+        String blankConfig = (String) Reflect.getField(config.getClass().getDeclaredField("BLANK_CONFIG")).get(null);
+
+        if (yamlDump.equalsIgnoreCase(blankConfig)) yamlDump = "";
+        String data = StringEscapeUtils.unescapeJava(new String(new StringBuilder(configHeader).append(yamlDump).toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+
         @Cleanup
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
         writer.write(data);

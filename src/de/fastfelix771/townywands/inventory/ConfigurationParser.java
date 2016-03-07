@@ -15,12 +15,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.lang.Translator;
 import de.fastfelix771.townywands.main.ConfigManager;
+import de.fastfelix771.townywands.main.Debug;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Database;
 import de.fastfelix771.townywands.utils.Utils;
@@ -31,7 +32,7 @@ public class ConfigurationParser {
     @Getter
     @Setter
     @NonNull
-    private FileConfiguration config;
+    private YamlConfiguration config;
     private final Level lvl;
     private final boolean async;// Adde consolen commands für jedes item!
     private boolean error;// Und ein paar spielerbezogene variablen wie {uuid} , {username} undso, damit man consolen-commands auch brauchen kann! Und diese dem Config-How to beifügen.
@@ -239,12 +240,13 @@ public class ConfigurationParser {
     }
 
     private void save() {
-        ConfigManager.saveConfig(config, file);
+        ConfigManager.saveYAML(config, file);
     }
 
     private void error(final String message) {
         this.error = true;
         TownyWands.getInstance().getLogger().log(this.lvl, message);
+        Debug.msg(message);
     }
 
 }

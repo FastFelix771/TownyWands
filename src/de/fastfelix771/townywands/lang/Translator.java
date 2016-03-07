@@ -11,14 +11,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
- * @description This class manages the translation of TownyWands GUI's! (EXPERIMENTAL)
+ * @description This class manages the translation of TownyWands GUI's!
  * @author FastFelix771
  * @specialThanks to mymemory.translated.net for its awesome API, without this feature wouldnt be possible with the same awesome translation-quality!
  */
+@SuppressWarnings("all")
 public class Translator {
 
     private static final String USER_AGENT = "Mozilla/5.0";
     private static final Charset UTF8 = Charset.forName("UTF-8");
+    private static final String QUOTA_REACHED = "MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY. VISIT HTTP://MYMEMORY.TRANSLATED.NET/DOC/QUOTAREACHED TO TRANSLATE MORE";
 
     public static String translate(final Language from, final Language to, final String inputText) {
         String text = inputText;
@@ -66,7 +68,7 @@ public class Translator {
         try {
             final JSONObject json = (JSONObject) new JSONParser().parse(translated);
             final JSONObject data = (JSONObject) json.get("responseData");
-            translated = data.get("translatedText").toString();
+            translated = (String) data.get("translatedText");
         }
         catch (final Exception e) {
             return null;

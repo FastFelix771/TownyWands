@@ -1,12 +1,12 @@
 # TownyWands - Customizable modular GUI's | Written and maintained by FastFelix771, CEO of the UnityGaming Network. | https://www.unitygaming.de
 
 # If you change the value below, it will reset your config. Don't do it.
-configVersion: 988
+configVersion: 1799
 
 # Important Notes:
 # If you dont know what 'metaID' means: its the last part of the full item id, for example: 17:3 , the metaID comes behind the ':', if the item you want to add has no metaID, set it to 0 (zero)
 # Dont enter higher slot values than your inventory supports, so if your GUI has 18 slots, dont use values lower than 1 or higher than 18 or you will get bombed by a ton of errors :D
-# If you want to add more languages, just add the fields: name_ , lore_ , commands_ , each followed by your wished langcode, for example: es_ES = Spanish | fr_FR = Francais
+# If you want to add more languages, just add the fields: name_ , lore_ , commands_ , each followed by your wished langcode, for example: es_ES = Spanish | fr_FR = French
 # You can find all supported languages and their langcodes on the GitHub page! :) -> https://github.com/FastFelix771/TownyWands/blob/master/README.md
 # Should TownyWands send some anonymous data to mcstats.org? 
 
@@ -23,11 +23,7 @@ cpu-threads: 4
 checkForUpdates: true
 
 # If you have a BungeeCord Proxy connected to this server, you can enable this feature to make /bungeetp working!
-bungeecord: false
-
-# If you are running a spigot server, set this to true! Currently, this variable is useless.
-spigot: false
-
+bungeecord: true
 
 ## HOW DOES THE COMMANDS WORK ##
 # This will become a tiny How-To that i'll update and enhance with the newer versions. =)

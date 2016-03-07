@@ -28,6 +28,7 @@ public class NettyUtils {
                         return channel;
                     }
                     continue;
+                case v1_9:    
                 case v1_8:
                     if (field.getType().isAssignableFrom(Reflect.getClass("io.netty.channel.Channel"))) {
                         Object channel = field.get(networkManager);
@@ -57,9 +58,10 @@ public class NettyUtils {
                 Object pipeline17 = getPipeline(target);
                 Reflect.getMethod(pipeline17.getClass().getMethod("addAfter", String.class, String.class, Reflect.getClass("net.minecraft.util.io.netty.channel.ChannelHandler"))).invoke(pipeline17, addAfter, handlerName, new MessageToMessageDecoder_1_7(invoker, packetClass, dropOnError));
                 break;
+            case v1_9:    
             case v1_8:
-                Object pipeline18 = getPipeline(target);
-                Reflect.getMethod(pipeline18.getClass().getMethod("addAfter", String.class, String.class, Reflect.getClass("io.netty.channel.ChannelHandler"))).invoke(pipeline18, addAfter, handlerName, new MessageToMessageDecoder_1_8(invoker, packetClass, dropOnError));
+                Object pipeline18_19 = getPipeline(target);
+                Reflect.getMethod(pipeline18_19.getClass().getMethod("addAfter", String.class, String.class, Reflect.getClass("io.netty.channel.ChannelHandler"))).invoke(pipeline18_19, addAfter, handlerName, new MessageToMessageDecoder_1_8(invoker, packetClass, dropOnError));
                 break;
             default:
                 break;

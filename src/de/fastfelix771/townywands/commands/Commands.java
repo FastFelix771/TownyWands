@@ -94,8 +94,8 @@ public class Commands {
     public void vsign(final CommandSender sender, final String[] args) {
         if ((args.length == 0) || (Bukkit.getPlayerExact(args[0]) == null)) return;
 
-        // If not 1.8, do nothing.
-        if (TownyWands.getSignGUI() == null) return;
+        // If this version is not compatible, do nothing.
+        if (TownyWands.getVSign() == null) return;
 
         final Player player = Bukkit.getPlayerExact(args[0]);
         final StringBuilder sb = new StringBuilder();
@@ -105,13 +105,13 @@ public class Commands {
             sb.append(arg + " ");
         }
 
-        TownyWands.getSignGUI().open(player, new Invoker<String[]>() {
+        TownyWands.getVSign().show(player, new Invoker<String[]>() {
 
             @Override
             public void invoke(final String[] lines) {
                 final StringBuilder data = new StringBuilder();
                 for (final String line : lines)
-                    if (!line.isEmpty()) data.append(line);
+                    if (line != null && !line.trim().isEmpty()) data.append(line);
 
                 String command = sb.toString();
                 command = command.substring(0, command.length() - 1);
