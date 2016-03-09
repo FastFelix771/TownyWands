@@ -1,9 +1,9 @@
 package de.fastfelix771.townywands.utils;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
 import org.bukkit.inventory.Inventory;
-import com.google.common.collect.Sets;
 import de.fastfelix771.townywands.inventory.ModularGUI;
 import de.fastfelix771.townywands.lang.Language;
 
@@ -13,8 +13,8 @@ public class Database {
 
     private static final HashMap<String, ModularGUI> storage = new HashMap<>();
 
-    public static Set<ModularGUI> guiList() {
-        return Sets.newHashSet(storage.values());
+    public static Collection<ModularGUI> guiList() {
+        return Collections.unmodifiableCollection(storage.values());
     }
 
     public static Inventory get(final String command, final Language language) {

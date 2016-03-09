@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
@@ -101,6 +102,9 @@ public class TownyWandsListener implements Listener {
     
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
+        
+        TownyWands.getVirtualSign().setup(e.getPlayer());
+        
         if(!TownyWands.isUpdateCheckingEnabled()|| TownyWands.getUpdateResult() == null || TownyWands.getUpdateResult().getState() != State.UPDATE_FOUND) return;
         Player p = e.getPlayer();
         if ((p.isOp() || p.hasPermission("townywands.msg.update"))) {
@@ -112,6 +116,11 @@ public class TownyWandsListener implements Listener {
             }
 
         }
+    }
+    
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        TownyWands.getVirtualSign().unsetup(e.getPlayer());
     }
 
 }

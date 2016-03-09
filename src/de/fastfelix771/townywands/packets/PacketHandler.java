@@ -1,10 +1,21 @@
 package de.fastfelix771.townywands.packets;
 
-/** 
- *  - EXPERIMENTAL / WIP -
- * Soon, this will handle the packet stuff to get back the performance it gives away because of Reflection etc.
- * It will be 100% free of Reflection and should also allow me to add more version compatbility.
- * ProtocolLib Support will be continued, of course.
- *
+import org.bukkit.entity.Player;
+import de.fastfelix771.townywands.utils.ReturningInvoker;
+
+/**
+ * Universal interface to handle packet sending & handling of incoming client packets.
+ * @author FastFelix771
  */
-public abstract interface PacketHandler {}
+public abstract interface PacketHandler {
+    
+    public void sendPacket(Player player, Object packet);
+    public void addPacketListener(Player player, Class<?> packetClass, ReturningInvoker<Object, Boolean> invoker, boolean dropPacketOnError);
+
+    public static abstract interface NettySupport {
+
+        public Object getChannel(Player player);
+        
+    }
+    
+}

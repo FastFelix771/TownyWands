@@ -1,5 +1,7 @@
 package de.fastfelix771.townywands.inventory;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
@@ -74,6 +76,10 @@ public class ModularGUI implements Cloneable {
         final ModularGUI gui = new ModularGUI(this.internalName, this.command, this.permission);
         gui.addAll(this.guis);
         return gui;
+    }
+
+    public Collection<Inventory> inventories() {
+        return Collections.unmodifiableCollection(guis.values());
     }
 
 }

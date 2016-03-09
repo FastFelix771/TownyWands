@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,15 +18,16 @@ import de.fastfelix771.townywands.commands.Commands;
 import de.fastfelix771.townywands.inventory.ConfigurationParser;
 import de.fastfelix771.townywands.listeners.TownyWandsListener;
 import de.fastfelix771.townywands.metrics.Metrics;
+import de.fastfelix771.townywands.packets.PacketHandler;
+import de.fastfelix771.townywands.packets.PacketSupport;
+import de.fastfelix771.townywands.packets.VirtualSign;
 import de.fastfelix771.townywands.utils.Database;
 import de.fastfelix771.townywands.utils.Invoker;
 import de.fastfelix771.townywands.utils.Reflect;
-import de.fastfelix771.townywands.utils.Reflect.Version;
 import de.fastfelix771.townywands.utils.Updater;
 import de.fastfelix771.townywands.utils.Updater.Result;
-import de.fastfelix771.townywands.utils.vSign;
 
-@Log
+@Log(topic = "TownyWands")
 public final class TownyWands extends JavaPlugin {
 
     private static final int CONFIG_VERSION = 1799;
@@ -33,7 +35,10 @@ public final class TownyWands extends JavaPlugin {
     @Getter private static ConfigurationParser parser;
     @Getter private static boolean autotranslate;
     @Getter private static ExecutorService pool;
-    @Getter private static vSign vSign;
+
+    @Getter private static VirtualSign virtualSign;
+    @Getter private static PacketHandler packetHandler;
+
     @Getter private static boolean bungeecord;
     @Getter private static boolean protocolLibEnabled;
     @Getter private static boolean updateCheckingEnabled;
@@ -50,31 +55,18 @@ public final class TownyWands extends JavaPlugin {
         updateConfig();
     }
 
-    @Override
+    @Override @SneakyThrows
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new TownyWandsListener(), this);
         CommandController.registerCommands(this, new Commands());
 
         protocolLibEnabled = Bukkit.getPluginManager().getPlugin("ProtocolLib") != null && Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
 
-        if (Reflect.getServerVersion() == Version.v1_9 || Reflect.getServerVersion() == Version.v1_8 || Reflect.getServerVersion() == Version.v1_7) {
-            vSign = new vSign(this);
-        } else vSign = null;
-
-        if (this.getConfig().get("metrics") == null) this.metrics(true);
-        else this.metrics(this.getConfig().getBoolean("metrics"));
-
-        if (this.getConfig().get("auto-translate") == null) autotranslate = false;
-        else autotranslate = this.getConfig().getBoolean("auto-translate");
-
-        if (this.getConfig().get("cpu-threads") == null) threads = 4;
-        else threads = this.getConfig().getInt("cpu-threads");
-
-        if (this.getConfig().get("checkForUpdates") == null) updateCheckingEnabled = false;
-        else updateCheckingEnabled = this.getConfig().getBoolean("checkForUpdates");
-
-        if (this.getConfig().get("bungeecord") == null) bungeecord = false;
-        else bungeecord = this.getConfig().getBoolean("bungeecord");
+        metrics(this.getConfig().getBoolean("metrics"));
+        autotranslate = this.getConfig().getBoolean("auto-translate");
+        threads = this.getConfig().getInt("cpu-threads");
+        updateCheckingEnabled = this.getConfig().getBoolean("checkForUpdates");
+        bungeecord = this.getConfig().getBoolean("bungeecord");
 
         if (bungeecord) this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -90,8 +82,6 @@ public final class TownyWands extends JavaPlugin {
         log.info("Update-Checking is " + (updateCheckingEnabled ? "enabled" : "disabled"));
         log.info("Auto-Translation is " + (autotranslate ? "enabled" : "disabled"));
         log.info("Using " + threads + " of " + Runtime.getRuntime().availableProcessors() + " threads.");
-        log.info("vSign's does " + (vSign != null ? "work on this version!" : "not work on this version!"));
-        if (protocolLibEnabled) log.info("Using ProtocolLib instead of TownyWands' internal methods to modify packets.");
 
         pool = Executors.newFixedThreadPool(threads);
 
@@ -99,6 +89,24 @@ public final class TownyWands extends JavaPlugin {
         getParser().parse();
 
         loadAddons();
+
+        /// EXPERIMENTAL ///
+
+        PacketSupport ps = PacketSupport.forVersion(Reflect.getServerVersion());
+
+        if(ps != PacketSupport.NONE) {
+            Class<?> vsignclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.%s", Reflect.getServerVersion().toString(), ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled) ? "ProtocolLibvSign" : "NMSvSign"));
+            if(vsignclazz != null) {
+                virtualSign = (VirtualSign) vsignclazz.newInstance();
+            } else log.warning("Cannot use vSigns on this version! - You either need ProtocolLib or your version has no support yet!");
+
+            Class<?> packethandlerclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.%s", Reflect.getServerVersion().toString(), ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled) ? "ProtocolLibHandler" : "NMSHandler"));
+            if(packethandlerclazz != null) {
+                packetHandler = (PacketHandler) packethandlerclazz.newInstance();
+            } else log.warning("No PacketHandler found for your servers version! - You either need ProtocolLib or your version has no support yet!");
+        }
+
+        log.info("vSign's does ".concat((virtualSign != null ? "work on this version!".concat(String.format(" (Using: %s %s)", ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled ? "ProtocolLib" : "NMS"), Reflect.getServerVersion().toString())) : "not work on this version!")));
     }
 
     @Override
@@ -110,9 +118,11 @@ public final class TownyWands extends JavaPlugin {
 
     public static void reload() {
         Database.clear();
+        if(protocolLibEnabled) com.comphenix.protocol.ProtocolLibrary.getProtocolManager().removePacketListeners(getInstance());
+
         getInstance().reloadConfig();
-        parser.setConfig(YamlConfiguration.loadConfiguration(new File(getInstance().getDataFolder().getAbsolutePath() + "/inventories.yml")));
         getParser().getInventoryTokens().clear();
+        parser.setConfig(YamlConfiguration.loadConfiguration(new File(getInstance().getDataFolder().getAbsolutePath() + "/inventories.yml")));
         getParser().parse();
     }
 
@@ -143,7 +153,7 @@ public final class TownyWands extends JavaPlugin {
             reloadConfig();
             return;
         }
-        
+
         log.severe("Renaming of the old configuration file has failed, continue using the old one...");
 
     }

@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="C:/Users/FastFelix771/Desktop/WorkSpace/Plugin Libraries/ProtocolLib.jar"/>
 	<classpathentry kind="lib" path="C:/Users/FastFelix771/Desktop/WorkSpace/Plugin Libraries/spigot_1.9.jar"/>
 	<classpathentry kind="lib" path="C:/Users/FastFelix771/Desktop/WorkSpace/Plugin Libraries/spigot-1.7.10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/FastFelix771/Desktop/WorkSpace/Plugin Libraries/spigot_1.8.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

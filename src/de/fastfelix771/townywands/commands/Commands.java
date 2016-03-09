@@ -95,7 +95,7 @@ public class Commands {
         if ((args.length == 0) || (Bukkit.getPlayerExact(args[0]) == null)) return;
 
         // If this version is not compatible, do nothing.
-        if (TownyWands.getVSign() == null) return;
+        if (TownyWands.getVirtualSign() == null) return;
 
         final Player player = Bukkit.getPlayerExact(args[0]);
         final StringBuilder sb = new StringBuilder();
@@ -105,7 +105,7 @@ public class Commands {
             sb.append(arg + " ");
         }
 
-        TownyWands.getVSign().show(player, new Invoker<String[]>() {
+        TownyWands.getVirtualSign().show(player, new Invoker<String[]>() {
 
             @Override
             public void invoke(final String[] lines) {
@@ -154,21 +154,15 @@ public class Commands {
         permission = "townywands.cmd.fakecmd",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.fakecmd§c!")
     public void fakecmd(final CommandSender sender, final String[] args) {
-        if ((args.length < 1) || (Bukkit.getPlayerExact(args[0]) == null)) return;
+        if ((args.length < 2) || (Bukkit.getPlayerExact(args[0]) == null)) return;
 
-        final Player player = Bukkit.getPlayerExact(args[0]);
         final StringBuilder sb = new StringBuilder();
 
         for (int i = 1; i < args.length; i++) {
-            final String arg = args[i];
-            sb.append(arg + " ");
+            sb.append(args[i]).append(" ");
         }
 
-        String fakeCommand = sb.toString();
-        fakeCommand = fakeCommand.substring(0, fakeCommand.length() - 1);
-        fakeCommand = "/" + fakeCommand;
-
-        player.chat(fakeCommand);
+        Bukkit.getPlayerExact(args[0]).chat("/".concat(sb.toString()));
 
     }
 
