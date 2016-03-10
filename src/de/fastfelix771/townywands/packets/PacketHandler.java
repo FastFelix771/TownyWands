@@ -10,7 +10,7 @@ import de.fastfelix771.townywands.utils.ReturningInvoker;
 public abstract interface PacketHandler {
     
     public void sendPacket(Player player, Object packet);
-    public void addPacketListener(Player player, Class<?> packetClass, ReturningInvoker<Object, Boolean> invoker, boolean dropPacketOnError);
+    public void addPacketListener(Player player, Object packetRelatedObject, ReturningInvoker<Object, Boolean> invoker, boolean dropPacketOnError);
 
     public static abstract interface NettySupport {
 

@@ -98,15 +98,15 @@ public final class TownyWands extends JavaPlugin {
             Class<?> vsignclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.%s", Reflect.getServerVersion().toString(), ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled) ? "ProtocolLibvSign" : "NMSvSign"));
             if(vsignclazz != null) {
                 virtualSign = (VirtualSign) vsignclazz.newInstance();
-            } else log.warning("Cannot use vSigns on this version! - You either need ProtocolLib or your version has no support yet!");
+            }
 
             Class<?> packethandlerclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.%s", Reflect.getServerVersion().toString(), ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled) ? "ProtocolLibHandler" : "NMSHandler"));
             if(packethandlerclazz != null) {
                 packetHandler = (PacketHandler) packethandlerclazz.newInstance();
-            } else log.warning("No PacketHandler found for your servers version! - You either need ProtocolLib or your version has no support yet!");
+            }
         }
 
-        log.info("vSign's does ".concat((virtualSign != null ? "work on this version!".concat(String.format(" (Using: %s %s)", ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled ? "ProtocolLib" : "NMS"), Reflect.getServerVersion().toString())) : "not work on this version!")));
+        log.info("vSign's does ".concat((virtualSign != null ? "work on this version!".concat(String.format(" (Using: %s %s)", ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled ? "ProtocolLib" : "NMS"), Reflect.getServerVersion().toString())) : String.format("not work on this version! (Detected: %s)", Reflect.getServerVersion().toString()))));
     }
 
     @Override
@@ -118,8 +118,6 @@ public final class TownyWands extends JavaPlugin {
 
     public static void reload() {
         Database.clear();
-        if(protocolLibEnabled) com.comphenix.protocol.ProtocolLibrary.getProtocolManager().removePacketListeners(getInstance());
-
         getInstance().reloadConfig();
         getParser().getInventoryTokens().clear();
         parser.setConfig(YamlConfiguration.loadConfiguration(new File(getInstance().getDataFolder().getAbsolutePath() + "/inventories.yml")));

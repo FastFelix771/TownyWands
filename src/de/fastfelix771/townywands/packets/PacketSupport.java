@@ -16,7 +16,7 @@ public enum PacketSupport {
     
     NMS(Arrays.asList(          Version.v1_9, Version.v1_8, Version.v1_7  )), 
     
-    ProtocolLib(Arrays.asList(  Version.v1_9, Version.v1_8, Version.v1_7  ));
+    ProtocolLib(Arrays.asList(  Version.v1_9, Version.v1_8, Version.v1_7, Version.v1_6  ));
     
     @Getter private final List<Version> supportedVersions;
     

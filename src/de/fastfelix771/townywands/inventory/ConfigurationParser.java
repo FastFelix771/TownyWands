@@ -26,7 +26,7 @@ import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Database;
 import de.fastfelix771.townywands.utils.Utils;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor @SuppressWarnings("all")
 public class ConfigurationParser {
 
     @Getter
@@ -103,7 +103,6 @@ public class ConfigurationParser {
 
                         final int id = i.getInt("itemID");
                         final int metaid = i.getInt("metaID");
-                        @SuppressWarnings("deprecation")
                         final Material material = Material.getMaterial(id);
 
                         // Skip to next item if the given material doesnt exist.

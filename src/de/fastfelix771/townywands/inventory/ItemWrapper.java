@@ -23,8 +23,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import de.fastfelix771.townywands.utils.DataOrb;
 import de.fastfelix771.townywands.utils.Reflect;
 
-@RequiredArgsConstructor(
-    access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE) @SuppressWarnings("all")
 public final class ItemWrapper implements Cloneable {
 
     // The PREFIX should prevent errors with minecraft itself, mods and other plugins.
@@ -84,7 +83,6 @@ public final class ItemWrapper implements Cloneable {
         item.setType(mat);
     }
 
-    @SuppressWarnings("deprecation")
     public void setID(int id) {
         item.setTypeId(id);
     }

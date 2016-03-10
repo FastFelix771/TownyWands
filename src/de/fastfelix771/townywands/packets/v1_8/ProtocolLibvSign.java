@@ -27,7 +27,7 @@ public class ProtocolLibvSign implements VirtualSign {
 
         packet.getBlockPositionModifier().write(0, new BlockPosition(0, 0, 0));
 
-        ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+        TownyWands.getPacketHandler().sendPacket(player, packet);
     }
 
     @Override

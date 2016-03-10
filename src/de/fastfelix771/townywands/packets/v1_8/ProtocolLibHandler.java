@@ -19,13 +19,13 @@ public class ProtocolLibHandler implements PacketHandler {
     }
 
     @Override
-    public void addPacketListener(final Player player, final Class<?> packetClass, final ReturningInvoker<Object, Boolean> invoker, final boolean dropPacketOnError) {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(TownyWands.getInstance(), PacketType.fromClass(packetClass)) {
+    public void addPacketListener(final Player player, final Object packetClass, final ReturningInvoker<Object, Boolean> invoker, final boolean dropPacketOnError) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(TownyWands.getInstance(), PacketType.fromClass((Class<?>) packetClass)) {
 
             @Override
             public void onPacketReceiving(PacketEvent e) {
                 if(!(e.getPlayer() == player)) return;
-                if(!(e.getPacketType() == PacketType.fromClass(packetClass))) return;
+                if(!(e.getPacketType() == PacketType.fromClass((Class<?>) packetClass))) return;
 
                 try{
                     e.setCancelled(invoker.invoke(e.getPacket()));

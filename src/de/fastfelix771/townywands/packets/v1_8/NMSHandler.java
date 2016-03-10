@@ -25,13 +25,13 @@ public class NMSHandler implements PacketHandler, NettySupport {
     }
 
     @Override
-    public void addPacketListener(Player player, final Class<?> packetClass, final ReturningInvoker<Object, Boolean> invoker, final boolean dropPacketOnError) {
+    public void addPacketListener(Player player, final Object packetClass, final ReturningInvoker<Object, Boolean> invoker, final boolean dropPacketOnError) {
         ((Channel) getChannel(player)).pipeline().addAfter("decoder", "TownyWands_vSigns_".concat(UUID.randomUUID().toString()), new MessageToMessageDecoder<Packet<?>>() {
 
             @Override
             protected void decode(ChannelHandlerContext chc, final Packet<?> packet, List<Object> forward) {
 
-                if(!packetClass.isInstance(packet)) {
+                if(!((Class<?>) packetClass).isInstance(packet)) {
                     forward.add(packet);
                     return;
                 } // If the packet's class isnt the one we are looking for, forward the packet to the server and do nothing.

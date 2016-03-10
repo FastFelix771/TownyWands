@@ -75,9 +75,9 @@ public class Commands {
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.debug§c!")
     public void townywands_debug(final CommandSender sender, final String[] args) {
         if (sender instanceof Player) {
-            if (Debug.players.contains(((Player) sender).getUniqueId())) Debug.players.remove(((Player) sender).getUniqueId());
-            else Debug.players.add(((Player) sender).getUniqueId());
-            sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.players.contains(((Player) sender).getUniqueId())).toLowerCase()));
+            if (Debug.players.contains(((Player) sender).getName())) Debug.players.remove(((Player) sender).getName());
+            else Debug.players.add(((Player) sender).getName());
+            sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.players.contains(((Player) sender).getName())).toLowerCase()));
             return;
         }
         Debug.console = Debug.console ? false : true;

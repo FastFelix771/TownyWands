@@ -1,5 +1,5 @@
 name: TownyWands
-version: 2.0.6
+version: 2.0.7
 author: FastFelix771
 main: de.fastfelix771.townywands.main.TownyWands
 soft-depend: [ProtocolLib, FactionsUUID, Towny, TownyChat, Vault, PermissionsEx, Essentials, WorldEdit, WorldGuard, Factions, MassiveCore]

@@ -17,6 +17,7 @@ import org.bukkit.configuration.file.YamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import de.fastfelix771.townywands.utils.Reflect;
+import de.fastfelix771.townywands.utils.Reflect.Version;
 
 /**
  * Utility class which guarantees UTF-8 loading & saving of YamlConfigurations!
@@ -27,7 +28,14 @@ public final class ConfigManager {
     @SneakyThrows
     public static YamlConfiguration loadYAML(@NonNull File file) {
         if (!file.exists()) return null;
-        return YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+
+        if(Reflect.getServerVersion().isNewerThan(Version.v1_6)) {
+            return YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+        }
+
+        // On 1.6 & lower the Unicode bug may appear again... this will completely get fixed with the InGame-Editor.
+        return YamlConfiguration.loadConfiguration(file);
+
     }
 
     @SneakyThrows
