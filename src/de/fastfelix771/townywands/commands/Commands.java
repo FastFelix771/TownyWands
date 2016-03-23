@@ -14,7 +14,7 @@ import de.fastfelix771.townywands.utils.Utils;
 
 public class Commands {
 
-    private static final List<String> commands = Arrays.asList("§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §areload");
+    private static final List<String> commands = Arrays.asList("§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §areload", "§c/townywands §adebug");
 
     @CommandHandler(
         name = "townywands",
@@ -97,15 +97,12 @@ public class Commands {
         // If this version is not compatible, do nothing.
         if (TownyWands.getVirtualSign() == null) return;
 
-        final Player player = Bukkit.getPlayerExact(args[0]);
         final StringBuilder sb = new StringBuilder();
-
         for (int i = 1; i < args.length; i++) {
-            final String arg = args[i];
-            sb.append(arg + " ");
+            if(!args[i].trim().isEmpty()) sb.append(args[i]).append(" ");
         }
 
-        TownyWands.getVirtualSign().show(player, new Invoker<String[]>() {
+        TownyWands.getVirtualSign().show(Bukkit.getPlayerExact(args[0]), new Invoker<String[]>() {
 
             @Override
             public void invoke(final String[] lines) {
@@ -114,10 +111,12 @@ public class Commands {
                     if (line != null && !line.trim().isEmpty()) data.append(line);
 
                 String command = sb.toString();
+                if(command.trim().isEmpty()) return;
+                
                 command = command.substring(0, command.length() - 1);
                 command = command.replace("{data}", data.toString());
 
-                Bukkit.dispatchCommand(player, command); // Maybe add console commands here too?
+                Bukkit.dispatchCommand(Bukkit.getPlayerExact(args[0]), command); // Maybe add console commands here too?
             }
         });
     }
@@ -141,7 +140,7 @@ public class Commands {
         }
         catch (final Exception e) {
             e.printStackTrace();
-            sender.sendMessage("Failed to teleport " + player.getName() + " to server " + servername);
+            sender.sendMessage("§cFailed to teleport §a" + player.getName() + "§c to server §a" + servername);
             return;
         }
 

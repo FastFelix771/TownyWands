@@ -1,7 +1,7 @@
 # TownyWands - Customizable modular GUI's | Written and maintained by FastFelix771, CEO of the UnityGaming Network. | https://www.unitygaming.de
 
 # If you change the value below, it will reset your config. Don't do it.
-configVersion: 1799
+configVersion: 1800
 
 # Important Notes:
 # If you dont know what 'metaID' means: its the last part of the full item id, for example: 17:3 , the metaID comes behind the ':', if the item you want to add has no metaID, set it to 0 (zero)
@@ -26,21 +26,13 @@ checkForUpdates: true
 bungeecord: true
 
 ## HOW DOES THE COMMANDS WORK ##
-# This will become a tiny How-To that i'll update and enhance with the newer versions. =)
 # 
 # /vsign {playername} t new {data}
 #
-# /vsign creates a virtual SignGUI that allows TownyWands to handle user-input for its GUI's! 
+# /vsign creates a virtual Sign where players can write something into.
+# This allows TownyWands to handle user-input for its GUI's! 
 #
-# The parameter {data} will be replaced with the stuff the user typed on the sign gui. (/vsign ONLY!)
-#
-# There are all parameters that you can use on ALL commands & console commands listed below:
-#
-#   {playername} = Player's name.
-#	{uuid} = Player's UUID.
-#	{world} = Name of the player's world.
-#	{displayname} = Player's displayname.
-#
+# The parameter {data} will be replaced with the stuff the user typed on the virtual sign. (/vsign ONLY!)
 #
 # =========================
 #
@@ -51,5 +43,12 @@ bungeecord: true
 # The second parameter means the server the user should connect to, please type in the exact name from your bungeecord config to prevent errors!
 #
 # =========================
+#
+# Below is a full list of usable shortcuts, they work on both commands and console-commands in the configuration files.
+#
+#   {playername} = Player's name.
+#	{uuid} = Player's UUID.
+#	{world} = Name of the player's world.
+#	{displayname} = Player's displayname.
 #
 ################################

@@ -38,13 +38,13 @@ public class Reflect {
         }
         
         public boolean isNewerThan(Version version) {
-            return version.getInteger() > this.getInteger();
+            return version.getInteger() < this.getInteger();
         }
         
         public boolean isOlderThan(Version version) {
-            return version.getInteger() < this.getInteger();
+            return version.getInteger() > this.getInteger();
         }
-
+        
         public static Set<Version> newerThan(Version version) {
             Set<Version> versions = new HashSet<>();
             for(Version v : values()) {
@@ -63,8 +63,8 @@ public class Reflect {
             return Collections.unmodifiableSet(versions);
         }
 
-        public static Version fromString(final String input) {
-            final String tmp = input.replace("v", "");
+        public static Version fromString(String input) {
+            final String tmp = input.replaceAll("[^0-9+_0-9+]", "");
 
             if (tmp.startsWith("1_0")) return v1_0;
 

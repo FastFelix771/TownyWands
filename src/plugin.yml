@@ -1,5 +1,5 @@
 name: TownyWands
-version: 2.0.7
+version: 2.0.8
 author: FastFelix771
 main: de.fastfelix771.townywands.main.TownyWands
 soft-depend: [ProtocolLib, FactionsUUID, Towny, TownyChat, Vault, PermissionsEx, Essentials, WorldEdit, WorldGuard, Factions, MassiveCore]
@@ -7,6 +7,7 @@ commands:
    townywands:
      description: Provides basic features.
      usage: /townywands ?
+     aliases: [tws]
    vsign:
      description: Creates a virtual Sign and executes commands from the given input.
      usage: /vsign playername command {data}

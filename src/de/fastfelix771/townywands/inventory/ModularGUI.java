@@ -21,6 +21,9 @@ import de.fastfelix771.townywands.utils.Database;
 // This could become difficult with multi-language GUIs...
 // Other great IDEA! I should stop filling my code with notes.. that spoilers every guy on GitHub ._.
 
+// Maybe there are possibilities for fully dynamic per-player GUIs... it would be a Packet-Modify feature and hopefully not that performance-hungry.
+// If it works, i could maybe save some RAM by making the language guis dynamic to one gui.
+
 @EqualsAndHashCode(exclude = "guis")
 @RequiredArgsConstructor
 public class ModularGUI implements Cloneable {

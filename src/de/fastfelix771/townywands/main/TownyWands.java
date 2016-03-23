@@ -30,7 +30,7 @@ import de.fastfelix771.townywands.utils.Updater.Result;
 @Log(topic = "TownyWands")
 public final class TownyWands extends JavaPlugin {
 
-    private static final int CONFIG_VERSION = 1799;
+    private static final int CONFIG_VERSION = 1800;
     @Getter private static TownyWands instance;
     @Getter private static ConfigurationParser parser;
     @Getter private static boolean autotranslate;
@@ -59,8 +59,28 @@ public final class TownyWands extends JavaPlugin {
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new TownyWandsListener(), this);
         CommandController.registerCommands(this, new Commands());
-
+        
+        /// EXPERIMENTAL ///
+        
         protocolLibEnabled = Bukkit.getPluginManager().getPlugin("ProtocolLib") != null && Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
+        
+        PacketSupport ps = PacketSupport.forVersion(Reflect.getServerVersion());
+
+        if(ps != PacketSupport.NONE) {
+            Class<?> vsignclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.%s", Reflect.getServerVersion().toString(), ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled) ? "ProtocolLibvSign" : "NMSvSign"));
+            if(vsignclazz != null) {
+                virtualSign = (VirtualSign) vsignclazz.newInstance();
+            }
+
+            Class<?> packethandlerclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.%s", Reflect.getServerVersion().toString(), ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled) ? "ProtocolLibHandler" : "NMSHandler"));
+            if(packethandlerclazz != null) {
+                packetHandler = (PacketHandler) packethandlerclazz.newInstance();
+            }
+        }
+
+        log.info("vSign's does ".concat((virtualSign != null ? "work on this version!".concat(String.format(" (Using: %s %s)", ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled ? "ProtocolLib" : "NMS"), Reflect.getServerVersion().toString())) : String.format("not work on this version! (Detected: %s)", Reflect.getServerVersion().toString()))));
+
+        /// EXPERIMENTAL ///
 
         metrics(this.getConfig().getBoolean("metrics"));
         autotranslate = this.getConfig().getBoolean("auto-translate");
@@ -89,24 +109,6 @@ public final class TownyWands extends JavaPlugin {
         getParser().parse();
 
         loadAddons();
-
-        /// EXPERIMENTAL ///
-
-        PacketSupport ps = PacketSupport.forVersion(Reflect.getServerVersion());
-
-        if(ps != PacketSupport.NONE) {
-            Class<?> vsignclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.%s", Reflect.getServerVersion().toString(), ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled) ? "ProtocolLibvSign" : "NMSvSign"));
-            if(vsignclazz != null) {
-                virtualSign = (VirtualSign) vsignclazz.newInstance();
-            }
-
-            Class<?> packethandlerclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.%s", Reflect.getServerVersion().toString(), ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled) ? "ProtocolLibHandler" : "NMSHandler"));
-            if(packethandlerclazz != null) {
-                packetHandler = (PacketHandler) packethandlerclazz.newInstance();
-            }
-        }
-
-        log.info("vSign's does ".concat((virtualSign != null ? "work on this version!".concat(String.format(" (Using: %s %s)", ((ps == PacketSupport.BOTH || ps == PacketSupport.ProtocolLib) && protocolLibEnabled ? "ProtocolLib" : "NMS"), Reflect.getServerVersion().toString())) : String.format("not work on this version! (Detected: %s)", Reflect.getServerVersion().toString()))));
     }
 
     @Override
