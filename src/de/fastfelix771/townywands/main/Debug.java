@@ -7,7 +7,7 @@ import lombok.Synchronized;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 
-@Log // v2.0.7 | changed from UUID to String to get it compatible with 1.6 & below, and its not needed anyways in this case.
+@Log
 public final class Debug {
 
     public static final HashSet<String> players = new HashSet<>();

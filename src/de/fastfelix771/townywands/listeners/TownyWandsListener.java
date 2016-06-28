@@ -34,19 +34,19 @@ public class TownyWandsListener implements Listener {
 
         if(!TownyWands.isUpdateCheckingEnabled() || TownyWands.getUpdateResult() == null || TownyWands.getUpdateResult().getState() != State.UPDATE_FOUND) return;
         if ((p.isOp() || p.hasPermission("townywands.msg.update"))) {
-            p.sendMessage("Â§4!UPDATE! Â§6-> TownyWands has found an update!");
-            p.sendMessage("Â§4!UPDATE! Â§6-> You are currently on version Â§c" + TownyWands.getInstance().getDescription().getVersion());
-            p.sendMessage("Â§4!UPDATE! Â§6-> Newest version is Â§c" + TownyWands.getUpdateResult().getLatestVersion());
+            p.sendMessage("§4!UPDATE! §6-> TownyWands has found an update!");
+            p.sendMessage("§4!UPDATE! §6-> You are currently on version §c" + TownyWands.getInstance().getDescription().getVersion());
+            p.sendMessage("§4!UPDATE! §6-> Newest version is §c" + TownyWands.getUpdateResult().getLatestVersion());
 
             if (Reflect.getServerVersion().isOlderThan(Version.v1_8)) {
-                p.sendMessage("Â§4!UPDATE! Â§6-> Download latest: Â§a" + TownyWands.getUpdateResult().getLatestURL());
+                p.sendMessage("§4!UPDATE! §6-> Download latest: §a" + TownyWands.getUpdateResult().getLatestURL());
                 return;
             }
 
             if(Reflect.getServerVersion().isNewerThan(Version.v1_7)) {
                 if(Reflect.getClass("net.md_5.bungee.api.chat.TextComponent") == null) return;
 
-                net.md_5.bungee.api.chat.TextComponent text = new net.md_5.bungee.api.chat.TextComponent("Â§4!UPDATE! Â§6-> Download latest: Â§aÂ§l[Click Me]");
+                net.md_5.bungee.api.chat.TextComponent text = new net.md_5.bungee.api.chat.TextComponent("§4!UPDATE! §6-> Download latest: §a§l[Click Me]");
                 text.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL, TownyWands.getUpdateResult().getLatestURL()));
                 p.spigot().sendMessage(text);
             }
@@ -72,7 +72,7 @@ public class TownyWandsListener implements Listener {
 
         final String permission = gui.getPermission();
         if (!p.hasPermission(permission)) {
-            p.sendMessage("Â§cYou are missing the permission 'Â§a" + permission + "Â§c'.");
+            p.sendMessage("§cYou are missing the permission '§a" + permission + "§c'.");
             return;
         }
 
@@ -81,8 +81,8 @@ public class TownyWandsListener implements Listener {
         if (gui.contains(lang)) inv = gui.get(lang);
         else {
             if (!gui.contains(Language.ENGLISH)) {
-                p.sendMessage("Â§cTownyWands | Â§aThere is no GUI registered in your language nor the default one (Â§6ENGLISHÂ§a)!");
-                p.sendMessage("Â§cPlease report this to an administrator!");
+                p.sendMessage("§cTownyWands | §aThere is no GUI registered in your language nor the default one (§6ENGLISH§a)!");
+                p.sendMessage("§cPlease report this to an administrator!");
                 return;
             }
             inv = gui.get(Language.ENGLISH);

@@ -1,1 +1,7 @@
+/target/
 /bin/
+.project
+.classpath
+/.settings/
+src/main/resources/rebel.xml
+src/rebel.xml
