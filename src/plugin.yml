@@ -1,8 +1,8 @@
 name: TownyWands
-version: 2.0.8
+version: 2.0.9-SNAPSHOT
 author: FastFelix771
 main: de.fastfelix771.townywands.main.TownyWands
-soft-depend: [ProtocolLib, FactionsUUID, Towny, TownyChat, Vault, PermissionsEx, Essentials, WorldEdit, WorldGuard, Factions, MassiveCore]
+depend: [ProtocolLib]
 commands:
    townywands:
      description: Provides basic features.

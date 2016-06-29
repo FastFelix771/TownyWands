@@ -7,8 +7,6 @@ import org.bukkit.inventory.Inventory;
 import de.fastfelix771.townywands.inventory.ModularGUI;
 import de.fastfelix771.townywands.lang.Language;
 
-// This class should be renamed to Cache... 
-// That crap will be removed too, when i implement the Ingame Editors. (IF i implement them.. its a crap ton of work! - probably...)
 public class Database {
 
     private static final HashMap<String, ModularGUI> storage = new HashMap<>();

@@ -6,6 +6,10 @@
 	<version>2.0.9-SNAPSHOT</version>
 	<name>TownyWands</name>
 	<description>TownyWands is an plugin for the Bukkit API that creates modular GUIs to enhance the players ingame experience.</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>

@@ -24,11 +24,11 @@ public class Commands {
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.townywands§c!",
         aliases = { "tws" })
     public void townywands(final CommandSender sender, final String[] args) {
-        sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
+        sender.sendMessage("§6§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§");
         sender.sendMessage("§bTowny§3Wands §6- §av§c" + TownyWands.getInstance().getDescription().getVersion());
         sender.sendMessage("§2Created by §6FastFelix771");
         sender.sendMessage("§cIf you need help, use §a/townywands help");
-        sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
+        sender.sendMessage("§6§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§");
     }
 
     @SubCommandHandler(
@@ -47,7 +47,7 @@ public class Commands {
         permission = "townywands.cmd.help",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
     public void townywands_help(final CommandSender sender, final String[] args) {
-        sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
+        sender.sendMessage("§6§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§");
         sender.sendMessage("§bTowny§3Wands §6- §aCommands");
 
         for (int i = 0; i < commands.size(); i++) {
@@ -56,7 +56,7 @@ public class Commands {
             sender.sendMessage(sb.toString());
         }
 
-        sender.sendMessage("§6▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰");
+        sender.sendMessage("§6§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§");
     }
 
     @SubCommandHandler(
