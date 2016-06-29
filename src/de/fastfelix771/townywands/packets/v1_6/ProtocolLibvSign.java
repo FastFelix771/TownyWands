@@ -10,7 +10,7 @@ import de.fastfelix771.townywands.packets.VirtualSign;
 import de.fastfelix771.townywands.utils.Invoker;
 import de.fastfelix771.townywands.utils.ReturningInvoker;
 
-@SuppressWarnings("deprecation") // On 1.6 & lower, UUIDs cannot be used. Use the players name instead.
+@SuppressWarnings("deprecation")
 public class ProtocolLibvSign implements VirtualSign {
 
     private static final HashMap<String, Invoker<String[]>> pending = new HashMap<>();
