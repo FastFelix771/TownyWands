@@ -28,7 +28,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
-@Log(topic = "TownyWands")
+@Log(topic = "TownyWands") 
 public final class TownyWands extends JavaPlugin {
 
 	private static final int CONFIG_VERSION = 1800;
