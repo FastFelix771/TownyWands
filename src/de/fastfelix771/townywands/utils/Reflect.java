@@ -3,17 +3,15 @@ package de.fastfelix771.townywands.utils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import de.fastfelix771.townywands.packets.Version;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.SneakyThrows;
 
 public class Reflect {
 
@@ -25,62 +23,8 @@ public class Reflect {
 	// PACKETS //
 	public static final Class<?> PacketPlayInUpdateSign = getNMSClass("PacketPlayInUpdateSign");
 
-	@Getter(lazy = true) private static final Version serverVersion = Version.fromString(getVersion());
-
-	@RequiredArgsConstructor
-	public enum Version {
-		UNKNOWN(-1), v1_10(110), v1_9(99), v1_8(88), v1_7(77), v1_6(66), v1_5(55), v1_4(44), v1_3(33), v1_2(22), v1_1(11), v1_0(0);
-
-		@Getter(AccessLevel.PRIVATE) private final int integer;
-
-		public boolean isBetween(Version newer, Version older) {
-			return this.getInteger() <= newer.getInteger() && this.getInteger() >= older.getInteger();
-		}
-
-		public boolean isNewerThan(Version version) {
-			return version.getInteger() < this.getInteger();
-		}
-
-		public boolean isOlderThan(Version version) {
-			return version.getInteger() > this.getInteger();
-		}
-
-		public static Set<Version> newerThan(Version version) {
-			Set<Version> versions = new HashSet<>();
-			for(Version v : values()) {
-				if(v == UNKNOWN) continue;
-				if(v.getInteger() > version.getInteger()) versions.add(v);
-			}
-			return Collections.unmodifiableSet(versions);
-		}
-
-		public static Set<Version> olderThan(Version version) {
-			Set<Version> versions = new HashSet<>();
-			for(Version v : values()) {
-				if(v == UNKNOWN) continue;
-				if(v.getInteger() < version.getInteger()) versions.add(v);
-			}
-			return Collections.unmodifiableSet(versions);
-		}
-
-		public static Version fromString(String input) {
-			final String tmp = input.replaceAll("[^0-9+_0-9+]", "");
-
-			if (tmp.startsWith("1_10")) return v1_10;
-			if (tmp.startsWith("1_9")) return v1_9;
-			if (tmp.startsWith("1_8")) return v1_8;
-			if (tmp.startsWith("1_7")) return v1_7;
-			if (tmp.startsWith("1_6")) return v1_6;
-			if (tmp.startsWith("1_5")) return v1_5;
-			if (tmp.startsWith("1_4")) return v1_4;
-			if (tmp.startsWith("1_3")) return v1_3;
-			if (tmp.startsWith("1_2")) return v1_2;
-			if (tmp.startsWith("1_1")) return v1_1;
-			if (tmp.startsWith("1_0")) return v1_0;
-
-			return Version.UNKNOWN;
-		}
-	}
+	@Getter(lazy = true) 
+	private static final Version serverVersion = Version.fromString(getVersion());
 
 	public static String getVersion() {
 		return Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".";

@@ -1,7 +1,8 @@
 name: TownyWands
-version: 2.0.9-SNAPSHOT
+version: 2.1.0-SNAPSHOT
 author: FastFelix771
 main: de.fastfelix771.townywands.main.TownyWands
+database: true
 depend: [ProtocolLib]
 commands:
    townywands:

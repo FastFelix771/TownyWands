@@ -11,14 +11,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import de.fastfelix771.townywands.api.GuiClickEvent;
+
+import de.fastfelix771.townywands.api.ModularGUI;
+import de.fastfelix771.townywands.api.events.GuiClickEvent;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
-import de.fastfelix771.townywands.inventory.ModularGUI;
 import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.main.TownyWands;
-import de.fastfelix771.townywands.utils.Database;
+import de.fastfelix771.townywands.packets.Version;
 import de.fastfelix771.townywands.utils.Reflect;
-import de.fastfelix771.townywands.utils.Reflect.Version;
 import de.fastfelix771.townywands.utils.Updater.State;
 
 public class TownyWandsListener implements Listener {

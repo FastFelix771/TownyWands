@@ -1,4 +1,4 @@
-package de.fastfelix771.townywands.api;
+package de.fastfelix771.townywands.api.events;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +8,9 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
+
+import de.fastfelix771.townywands.api.ModularGUI;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
-import de.fastfelix771.townywands.inventory.ModularGUI;
 
 @RequiredArgsConstructor
 public class GuiClickEvent extends Event implements Cancellable {
