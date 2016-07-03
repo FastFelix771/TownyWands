@@ -1,12 +1,23 @@
 package de.fastfelix771.townywands.api;
 
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.inventory.Inventory;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 
 import de.fastfelix771.townywands.dao.EntityItem;
+import de.fastfelix771.townywands.lang.Language;
+import de.fastfelix771.townywands.inventory.ItemWrapper;
 import de.fastfelix771.townywands.main.TownyWands;
-import de.fastfelix771.townywands.utils.Utils;
+import de.fastfelix771.townywands.utils.Base64;
+import de.fastfelix771.townywands.utils.Compressor;
+import de.fastfelix771.townywands.utils.Serializer;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public final class ModularItem {
 
 	private final EntityItem dao;
+	private ItemWrapper wrapper;
 
 	public static ModularItem fromID(int id) {
 		if(id == -1) return null;
@@ -22,67 +34,204 @@ public final class ModularItem {
 		return dao != null ? new ModularItem(dao) : null;
 	}
 
-	public ModularItem(@NonNull String title, int slots) {
-		if(title.length() > 32 || !Utils.isValidSlotCount(slots)) {
-			throw new ExceptionInInitializerError("Invalid title or slots given!");
-		}
-
+	public ModularItem(@NonNull String displayName, @NonNull Material material, short metaID) {
 		EntityItem entity = new EntityItem();
-		entity.setTitle(title);
-		entity.setSlots(slots);
-
+		entity.setDisplayname(displayName);
+		entity.setMaterial(material);
+		entity.setMetaID(metaID);
+		
+		
 		TownyWands.getInstance().getDatabase().save(entity);
 		this.dao = entity;
 	}
 
-	public ModularItem(@NonNull Inventory inventory) {
+	public ModularItem(@NonNull ItemStack item) {
 		dao = null;
 	}
 
 
-	/**
-	 * @param slots must be 9, 18, 27, 36, 45 or 54 (Minecraft Limitation)
-	 */
-	public void setSlots(int slots) {
-		if(slots != -1 && Utils.isValidSlotCount(slots)) {
-			dao.setSlots(slots);
+	public void setAmount(int amount) {
+		if(!(amount <= 0) && !(amount > 64)) {
+			dao.setAmount(amount);
 		}
 	}
 
-	public void setEnabled(boolean enabled) {
-		dao.setEnabled(enabled);
+	public int getAmount() {
+		return dao.getAmount();
 	}
 
-	public void setTitle(@NonNull String title) {
-		dao.setTitle(title);
+	public void setDisplayName(@NonNull String displayName) {
+		dao.setDisplayname(displayName);
 	}
 
-	public void setGUI(@NonNull ModularGUI gui) {
-		dao.setGui(gui.getName());
+	public String getDisplayName() {
+		return dao.getDisplayname();
 	}
 
-	public ModularGUI getGUI() {
-		return ModularGUI.fromName(dao.getGui());
+	public void setHideFlags(boolean hideFlags) {
+		dao.setHideFlags(hideFlags);
 	}
 
-	public String getTitle() {
-		return dao.getTitle();
+	public boolean isHideFlags() {
+		return dao.isHideFlags();
 	}
 
-	public int getSlots() {
-		return dao.getSlots();
+	public void setEnchanted(boolean enchanted) {
+		dao.setEnchanted(enchanted);
 	}
 
-	public boolean isEnabled() {
-		return dao.isEnabled();
+	public boolean isEnchanted() {
+		return dao.isEnchanted();
 	}
 
-	public int getID() {
-		return dao.getId();
+	public void setLanguage(Language language) {
+		dao.setLanguage(language);
 	}
 
-	public Set<Object> getItems() {
-		return null; // TODO: items getten
+	public Language getLanguage() {
+		return dao.getLanguage();
+	}
+
+	public void setMaterial(Material material) {
+		dao.setMaterial(material);
+	}
+
+	public Material getMaterial() {
+		return dao.getMaterial();
+	}
+
+	public void setInventory(int id) {
+		dao.setInventory(id);
+	}
+
+	public int getInventory() {
+		return dao.getInventory();
+	}
+
+	public void setMetaID(short metaID) {
+		if(metaID == -1) {
+			dao.setMetaID((short) 0);
+			return;
+		}
+		
+		dao.setMetaID(metaID);
+	}
+
+	public short getMetaID() {
+		return dao.getMetaID();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setCommands(String... commands) {
+		JSONArray json = new JSONArray();
+
+		for(String line : commands) {
+			json.add(line);
+		}
+
+		dao.setCommands(Base64.getInstance().print(Compressor.getInstance().compress(json.toJSONString().getBytes(StandardCharsets.UTF_8))));
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<String> getCommands() {
+		Set<String> commands = new HashSet<>();
+		JSONArray json = (JSONArray) JSONValue.parse(new String(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getCommands())), StandardCharsets.UTF_8));
+		commands.addAll(json);
+		return commands;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setConsoleCommands(String... consoleCommands) {
+		JSONArray json = new JSONArray();
+
+		for(String line : consoleCommands) {
+			json.add(line);
+		}
+
+		dao.setConsoleCommands(Base64.getInstance().print(Compressor.getInstance().compress(json.toJSONString().getBytes(StandardCharsets.UTF_8))));
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<String> getConsoleCommands() {
+		Set<String> consoleCommands = new HashSet<>();
+		JSONArray json = (JSONArray) JSONValue.parse(new String(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getConsoleCommands())), StandardCharsets.UTF_8));
+		consoleCommands.addAll(json);
+		return consoleCommands;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setLore(String... lore) {
+		JSONArray json = new JSONArray();
+
+		for(String line : lore) {
+			json.add(line);
+		}
+
+		dao.setLore(Base64.getInstance().print(Compressor.getInstance().compress(json.toJSONString().getBytes(StandardCharsets.UTF_8))));
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<String> getLore() {
+		Set<String> lore = new HashSet<>();
+		JSONArray json = (JSONArray) JSONValue.parse(new String(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getLore())), StandardCharsets.UTF_8));
+		lore.addAll(json);
+		return lore;
+	}
+
+	public void setBinaryTag(Object tag) {
+		if(tag == null) {
+			dao.setTag(null);
+			return;
+		}
+
+		dao.setTag(Base64.getInstance().print(Compressor.getInstance().compress(Serializer.getInstance().serialize((Serializable) tag))));
+	}
+
+	public Object getBinaryTag() {
+		if(dao.getTag() == null) return null;
+		return Serializer.getInstance().deserialize(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getTag())));
+	}
+	
+	/**
+	 * @return Semi-Cached Bukkit ItemStack built from the saved data of this object.
+	 */
+	public ItemStack toItemStack() { //TODO: add NBT Key "townywands_id" to items dao id.
+		if(wrapper == null) wrapper = ItemWrapper.wrap(new ItemStack(Material.STONE));
+		
+		if(getBinaryTag() != null) wrapper.setTag(getBinaryTag());
+		wrapper.setMaterial(getMaterial());
+		wrapper.setMetaID(getMetaID());
+		wrapper.setDisplayName(ChatColor.translateAlternateColorCodes('&', getDisplayName()));
+		wrapper.setEnchanted(isEnchanted());
+		wrapper.hideFlags(isHideFlags());
+		wrapper.setAmount(getAmount());
+		if(getLore() != null && !getLore().isEmpty()) {
+			for(String line : getLore()) {
+				wrapper.addLore(ChatColor.translateAlternateColorCodes('&', line));
+			}
+		}
+		
+		return wrapper.getItem();
+	}
+	
+	/**
+	 * @param source The ItemStack, wich data will be merged into this object.
+	 */
+	public void update(@NonNull ItemStack source) {
+		wrapper = ItemWrapper.wrap(source);
+		
+		setBinaryTag(wrapper.getTag());
+		
+		if(source.hasItemMeta() && source.getItemMeta().hasDisplayName()) {
+			setDisplayName(source.getItemMeta().getDisplayName());
+			if(source.getItemMeta().hasLore()) setLore(source.getItemMeta().getLore().toArray(new String[source.getItemMeta().getLore().size()]));
+		}
+		
+		setEnchanted(false); // TODO: check for "ench" != null in NBT Tag via ItemWrapper.
+		setHideFlags(true); // TODO: check for "HideFlags" == 1 in NBT Tag
+		setAmount(source.getAmount());
+		setMaterial(source.getType());
+		setMetaID(source.getDurability());
 	}
 
 }

@@ -52,7 +52,7 @@ public class EntityItem implements Serializable {
 	@Getter @Setter
 	private boolean enchanted = false;
 
-	@Column(name = "displayname")
+	@Column(name = "displayname", nullable = false)
 	@Getter @Setter
 	private String displayname = "Default Displayname";
 

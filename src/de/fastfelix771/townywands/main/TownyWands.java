@@ -92,14 +92,16 @@ public final class TownyWands extends JavaPlugin {
 
 		if (bungeecord) this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		if (updateCheckingEnabled) new Updater(this, 89537).check(new Invoker<Result>() {
+		if (updateCheckingEnabled) {
+			new Updater(this, 89537).check(new Invoker<Result>() {
 
-			@Override
-			public void invoke(Result result) {
-				setUpdateResult(result);
-			}
+				@Override
+				public void invoke(Result result) {
+					setUpdateResult(result);
+				}
 
-		});;
+			});
+		}
 
 		log.info("Update-Checking is " + (updateCheckingEnabled ? "enabled" : "disabled"));
 		log.info("Auto-Translation is " + (autotranslate ? "enabled" : "disabled"));
