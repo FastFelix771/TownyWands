@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 
 import de.fastfelix771.townywands.dao.EntityInventory;
 import de.fastfelix771.townywands.dao.EntityItem;
+import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Utils;
 import lombok.AccessLevel;
@@ -85,10 +86,10 @@ public final class ModularInventory {
 		return dao.getId();
 	}
 
-	public Set<ModularItem> getItems() {
+	public Set<ModularItem> getItems(@NonNull Language language) {
 		Set<ModularItem> items = new HashSet<>();
 
-		Set<EntityItem> entities = TownyWands.getInstance().getDatabase().find(EntityItem.class).where().eq("inventory", getID()).findSet();
+		Set<EntityItem> entities = TownyWands.getInstance().getDatabase().find(EntityItem.class).where().eq("inventory", getID()).eq("language", language).findSet();
 		for(EntityItem entity : entities) {
 			items.add(ModularItem.fromID(entity.getId()));
 		}
@@ -97,17 +98,21 @@ public final class ModularInventory {
 	}
 
 	/**
-	 * @return Fresh created Bukkit Inventory from the given data of this object.
+	 * @return Fresh created Bukkit Inventory from the given data of this object with items in the specified language.
 	 */
-	public Inventory toInventory() {
+	public Inventory toInventory(@NonNull Language language) {
 		Inventory inv = Bukkit.createInventory(null, getSlots(), ChatColor.translateAlternateColorCodes('&', getTitle()));
-		
-		for(ModularItem item : getItems()) {
+
+		for(ModularItem item : getItems(language)) {
 			if(item.getSlot() >= getSlots()) continue;
 			inv.setItem(item.getSlot(), item.toItemStack());
 		}
-		
+
 		return inv;
+	}
+	
+	public void save() {
+		TownyWands.getInstance().getDatabase().save(this.dao);
 	}
 
 }

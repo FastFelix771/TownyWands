@@ -23,12 +23,12 @@ public class Commands {
         permission = "townywands.cmd.townywands",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.townywands§c!",
         aliases = { "tws" })
-    public void townywands(final CommandSender sender, final String[] args) {
-        sender.sendMessage("§6§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§");
+    public void townywands(CommandSender sender, String[] args) {
+        sender.sendMessage("§6================================================================");
         sender.sendMessage("§bTowny§3Wands §6- §av§c" + TownyWands.getInstance().getDescription().getVersion());
         sender.sendMessage("§2Created by §6FastFelix771");
         sender.sendMessage("§cIf you need help, use §a/townywands help");
-        sender.sendMessage("§6§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§");
+        sender.sendMessage("§6================================================================");
     }
 
     @SubCommandHandler(
@@ -36,7 +36,7 @@ public class Commands {
         parent = "townywands",
         permission = "townywands.cmd.reload",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.reload§c!")
-    public void townywands_reload(final CommandSender sender, final String[] args) {
+    public void townywands_reload(CommandSender sender, String[] args) {
         TownyWands.reload();
         sender.sendMessage("§bTowny§3Wands §ahas been reloaded!");
     }
@@ -46,17 +46,17 @@ public class Commands {
         parent = "townywands",
         permission = "townywands.cmd.help",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
-    public void townywands_help(final CommandSender sender, final String[] args) {
-        sender.sendMessage("§6§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§");
+    public void townywands_help(CommandSender sender, String[] args) {
+        sender.sendMessage("§6================================================================");
         sender.sendMessage("§bTowny§3Wands §6- §aCommands");
 
         for (int i = 0; i < commands.size(); i++) {
-            final StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.append(commands.get(i));
             sender.sendMessage(sb.toString());
         }
 
-        sender.sendMessage("§6§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§");
+        sender.sendMessage("§6================================================================");
     }
 
     @SubCommandHandler(
@@ -64,7 +64,7 @@ public class Commands {
         parent = "townywands",
         permission = "townywands.cmd.help",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
-    public void townywands_help2(final CommandSender sender, final String[] args) {
+    public void townywands_help2(CommandSender sender, String[] args) {
         this.townywands_help(sender, args);
     }
 
@@ -73,7 +73,7 @@ public class Commands {
         parent = "townywands",
         permission = "townywands.cmd.debug",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.debug§c!")
-    public void townywands_debug(final CommandSender sender, final String[] args) {
+    public void townywands_debug(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             if (Debug.players.contains(((Player) sender).getName())) Debug.players.remove(((Player) sender).getName());
             else Debug.players.add(((Player) sender).getName());
@@ -91,7 +91,7 @@ public class Commands {
         usage = "/vsign playername command {data}",
         permission = "townywands.cmd.vsign",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.vsign§c!")
-    public void vsign(final CommandSender sender, final String[] args) {
+    public void vsign(CommandSender sender, final String[] args) {
         if ((args.length == 0) || (Bukkit.getPlayerExact(args[0]) == null)) return;
 
         // If this version is not compatible, do nothing.
@@ -105,9 +105,9 @@ public class Commands {
         TownyWands.getVirtualSign().show(Bukkit.getPlayerExact(args[0]), new Invoker<String[]>() {
 
             @Override
-            public void invoke(final String[] lines) {
-                final StringBuilder data = new StringBuilder();
-                for (final String line : lines)
+            public void invoke(String[] lines) {
+                StringBuilder data = new StringBuilder();
+                for (String line : lines)
                     if (line != null && !line.trim().isEmpty()) data.append(line);
 
                 String command = sb.toString();
@@ -127,18 +127,18 @@ public class Commands {
         usage = "/bungeetp playername servername",
         permission = "townywands.cmd.bungeetp",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.bungeetp§c!")
-    public void bungeetp(final CommandSender sender, final String[] args) {
+    public void bungeetp(CommandSender sender, String[] args) {
         if (!(args.length == 2)) return;
 
         if (Bukkit.getPlayerExact(args[0]) == null) return;
 
-        final Player player = Bukkit.getPlayerExact(args[0]);
-        final String servername = args[1];
+        Player player = Bukkit.getPlayerExact(args[0]);
+        String servername = args[1];
 
         try {
             Utils.bungeeConnect(player, servername); // If bungeecord is disabled the method will do nothing.
         }
-        catch (final Exception e) {
+        catch (Exception e) {
             e.printStackTrace();
             sender.sendMessage("§cFailed to teleport §a" + player.getName() + "§c to server §a" + servername);
             return;
@@ -152,10 +152,10 @@ public class Commands {
         usage = "/fakecmd playername commandToExecute",
         permission = "townywands.cmd.fakecmd",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.fakecmd§c!")
-    public void fakecmd(final CommandSender sender, final String[] args) {
+    public void fakecmd(CommandSender sender, String[] args) {
         if ((args.length < 2) || (Bukkit.getPlayerExact(args[0]) == null)) return;
 
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 1; i < args.length; i++) {
             sb.append(args[i]).append(" ");
@@ -166,15 +166,11 @@ public class Commands {
     }
 
     @CommandHandler(
-        // TODO: register command to plugin.yml
         name = "modify",
         permission = "townywands.cmd.modify",
         permissionMessage = "§cYou are missing the permission §atownywands.cmd.modify§c!")
     public void modify(Player sender, String[] args) {
-        // Command to control item behaivour with the new ItemWrapper.
-        // TODO: Create a full-featured but simple /modify help menu.
-        // TODO: Create a modify system via SubCommandHandlers.
-
+        //TODO: create modify command, gui command and inv command.
     }
 
 }

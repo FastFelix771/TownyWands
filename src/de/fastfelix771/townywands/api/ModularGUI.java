@@ -80,5 +80,9 @@ public final class ModularGUI {
 		EntityInventory entity = TownyWands.getInstance().getDatabase().find(EntityInventory.class).where().eq("gui", dao.getName()).eq("enabled", true).findUnique();
 		return entity != null ? ModularInventory.fromID(entity.getId()) : null;
 	}
+	
+	public void save() {
+		TownyWands.getInstance().getDatabase().save(this.dao);
+	}
 
 }

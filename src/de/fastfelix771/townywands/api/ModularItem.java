@@ -247,5 +247,9 @@ public final class ModularItem {
 		setMaterial(source.getType());
 		setMetaID(source.getDurability());
 	}
+	
+	public void save() {
+		TownyWands.getInstance().getDatabase().save(this.dao);
+	}
 
 }

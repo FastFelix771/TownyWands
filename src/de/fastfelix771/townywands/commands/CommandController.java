@@ -4,7 +4,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,20 +19,20 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class CommandController implements CommandExecutor {
 
-    private static final ConcurrentHashMap<Command, Object> handlers = new ConcurrentHashMap<Command, Object>();
-    private static final ConcurrentHashMap<Command, Method> methods = new ConcurrentHashMap<Command, Method>();
-    private static final ConcurrentHashMap<String, SubCommand> subCommands = new ConcurrentHashMap<String, SubCommand>();
-    private static final ConcurrentHashMap<String, Object> subHandlers = new ConcurrentHashMap<String, Object>();
-    private static final ConcurrentHashMap<String, Method> subMethods = new ConcurrentHashMap<String, Method>();
+    private static final HashMap<Command, Object> handlers = new HashMap<Command, Object>();
+    private static final HashMap<Command, Method> methods = new HashMap<Command, Method>();
+    private static final HashMap<String, SubCommand> subCommands = new HashMap<String, SubCommand>();
+    private static final HashMap<String, Object> subHandlers = new HashMap<String, Object>();
+    private static final HashMap<String, Method> subMethods = new HashMap<String, Method>();
 
-    public static void registerCommands(final JavaPlugin plugin, final Object handler) {
+    public static void registerCommands(JavaPlugin plugin, Object handler) {
 
-        for (final Method method : handler.getClass().getMethods()) {
-            final Class<?>[] params = method.getParameterTypes();
+        for (Method method : handler.getClass().getMethods()) {
+            Class<?>[] params = method.getParameterTypes();
             if (!((params.length == 2) && CommandSender.class.isAssignableFrom(params[0]) && String[].class.equals(params[1]))) return;
 
             if (isCommandHandler(method)) {
-                final CommandHandler annotation = method.getAnnotation(CommandHandler.class);
+                CommandHandler annotation = method.getAnnotation(CommandHandler.class);
                 if (plugin.getCommand(annotation.name()) != null) {
                     plugin.getCommand(annotation.name()).setExecutor(new CommandController());
                     if (!(annotation.aliases().equals(new String[] { "" }))) plugin.getCommand(annotation.name()).setAliases(Arrays.asList(annotation.aliases()));
@@ -45,10 +46,10 @@ public class CommandController implements CommandExecutor {
             }
 
             if (isSubCommandHandler(method)) {
-                final SubCommandHandler annotation = method.getAnnotation(SubCommandHandler.class);
+                SubCommandHandler annotation = method.getAnnotation(SubCommandHandler.class);
                 if (plugin.getCommand(annotation.parent()) != null) {
                     plugin.getCommand(annotation.parent()).setExecutor(new CommandController());
-                    final SubCommand subCommand = new SubCommand(plugin.getCommand(annotation.parent()), annotation.name());
+                    SubCommand subCommand = new SubCommand(plugin.getCommand(annotation.parent()), annotation.name());
                     subCommand.permission = annotation.permission();
                     subCommand.permissionMessage = annotation.permissionMessage();
                     subCommands.put(subCommand.toString(), subCommand);
@@ -59,11 +60,11 @@ public class CommandController implements CommandExecutor {
         }
     }
 
-    private static boolean isCommandHandler(final Method method) {
+    private static boolean isCommandHandler(Method method) {
         return method.getAnnotation(CommandHandler.class) != null;
     }
 
-    private static boolean isSubCommandHandler(final Method method) {
+    private static boolean isSubCommandHandler(Method method) {
         return method.getAnnotation(SubCommandHandler.class) != null;
     }
 
@@ -94,18 +95,18 @@ public class CommandController implements CommandExecutor {
     }
 
     private static class SubCommand {
-        public final Command superCommand;
-        public final String subCommand;
+        public Command superCommand;
+        public String subCommand;
         public String permission;
         public String permissionMessage;
 
-        public SubCommand(final Command superCommand, final String subCommand) {
+        public SubCommand(Command superCommand, String subCommand) {
             this.superCommand = superCommand;
             this.subCommand = subCommand.toLowerCase();
         }
 
         @Override
-        public boolean equals(final Object x) {
+        public boolean equals(Object x) {
             return this.toString().equals(x.toString());
         }
 
@@ -116,18 +117,18 @@ public class CommandController implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 0) {
 
             SubCommand subCommand = new SubCommand(command, args[0]);
             subCommand = subCommands.get(subCommand.toString());
             if (subCommand != null) {
 
-                final Object subHandler = subHandlers.get(subCommand.toString());
-                final Method subMethod = subMethods.get(subCommand.toString());
+                Object subHandler = subHandlers.get(subCommand.toString());
+                Method subMethod = subMethods.get(subCommand.toString());
                 if ((subHandler != null) && (subMethod != null)) {
 
-                    final String[] subArgs = new String[args.length - 1];
+                    String[] subArgs = new String[args.length - 1];
                     for (int i = 1; i < args.length; i++)
                         subArgs[i - 1] = args[i];
 
@@ -149,7 +150,7 @@ public class CommandController implements CommandExecutor {
                     try {
                         subMethod.invoke(subHandler, sender, args);
                     }
-                    catch (final Exception e) {
+                    catch (Exception e) {
                         sender.sendMessage("§cAn error occurred while trying to process the command");
                         e.printStackTrace();
                     }
@@ -159,8 +160,8 @@ public class CommandController implements CommandExecutor {
             }
         }
 
-        final Object handler = handlers.get(command);
-        final Method method = methods.get(command);
+        Object handler = handlers.get(command);
+        Method method = methods.get(command);
         if ((handler != null) && (method != null)) {
 
             if (method.getParameterTypes()[0].equals(Player.class) && !(sender instanceof Player)) {
@@ -176,7 +177,7 @@ public class CommandController implements CommandExecutor {
             try {
                 method.invoke(handler, sender, args);
             }
-            catch (final Exception e) {
+            catch (Exception e) {
                 sender.sendMessage("§cAn error occurred while trying to process the command");
                 e.printStackTrace();
             }

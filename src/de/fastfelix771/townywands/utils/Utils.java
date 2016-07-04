@@ -11,20 +11,20 @@ public class Utils {
 
     private static final List<Integer> validCounts = Arrays.asList(9, 18, 27, 36, 45, 54);
 
-    public static boolean isValidSlotCount(final int slots) {
+    public static boolean isValidSlotCount(int slots) {
         return validCounts.contains(slots);
     }
 
-    public static void bungeeConnect(final Player player, final String servername) {
+    public static void bungeeConnect(Player player, String servername) {
         if (TownyWands.isBungeecord()) {
-            final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            final DataOutputStream dout = new DataOutputStream(bout);
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            DataOutputStream dout = new DataOutputStream(bout);
             try {
                 dout.writeUTF("Connect");
                 dout.writeUTF(servername);
                 player.sendPluginMessage(TownyWands.getInstance(), "BungeeCord", bout.toByteArray());
             }
-            catch (final Exception e) {
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }

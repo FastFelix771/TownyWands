@@ -15,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.fastfelix771.townywands.api.ModularGUI;
+import de.fastfelix771.townywands.api.ModularItem;
 import de.fastfelix771.townywands.api.events.GuiClickEvent;
 import de.fastfelix771.townywands.api.events.GuiOpenEvent;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
@@ -84,22 +85,21 @@ public class TownyWandsListener implements Listener {
 			p.sendMessage(String.format("§a%d §cdisabled inventories has been found, though!", gui.getInventories().size()));
 			return;
 		}
-		
-		if (gui.contains(lang)) inv = gui.get(lang);
-		else {
-			if (!gui.contains(Language.ENGLISH)) {
-				p.sendMessage("§cTownyWands | §aThere is no GUI registered in your language nor the default one (§6ENGLISH§a)!");
-				p.sendMessage("§cPlease report this to an administrator!");
-				return;
-			}
-			inv = gui.get(Language.ENGLISH);
-		}
 
 		GuiOpenEvent event = new GuiOpenEvent(p, gui, gui.getInventory(), language);
 		Bukkit.getPluginManager().callEvent(event);
 		if(event.isCancelled()) return;
-		
-		Inventory inv = event.getInventory().toInventory();
+
+		Inventory inv = event.getInventory().toInventory(event.getItemLanguage());
+
+		if(inv.getContents().length <= 0) {
+			if((inv = event.getInventory().toInventory(Language.ENGLISH)).getContents().length <= 0) {
+				p.sendMessage("§cTownyWands | §aThere is no inventory in your language nor the default one (§6ENGLISH§a)!");
+				p.sendMessage("§cPlease report this to an administrator!");
+				return;
+			}
+		}
+
 		if(inv != null) p.openInventory(inv);
 	}
 
@@ -114,14 +114,13 @@ public class TownyWandsListener implements Listener {
 		if(!wrapper.hasNBTKey("townywands_id")) return;
 		e.setCancelled(true);
 
-		ItemWrapper eventWrapper = wrapper.clone(); // Prevents GUI modifications on accident, and allows for adding commands etc. on-the-fly.
-		GuiClickEvent event = new GuiClickEvent(eventWrapper, p, Database.get(wrapper.getValue("key", String.class)), Database.get(wrapper.getValue("key", String.class), Language.getLanguage(p)));
+		GuiClickEvent event = new GuiClickEvent(p, ModularItem.fromID(wrapper.getNBTKey("townywands_id", int.class)));
 		Bukkit.getPluginManager().callEvent(event);
 		if(event.isCancelled()) return;
 
 		onGuiClick(event);
 	}
-	
+
 	private void onGuiClick(GuiClickEvent e) {
 
 		Player p = e.getPlayer();

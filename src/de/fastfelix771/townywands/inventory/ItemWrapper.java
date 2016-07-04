@@ -1,25 +1,16 @@
 package de.fastfelix771.townywands.inventory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 
-import de.fastfelix771.townywands.utils.DataOrb;
 import de.fastfelix771.townywands.utils.Reflect;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,7 +20,7 @@ import lombok.SneakyThrows;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE) 
 @SuppressWarnings("all")
-public class ItemWrapper implements Cloneable {
+public class ItemWrapper {
 
 	@NonNull
 	@Getter
@@ -37,36 +28,6 @@ public class ItemWrapper implements Cloneable {
 
 	public static ItemWrapper wrap(@NonNull ItemStack item) {
 		return new ItemWrapper(item);
-	}
-
-	public static ItemWrapper fromString(@NonNull String string) {
-		try (ByteArrayInputStream bytes = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(string)); BukkitObjectInputStream inputstream = new BukkitObjectInputStream(bytes)) {
-			final ItemStack item = (ItemStack) inputstream.readObject();
-			inputstream.close();
-			return wrap(item);
-		}
-		catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public String toString() {
-		try (ByteArrayOutputStream bytes = new ByteArrayOutputStream(); BukkitObjectOutputStream output = new BukkitObjectOutputStream(bytes)) {
-			output.writeObject(item);
-			output.close();
-			return DatatypeConverter.printBase64Binary(bytes.toByteArray());
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public ItemWrapper clone() {
-		return fromString(this.toString());
 	}
 
 	// FEATURES //
@@ -150,17 +111,10 @@ public class ItemWrapper implements Cloneable {
 	}
 
 	@SneakyThrows
-	public void setNBTKey(@NonNull String key, @NonNull Serializable value) {
+	public void setNBTKey(@NonNull String key, @NonNull Object value) {
 		Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
-
-		DataOrb orb = new DataOrb();
-		orb.put("data", value);
-		String data = orb.toString();
-
-		if (data == null || data.trim().isEmpty()) return;
-
 		Object tag = getTag();
-		setString.invoke(tag, key, data);
+		setString.invoke(tag, key, value);
 		setTag(tag);
 	}
 
@@ -173,10 +127,7 @@ public class ItemWrapper implements Cloneable {
 		String data = (String) getString.invoke(tag, key);
 		if (data == null || data.trim().isEmpty()) return null;
 
-		DataOrb orb = DataOrb.fromString(data);
-		Serializable value = orb.get("data");
-
-		return (T) value;
+		return (T) data;
 	}
 
 	@SneakyThrows
