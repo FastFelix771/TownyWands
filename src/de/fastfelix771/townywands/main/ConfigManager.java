@@ -17,7 +17,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import de.fastfelix771.townywands.packets.Version;
 import de.fastfelix771.townywands.utils.Reflect;
-import lombok.Cleanup;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
@@ -27,59 +26,62 @@ import lombok.SneakyThrows;
  */
 public final class ConfigManager {
 
-    @SneakyThrows
-    public static YamlConfiguration loadYAML(@NonNull File file) {
-        if (!file.exists()) return null;
+	@SneakyThrows
+	public static YamlConfiguration loadYAML(@NonNull File file) {
+		if (!file.exists()) return null;
 
-        if(Reflect.getServerVersion().isNewerThan(Version.v1_6)) {
-            return YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-        }
+		if(Reflect.getServerVersion().isNewerThan(Version.v1_6)) {
+			return YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+		}
 
-        // On 1.6 & lower the Unicode bug may appear again... this will completely get fixed with the InGame-Editor.
-        return YamlConfiguration.loadConfiguration(file);
+		return YamlConfiguration.loadConfiguration(file);
 
-    }
+	}
 
-    @SneakyThrows
-    public static void saveYAML(@NonNull YamlConfiguration config, @NonNull File file) {
+	@SneakyThrows
+	public static void saveYAML(@NonNull YamlConfiguration config, @NonNull File file) {
 
-        Method buildHeader = Reflect.getMethod(config.getClass().getDeclaredMethod("buildHeader"));
+		Method buildHeader = Reflect.getMethod(config.getClass().getDeclaredMethod("buildHeader"));
 
-        DumperOptions yamlOptions = (DumperOptions) Reflect.getField(config.getClass().getDeclaredField("yamlOptions")).get(config);
-        YamlRepresenter yamlRepresenter = (YamlRepresenter) Reflect.getField(config.getClass().getDeclaredField("yamlRepresenter")).get(config);
-        Yaml yaml = (Yaml) Reflect.getField(config.getClass().getDeclaredField("yaml")).get(config);
+		DumperOptions yamlOptions = (DumperOptions) Reflect.getField(config.getClass().getDeclaredField("yamlOptions")).get(config);
+		YamlRepresenter yamlRepresenter = (YamlRepresenter) Reflect.getField(config.getClass().getDeclaredField("yamlRepresenter")).get(config);
+		Yaml yaml = (Yaml) Reflect.getField(config.getClass().getDeclaredField("yaml")).get(config);
 
-        yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+		yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+		yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-        yamlOptions.setIndent(config.options().indent());
-        yamlOptions.setAllowUnicode(true);
+		yamlOptions.setIndent(config.options().indent());
+		yamlOptions.setAllowUnicode(true);
 
-        String configHeader = (String) buildHeader.invoke(config);
-        String yamlDump = yaml.dump(config.getValues(false));
-        String blankConfig = (String) Reflect.getField(config.getClass().getDeclaredField("BLANK_CONFIG")).get(null);
+		String configHeader = (String) buildHeader.invoke(config);
+		String yamlDump = yaml.dump(config.getValues(false));
+		String blankConfig = (String) Reflect.getField(config.getClass().getDeclaredField("BLANK_CONFIG")).get(null);
 
-        if (yamlDump.equalsIgnoreCase(blankConfig)) yamlDump = "";
-        String data = StringEscapeUtils.unescapeJava(new String(new StringBuilder(configHeader).append(yamlDump).toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+		if (yamlDump.equalsIgnoreCase(blankConfig)) yamlDump = "";
+		String data = StringEscapeUtils.unescapeJava(new String(new StringBuilder(configHeader).append(yamlDump).toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
 
-        @Cleanup
-        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-        writer.write(data);
-    }
+		try(OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+			writer.write(data);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 
-    @SneakyThrows(IOException.class)
-    public static void saveResource(@NonNull String path, @NonNull File file, boolean overwrite) {
-        if (file.exists() && !overwrite) return;
-        @Cleanup
-        InputStreamReader reader = new InputStreamReader(ConfigManager.class.getClassLoader().getResourceAsStream(path), StandardCharsets.UTF_8);
-        @Cleanup
-        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+	}
 
-        int i;
-        while ((i = reader.read()) != -1) {
-            writer.write(i);
-        }
+	public static void saveResource(@NonNull String path, @NonNull File file, boolean overwrite) {
+		if (file.exists() && !overwrite) return;
 
-    }
+		try(InputStreamReader reader = new InputStreamReader(ConfigManager.class.getClassLoader().getResourceAsStream(path), StandardCharsets.UTF_8); OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+
+			int i;
+			while ((i = reader.read()) != -1) {
+				writer.write(i);
+			}
+
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 }

@@ -21,6 +21,12 @@ public final class ModularGUI {
 		return dao != null ? new ModularGUI(dao) : null;
 	}	
 
+	public static ModularGUI fromCommand(String command) {
+		if(command == null) return null;
+		EntityGUI dao = TownyWands.getInstance().getDatabase().find(EntityGUI.class).where().eq("command", command).findUnique();
+		return dao != null ? new ModularGUI(dao) : null;
+	}	
+
 	public ModularGUI(@NonNull String name, @NonNull String command, @NonNull String permission) {
 		if(TownyWands.getInstance().getDatabase().find(EntityGUI.class).where().eq("name", name).findUnique() != null) {
 			throw new ExceptionInInitializerError("This name is already bound to a ModularGUI!");

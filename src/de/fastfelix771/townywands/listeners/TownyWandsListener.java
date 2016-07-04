@@ -1,5 +1,7 @@
 package de.fastfelix771.townywands.listeners;
 
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.fastfelix771.townywands.api.ModularGUI;
 import de.fastfelix771.townywands.api.events.GuiClickEvent;
+import de.fastfelix771.townywands.api.events.GuiOpenEvent;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
 import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.main.TownyWands;
@@ -60,24 +63,28 @@ public class TownyWandsListener implements Listener {
 	}
 
 	@EventHandler
-	public void onCommand(final PlayerCommandPreprocessEvent e) { // add GuiOpenEvent & GuiCloseEvent
-		final String command = e.getMessage().substring(1, e.getMessage().length());
-		final Player p = e.getPlayer();
+	public void onCommand(PlayerCommandPreprocessEvent e) {
+		if(e.getMessage().trim().isEmpty() || e.getMessage().trim().length() < 2) return;
 
-		if (!Database.contains(command)) return;
+		String command = e.getMessage().substring(1, e.getMessage().length());
+		Player p = e.getPlayer();
+		Language language = Language.getLanguage(p);
+		ModularGUI gui = ModularGUI.fromCommand(command);
+
+		if(gui == null) return;
 		e.setCancelled(true);
 
-		Language lang = Language.getLanguage(p);
-		ModularGUI gui = Database.get(command);
-
-		final String permission = gui.getPermission();
-		if (!p.hasPermission(permission)) {
-			p.sendMessage("§cYou are missing the permission '§a" + permission + "§c'.");
+		if (!p.hasPermission(gui.getPermission())) {
+			p.sendMessage("§cYou are missing the permission '§a" + gui.getPermission() + "§c'.");
 			return;
 		}
 
-		Inventory inv = null;
-
+		if(gui.getInventory() == null) {
+			p.sendMessage("§cThis GUI has no inventory enabled at the moment!");
+			p.sendMessage(String.format("§a%d §cdisabled inventories has been found, though!", gui.getInventories().size()));
+			return;
+		}
+		
 		if (gui.contains(lang)) inv = gui.get(lang);
 		else {
 			if (!gui.contains(Language.ENGLISH)) {
@@ -88,8 +95,12 @@ public class TownyWandsListener implements Listener {
 			inv = gui.get(Language.ENGLISH);
 		}
 
+		GuiOpenEvent event = new GuiOpenEvent(p, gui, gui.getInventory(), language);
+		Bukkit.getPluginManager().callEvent(event);
+		if(event.isCancelled()) return;
+		
+		Inventory inv = event.getInventory().toInventory();
 		if(inv != null) p.openInventory(inv);
-
 	}
 
 	@EventHandler
@@ -100,7 +111,7 @@ public class TownyWandsListener implements Listener {
 		if ((item == null) || item.getType().equals(Material.AIR)) return;
 		ItemWrapper wrapper = ItemWrapper.wrap(item);
 
-		if (!(wrapper.hasValue("key") && Database.contains(wrapper.getValue("key", String.class)))) return;
+		if(!wrapper.hasNBTKey("townywands_id")) return;
 		e.setCancelled(true);
 
 		ItemWrapper eventWrapper = wrapper.clone(); // Prevents GUI modifications on accident, and allows for adding commands etc. on-the-fly.
@@ -110,18 +121,15 @@ public class TownyWandsListener implements Listener {
 
 		onGuiClick(event);
 	}
-
-	// INTERNAL //
-
-	public void onGuiClick(GuiClickEvent e) {
+	
+	private void onGuiClick(GuiClickEvent e) {
 
 		Player p = e.getPlayer();
-		// Add anti-spam click check maybe?
 
-		String[] commands = e.getItemWrapper().getValue("commands");
-		String[] console_commands = e.getItemWrapper().getValue("console_commands");
+		Set<String> commands = e.getItem().getCommands();
+		Set<String> console_commands = e.getItem().getConsoleCommands();
 
-		if (commands != null && commands.length > 0) {
+		if (commands != null && !commands.isEmpty()) {
 			for (String cmd : commands) {
 				if (cmd.trim().isEmpty()) continue;
 
@@ -134,7 +142,7 @@ public class TownyWandsListener implements Listener {
 			}
 		}
 
-		if (console_commands != null && console_commands.length > 0) {
+		if (console_commands != null && console_commands.isEmpty()) {
 			for (String cmd : console_commands) {
 				if (cmd.trim().isEmpty()) continue;
 

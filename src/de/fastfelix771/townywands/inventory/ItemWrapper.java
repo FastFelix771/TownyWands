@@ -9,26 +9,27 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.bind.DatatypeConverter;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+
 import de.fastfelix771.townywands.utils.DataOrb;
 import de.fastfelix771.townywands.utils.Reflect;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE) @SuppressWarnings("all")
-public final class ItemWrapper implements Cloneable {
-
-	// The PREFIX should prevent errors with minecraft itself, mods and other plugins.
-	private static final String PREFIX = "townywands_";
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE) 
+@SuppressWarnings("all")
+public class ItemWrapper implements Cloneable {
 
 	@NonNull
 	@Getter
@@ -149,7 +150,7 @@ public final class ItemWrapper implements Cloneable {
 	}
 
 	@SneakyThrows
-	public void setValue(@NonNull String key, @NonNull Serializable value) {
+	public void setNBTKey(@NonNull String key, @NonNull Serializable value) {
 		Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
 
 		DataOrb orb = new DataOrb();
@@ -159,17 +160,17 @@ public final class ItemWrapper implements Cloneable {
 		if (data == null || data.trim().isEmpty()) return;
 
 		Object tag = getTag();
-		setString.invoke(tag, new StringBuilder(PREFIX).append(key).toString(), data);
+		setString.invoke(tag, key, data);
 		setTag(tag);
 	}
 
 	@SuppressWarnings("unchecked")
 	@SneakyThrows
-	public <T> T getValue(@NonNull String key) {
+	public <T> T getNBTKey(@NonNull String key) {
 		Method getString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("getString", String.class));
 		Object tag = getTag();
 
-		String data = (String) getString.invoke(tag, new StringBuilder(PREFIX).append(key).toString());
+		String data = (String) getString.invoke(tag, key);
 		if (data == null || data.trim().isEmpty()) return null;
 
 		DataOrb orb = DataOrb.fromString(data);
@@ -179,15 +180,15 @@ public final class ItemWrapper implements Cloneable {
 	}
 
 	@SneakyThrows
-	public boolean hasValue(@NonNull String key) {
+	public boolean hasNBTKey(@NonNull String key) {
 		Method hasKey = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("hasKey", String.class));
-		return (boolean) hasKey.invoke(getTag(), new StringBuilder(PREFIX).append(key).toString()) && getValue(key) != null;
+		return (boolean) hasKey.invoke(getTag(), key);
 	}
 
 	@SuppressWarnings("unchecked")
 	@SneakyThrows
-	public <T> T getValue(@NonNull String key, @NonNull Class<T> returnType) {
-		return (T) getValue(key);
+	public <T> T getNBTKey(@NonNull String key, @NonNull Class<T> returnType) {
+		return (T) getNBTKey(key);
 	}
 
 	// TODO: Add remove method.

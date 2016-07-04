@@ -192,6 +192,19 @@ public final class ModularItem {
 		return Serializer.getInstance().deserialize(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getTag())));
 	}
 	
+	public void setSlot(int slot) {
+		if(!(slot > 0 && slot < 54)) return;
+		dao.setSlot(slot);
+	}
+	
+	public int getSlot() {
+		return dao.getSlot();
+	}
+	
+	public int getID() {
+		return dao.getId();
+	}
+	
 	/**
 	 * @return Semi-Cached Bukkit ItemStack built from the saved data of this object.
 	 */
@@ -211,6 +224,7 @@ public final class ModularItem {
 			}
 		}
 		
+		wrapper.setNBTKey("townywands_id", getID());
 		return wrapper.getItem();
 	}
 	
@@ -227,8 +241,8 @@ public final class ModularItem {
 			if(source.getItemMeta().hasLore()) setLore(source.getItemMeta().getLore().toArray(new String[source.getItemMeta().getLore().size()]));
 		}
 		
-		setEnchanted(false); // TODO: check for "ench" != null in NBT Tag via ItemWrapper.
-		setHideFlags(true); // TODO: check for "HideFlags" == 1 in NBT Tag
+		setEnchanted(wrapper.hasNBTKey("ench"));
+		setHideFlags(wrapper.hasNBTKey("HideFlags") && wrapper.getNBTKey("HideFlags", int.class) == 1);
 		setAmount(source.getAmount());
 		setMaterial(source.getType());
 		setMetaID(source.getDurability());
