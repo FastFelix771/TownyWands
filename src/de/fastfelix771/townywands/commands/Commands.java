@@ -2,9 +2,14 @@ package de.fastfelix771.townywands.commands;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import de.fastfelix771.townywands.api.ModularGUI;
+import de.fastfelix771.townywands.api.ModularInventory;
+import de.fastfelix771.townywands.api.ModularItem;
 import de.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import de.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
 import de.fastfelix771.townywands.main.Debug;
@@ -14,163 +19,233 @@ import de.fastfelix771.townywands.utils.Utils;
 
 public class Commands {
 
-    private static final List<String> commands = Arrays.asList("§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §areload", "§c/townywands §adebug");
+	private static final List<String> commands = Arrays.asList("§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §areload", "§c/townywands §adebug");
 
-    @CommandHandler(
-        name = "townywands",
-        description = "Provides basic features.",
-        usage = "/townywands ?",
-        permission = "townywands.cmd.townywands",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.townywands§c!",
-        aliases = { "tws" })
-    public void townywands(CommandSender sender, String[] args) {
-        sender.sendMessage("§6================================================================");
-        sender.sendMessage("§bTowny§3Wands §6- §av§c" + TownyWands.getInstance().getDescription().getVersion());
-        sender.sendMessage("§2Created by §6FastFelix771");
-        sender.sendMessage("§cIf you need help, use §a/townywands help");
-        sender.sendMessage("§6================================================================");
-    }
+	@CommandHandler(
+			name = "townywands",
+			description = "Provides basic features.",
+			usage = "/townywands ?",
+			permission = "townywands.cmd.townywands",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.townywands§c!",
+			aliases = { "tws" })
+	public void townywands(CommandSender sender, String[] args) {
+		sender.sendMessage("§6=====================================================");
+		sender.sendMessage("§bTowny§3Wands §6- §av§c" + TownyWands.getInstance().getDescription().getVersion());
+		sender.sendMessage("§2Created by §6FastFelix771");
+		sender.sendMessage("§cIf you need help, use §a/townywands help");
+		sender.sendMessage("§6=====================================================");
+	}
 
-    @SubCommandHandler(
-        name = "reload",
-        parent = "townywands",
-        permission = "townywands.cmd.reload",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.reload§c!")
-    public void townywands_reload(CommandSender sender, String[] args) {
-        TownyWands.reload();
-        sender.sendMessage("§bTowny§3Wands §ahas been reloaded!");
-    }
+	@SubCommandHandler(
+			name = "reload",
+			parent = "townywands",
+			permission = "townywands.cmd.reload",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.reload§c!")
+	public void townywands_reload(CommandSender sender, String[] args) {
+		TownyWands.reload();
+		sender.sendMessage("§bTowny§3Wands §ahas been reloaded!");
+	}
 
-    @SubCommandHandler(
-        name = "help",
-        parent = "townywands",
-        permission = "townywands.cmd.help",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
-    public void townywands_help(CommandSender sender, String[] args) {
-        sender.sendMessage("§6================================================================");
-        sender.sendMessage("§bTowny§3Wands §6- §aCommands");
+	@SubCommandHandler(
+			name = "help",
+			parent = "townywands",
+			permission = "townywands.cmd.help",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
+	public void townywands_help(CommandSender sender, String[] args) {
+		sender.sendMessage("§6=====================================================");
+		sender.sendMessage("§bTowny§3Wands §6- §aCommands");
 
-        for (int i = 0; i < commands.size(); i++) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(commands.get(i));
-            sender.sendMessage(sb.toString());
-        }
+		for (int i = 0; i < commands.size(); i++) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(commands.get(i));
+			sender.sendMessage(sb.toString());
+		}
 
-        sender.sendMessage("§6================================================================");
-    }
+		sender.sendMessage("§6=====================================================");
+	}
 
-    @SubCommandHandler(
-        name = "?",
-        parent = "townywands",
-        permission = "townywands.cmd.help",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
-    public void townywands_help2(CommandSender sender, String[] args) {
-        this.townywands_help(sender, args);
-    }
+	@SubCommandHandler(
+			name = "?",
+			parent = "townywands",
+			permission = "townywands.cmd.help",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.help§c!")
+	public void townywands_help2(CommandSender sender, String[] args) {
+		this.townywands_help(sender, args);
+	}
 
-    @SubCommandHandler(
-        name = "debug",
-        parent = "townywands",
-        permission = "townywands.cmd.debug",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.debug§c!")
-    public void townywands_debug(CommandSender sender, String[] args) {
-        if (sender instanceof Player) {
-            if (Debug.players.contains(((Player) sender).getName())) Debug.players.remove(((Player) sender).getName());
-            else Debug.players.add(((Player) sender).getName());
-            sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.players.contains(((Player) sender).getName())).toLowerCase()));
-            return;
-        }
-        Debug.console = Debug.console ? false : true;
-        sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.console).toLowerCase()));
+	@SubCommandHandler(
+			name = "debug",
+			parent = "townywands",
+			permission = "townywands.cmd.debug",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.debug§c!")
+	public void townywands_debug(CommandSender sender, String[] args) {
+		if (sender instanceof Player) {
+			if (Debug.players.contains(((Player) sender).getName())) Debug.players.remove(((Player) sender).getName());
+			else Debug.players.add(((Player) sender).getName());
+			sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.players.contains(((Player) sender).getName())).toLowerCase()));
+			return;
+		}
+		Debug.console = Debug.console ? false : true;
+		sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.console).toLowerCase()));
 
-    }
+	}
 
-    @CommandHandler(
-        name = "vsign",
-        description = "Creates a virtual Sign and executes commands from the given input.",
-        usage = "/vsign playername command {data}",
-        permission = "townywands.cmd.vsign",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.vsign§c!")
-    public void vsign(CommandSender sender, final String[] args) {
-        if ((args.length == 0) || (Bukkit.getPlayerExact(args[0]) == null)) return;
+	@CommandHandler(
+			name = "vsign",
+			description = "Creates a virtual Sign and executes commands from the given input.",
+			usage = "/vsign playername command {data}",
+			permission = "townywands.cmd.vsign",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.vsign§c!")
+	public void vsign(CommandSender sender, final String[] args) {
+		if ((args.length == 0) || (Bukkit.getPlayerExact(args[0]) == null)) return;
 
-        // If this version is not compatible, do nothing.
-        if (TownyWands.getVirtualSign() == null) return;
+		// If this version is not compatible, do nothing.
+		if (TownyWands.getVirtualSign() == null) return;
 
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 1; i < args.length; i++) {
-            if(!args[i].trim().isEmpty()) sb.append(args[i]).append(" ");
-        }
+		final StringBuilder sb = new StringBuilder();
+		for (int i = 1; i < args.length; i++) {
+			if(!args[i].trim().isEmpty()) sb.append(args[i]).append(" ");
+		}
 
-        TownyWands.getVirtualSign().show(Bukkit.getPlayerExact(args[0]), new Invoker<String[]>() {
+		TownyWands.getVirtualSign().show(Bukkit.getPlayerExact(args[0]), new Invoker<String[]>() {
 
-            @Override
-            public void invoke(String[] lines) {
-                StringBuilder data = new StringBuilder();
-                for (String line : lines)
-                    if (line != null && !line.trim().isEmpty()) data.append(line);
+			@Override
+			public void invoke(String[] lines) {
+				StringBuilder data = new StringBuilder();
+				for (String line : lines)
+					if (line != null && !line.trim().isEmpty()) data.append(line);
 
-                String command = sb.toString();
-                if(command.trim().isEmpty()) return;
-                
-                command = command.substring(0, command.length() - 1);
-                command = command.replace("{data}", data.toString());
+				String command = sb.toString();
+				if(command.trim().isEmpty()) return;
 
-                Bukkit.dispatchCommand(Bukkit.getPlayerExact(args[0]), command); // Maybe add console commands here too?
-            }
-        });
-    }
+				command = command.substring(0, command.length() - 1);
+				command = command.replace("{data}", data.toString());
 
-    @CommandHandler(
-        name = "bungeetp",
-        description = "Teleports a player to another server in your bungeecord network.",
-        usage = "/bungeetp playername servername",
-        permission = "townywands.cmd.bungeetp",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.bungeetp§c!")
-    public void bungeetp(CommandSender sender, String[] args) {
-        if (!(args.length == 2)) return;
+				Bukkit.dispatchCommand(Bukkit.getPlayerExact(args[0]), command); // Maybe add console commands here too?
+			}
+		});
+	}
 
-        if (Bukkit.getPlayerExact(args[0]) == null) return;
+	@CommandHandler(
+			name = "bungeetp",
+			description = "Teleports a player to another server in your bungeecord network.",
+			usage = "/bungeetp playername servername",
+			permission = "townywands.cmd.bungeetp",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.bungeetp§c!")
+	public void bungeetp(CommandSender sender, String[] args) {
+		if (!(args.length == 2)) return;
 
-        Player player = Bukkit.getPlayerExact(args[0]);
-        String servername = args[1];
+		if (Bukkit.getPlayerExact(args[0]) == null) return;
 
-        try {
-            Utils.bungeeConnect(player, servername); // If bungeecord is disabled the method will do nothing.
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            sender.sendMessage("§cFailed to teleport §a" + player.getName() + "§c to server §a" + servername);
-            return;
-        }
+		Player player = Bukkit.getPlayerExact(args[0]);
+		String servername = args[1];
 
-    }
+		try {
+			Utils.bungeeConnect(player, servername);
+		} catch (Exception e) {
+			e.printStackTrace();
+			sender.sendMessage("§cFailed to teleport §a" + player.getName() + "§c to server §a" + servername);
+			return;
+		}
 
-    @CommandHandler(
-        name = "fakecmd",
-        description = "Teleports a player to another server in your bungeecord network.",
-        usage = "/fakecmd playername commandToExecute",
-        permission = "townywands.cmd.fakecmd",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.fakecmd§c!")
-    public void fakecmd(CommandSender sender, String[] args) {
-        if ((args.length < 2) || (Bukkit.getPlayerExact(args[0]) == null)) return;
+	}
 
-        StringBuilder sb = new StringBuilder();
+	@CommandHandler(
+			name = "fakecmd",
+			description = "Teleports a player to another server in your bungeecord network.",
+			usage = "/fakecmd playername commandToExecute",
+			permission = "townywands.cmd.fakecmd",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.fakecmd§c!")
+	public void fakecmd(CommandSender sender, String[] args) {
+		if ((args.length < 2) || (Bukkit.getPlayerExact(args[0]) == null)) return;
 
-        for (int i = 1; i < args.length; i++) {
-            sb.append(args[i]).append(" ");
-        }
+		StringBuilder sb = new StringBuilder();
 
-        Bukkit.getPlayerExact(args[0]).chat("/".concat(sb.toString()));
+		for (int i = 1; i < args.length; i++) {
+			sb.append(args[i]).append(" ");
+		}
 
-    }
+		Bukkit.getPlayerExact(args[0]).chat("/".concat(sb.toString()));
 
-    @CommandHandler(
-        name = "modify",
-        permission = "townywands.cmd.modify",
-        permissionMessage = "§cYou are missing the permission §atownywands.cmd.modify§c!")
-    public void modify(Player sender, String[] args) {
-        //TODO: create modify command, gui command and inv command.
-    }
+	}
+
+	// MODIFY //
+
+	@CommandHandler(
+			name = "modify",
+			permission = "townywands.cmd.modify",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.modify§c!")
+	public void modify(Player sender, String[] args) {
+
+	}
+
+	@SubCommandHandler(parent = "modify", name= "help")
+	public void modify_help(Player sender, String[] args) {
+
+	}
+
+	@SubCommandHandler(parent = "modify", name= "?")
+	public void modify_questionmark(Player sender, String[] args) {
+		modify_help(sender, args);
+	}
+
+
+	// GUI //
+
+	@CommandHandler(
+			name = "gui",
+			permission = "townywands.cmd.gui",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.gui§c!")
+	public void gui(Player sender, String[] args) {
+
+	}
+
+	@SubCommandHandler(parent = "gui", name= "help")
+	public void gui_help(Player sender, String[] args) {
+
+	}
+
+	@SubCommandHandler(parent = "gui", name= "?")
+	public void gui_questionmark(Player sender, String[] args) {
+		gui_help(sender, args);
+	}
+
+	@SubCommandHandler(parent = "gui", name= "list")
+	public void gui_list(Player sender, String[] args) {
+		sender.sendMessage("§6=====================================================");
+
+		for(ModularGUI gui : ModularGUI.loadAll()) {
+			sender.sendMessage(String.format("§6<§3%s§6> - §a%d §6Storages - §a/%s §6- §c%s", gui.getName(), gui.getInventories().size(), gui.getCommand(), gui.getPermission()));
+		}
+
+		sender.sendMessage("§6=====================================================");
+	}
+
+
+	// INV //
+
+	@CommandHandler(
+			name = "inv",
+			permission = "townywands.cmd.inv",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.inv§c!")
+	public void inv(Player sender, String[] args) {
+		sender.sendMessage("§6=====================================================");
+
+		for(ModularInventory inv : ModularInventory.loadAll()) {
+			sender.sendMessage(String.format("§6<§3%d§6> - §6GUI: §a%s§6 - §a%d §6Slots - §a%d §6Items", inv.getID(), inv.getGUI(), inv.getSlots(), ModularItem.loadAll(inv).size()));
+		}
+
+		sender.sendMessage("§6=====================================================");
+	}
+
+	@SubCommandHandler(parent = "inv", name= "help")
+	public void inv_help(Player sender, String[] args) {
+
+	}
+
+	@SubCommandHandler(parent = "inv", name= "?")
+	public void inv_questionmark(Player sender, String[] args) {
+		inv_help(sender, args);
+	}
 
 }

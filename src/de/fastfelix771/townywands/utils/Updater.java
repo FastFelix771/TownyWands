@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +16,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import de.fastfelix771.townywands.main.Debug;
-import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.packets.Version;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
@@ -41,7 +41,7 @@ public final class Updater {
 
 	public void check(@NonNull final Invoker<Result> invoker) {
 
-		TownyWands.getPool().execute(new Runnable() {
+		Executors.newSingleThreadExecutor().execute(new Runnable() {
 
 			@Override
 			public void run() {

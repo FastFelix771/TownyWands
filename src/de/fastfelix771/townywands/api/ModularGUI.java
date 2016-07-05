@@ -26,6 +26,17 @@ public final class ModularGUI {
 		EntityGUI dao = TownyWands.getInstance().getDatabase().find(EntityGUI.class).where().eq("command", command).findUnique();
 		return dao != null ? new ModularGUI(dao) : null;
 	}	
+	
+	public static Set<ModularGUI> loadAll() {
+		Set<ModularGUI> guis = new HashSet<>();
+		
+		Set<EntityGUI> entities = TownyWands.getInstance().getDatabase().find(EntityGUI.class).findSet();
+		for(EntityGUI entity : entities) {
+			guis.add(ModularGUI.fromName(entity.getName()));
+		}
+		
+		return guis;
+	}
 
 	public ModularGUI(@NonNull String name, @NonNull String command, @NonNull String permission) {
 		if(TownyWands.getInstance().getDatabase().find(EntityGUI.class).where().eq("name", name).findUnique() != null) {

@@ -12,8 +12,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 
 import de.fastfelix771.townywands.dao.EntityItem;
-import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
+import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Base64;
 import de.fastfelix771.townywands.utils.Compressor;
@@ -39,10 +39,32 @@ public final class ModularItem {
 		entity.setDisplayname(displayName);
 		entity.setMaterial(material);
 		entity.setMetaID(metaID);
-		
-		
+
+
 		TownyWands.getInstance().getDatabase().save(entity);
 		this.dao = entity;
+	}
+
+	public static Set<ModularItem> loadAll() {
+		Set<ModularItem> items = new HashSet<>();
+
+		Set<EntityItem> entities = TownyWands.getInstance().getDatabase().find(EntityItem.class).findSet();
+		for(EntityItem entity : entities) {
+			items.add(ModularItem.fromID(entity.getId()));
+		}
+
+		return items;
+	}
+
+	public static Set<ModularItem> loadAll(ModularInventory inv) {
+		Set<ModularItem> items = new HashSet<>();
+
+		Set<EntityItem> entities = TownyWands.getInstance().getDatabase().find(EntityItem.class).where().eq("inventory", inv.getID()).findSet();
+		for(EntityItem entity : entities) {
+			items.add(ModularItem.fromID(entity.getId()));
+		}
+
+		return items;
 	}
 
 	public ModularItem(@NonNull ItemStack item) {
@@ -113,7 +135,7 @@ public final class ModularItem {
 			dao.setMetaID((short) 0);
 			return;
 		}
-		
+
 		dao.setMetaID(metaID);
 	}
 
@@ -191,26 +213,26 @@ public final class ModularItem {
 		if(dao.getTag() == null) return null;
 		return Serializer.getInstance().deserialize(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getTag())));
 	}
-	
+
 	public void setSlot(int slot) {
 		if(!(slot > 0 && slot < 54)) return;
 		dao.setSlot(slot);
 	}
-	
+
 	public int getSlot() {
 		return dao.getSlot();
 	}
-	
+
 	public int getID() {
 		return dao.getId();
 	}
-	
+
 	/**
 	 * @return Semi-Cached Bukkit ItemStack built from the saved data of this object.
 	 */
 	public ItemStack toItemStack() { //TODO: add NBT Key "townywands_id" to items dao id.
 		if(wrapper == null) wrapper = ItemWrapper.wrap(new ItemStack(Material.STONE));
-		
+
 		if(getBinaryTag() != null) wrapper.setTag(getBinaryTag());
 		wrapper.setMaterial(getMaterial());
 		wrapper.setMetaID(getMetaID());
@@ -223,31 +245,31 @@ public final class ModularItem {
 				wrapper.addLore(ChatColor.translateAlternateColorCodes('&', line));
 			}
 		}
-		
+
 		wrapper.setNBTKey("townywands_id", getID());
 		return wrapper.getItem();
 	}
-	
+
 	/**
 	 * @param source The ItemStack, wich data will be merged into this object.
 	 */
 	public void update(@NonNull ItemStack source) {
 		wrapper = ItemWrapper.wrap(source);
-		
+
 		setBinaryTag(wrapper.getTag());
-		
+
 		if(source.hasItemMeta() && source.getItemMeta().hasDisplayName()) {
 			setDisplayName(source.getItemMeta().getDisplayName());
 			if(source.getItemMeta().hasLore()) setLore(source.getItemMeta().getLore().toArray(new String[source.getItemMeta().getLore().size()]));
 		}
-		
+
 		setEnchanted(wrapper.hasNBTKey("ench"));
 		setHideFlags(wrapper.hasNBTKey("HideFlags") && wrapper.getNBTKey("HideFlags", int.class) == 1);
 		setAmount(source.getAmount());
 		setMaterial(source.getType());
 		setMetaID(source.getDurability());
 	}
-	
+
 	public void save() {
 		TownyWands.getInstance().getDatabase().save(this.dao);
 	}

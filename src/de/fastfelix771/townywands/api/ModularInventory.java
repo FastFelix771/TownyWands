@@ -26,6 +26,28 @@ public final class ModularInventory {
 		EntityInventory dao = TownyWands.getInstance().getDatabase().find(EntityInventory.class).where().eq("id", id).findUnique();
 		return dao != null ? new ModularInventory(dao) : null;
 	}
+	
+	public static Set<ModularInventory> loadAll() {
+		Set<ModularInventory> inventories = new HashSet<>();
+		
+		Set<EntityInventory> entities = TownyWands.getInstance().getDatabase().find(EntityInventory.class).findSet();
+		for(EntityInventory entity : entities) {
+			inventories.add(ModularInventory.fromID(entity.getId()));
+		}
+		
+		return inventories;
+	}
+	
+	public static Set<ModularInventory> loadAll(ModularGUI gui) {
+		Set<ModularInventory> inventories = new HashSet<>();
+		
+		Set<EntityInventory> entities = TownyWands.getInstance().getDatabase().find(EntityInventory.class).where().eq("gui", gui.getName()).findSet();
+		for(EntityInventory entity : entities) {
+			inventories.add(ModularInventory.fromID(entity.getId()));
+		}
+		
+		return inventories;
+	}
 
 	public ModularInventory(@NonNull String title, int slots) {
 		if(title.length() > 32 || !Utils.isValidSlotCount(slots)) {
