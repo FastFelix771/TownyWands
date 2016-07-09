@@ -232,7 +232,7 @@ public class Commands {
 		sender.sendMessage("§6=====================================================");
 
 		for(ModularInventory inv : ModularInventory.loadAll()) {
-			sender.sendMessage(String.format("§6<§3%d§6> - §6GUI: §a%s§6 - §a%d §6Slots - §a%d §6Items", inv.getID(), inv.getGUI(), inv.getSlots(), ModularItem.loadAll(inv).size()));
+			sender.sendMessage(String.format("§6<§3%d§6> - §6GUI: §a%s§6 - §a%d §6Slots - §a%d §6Items", inv.getID(), inv.getGUI().getName(), inv.getSlots(), ModularItem.loadAll(inv).size()));
 		}
 
 		sender.sendMessage("§6=====================================================");

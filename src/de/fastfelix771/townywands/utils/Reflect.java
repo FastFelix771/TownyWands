@@ -2,6 +2,7 @@ package de.fastfelix771.townywands.utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
@@ -9,103 +10,77 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import de.fastfelix771.townywands.packets.Version;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reflect {
 
-	public static final Class<?> NBTTagCompound = getNMSClass("NBTTagCompound");
-	public static final Class<?> NBTBase = getNMSClass("NBTBase");
-	public static final Class<?> CraftItemStack = getCBClass("inventory", "CraftItemStack");
-	public static final Class<?> ItemStack = getNMSClass("ItemStack");
+	@Getter
+	private static Reflect instance = new Reflect();
 
-	// PACKETS //
-	public static final Class<?> PacketPlayInUpdateSign = getNMSClass("PacketPlayInUpdateSign");
+	public static final Class<?> NBTTagCompound = getInstance().getNMSClass("NBTTagCompound");
+	public static final Class<?> NBTBase = getInstance().getNMSClass("NBTBase");
+	public static final Class<?> CraftItemStack = getInstance().getCBClass("inventory", "CraftItemStack");
+	public static final Class<?> ItemStack = getInstance().getNMSClass("ItemStack");
 
 	@Getter(lazy = true) 
 	private static final Version serverVersion = Version.fromString(getVersion());
 
-	public static String getVersion() {
+	private static String getVersion() {
 		return Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".";
 	}
 
-	public static Class<?> getClass(@NonNull String clazz) {
-		try {
-			return Class.forName(clazz);
-		}
-		catch (final ClassNotFoundException e) {
-			return null;
-		}
+	@SneakyThrows(ClassNotFoundException.class)
+	public Class<?> getClass(@NonNull String clazz) {
+		return Class.forName(clazz);
 	}
 
-	public static Constructor<?> getConstructor(final Class<?> clazz, final Class<?>... params) {
-		try {
-			final Constructor<?> constructor = clazz.getConstructor(params);
-			constructor.setAccessible(true);
-			return constructor;
-		}
-		catch (final NoSuchMethodException e) {
-			System.out.println("");
-			return null;
-		}
+	@SneakyThrows(NoSuchMethodException.class)
+	public Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) {
+		Constructor<?> constructor = clazz.getConstructor(params);
+		constructor.setAccessible(true);
+		return constructor;
 	}
 
-	public static Object getNMSPlayer(final Player player) {
-		try {
-			final Method getHandle = player.getClass().getMethod("getHandle");
-			final Object nms = getHandle.invoke(player);
-			return nms;
-		}
-		catch (final Exception e) {
-			return null;
-		}
+	@SneakyThrows(value = { InvocationTargetException.class, IllegalAccessException.class })
+	public Object getNMSPlayer(Player player) {
+		return getMethod(player.getClass(), "getHandle").invoke(player);
 	}
 
-	public static Method getMethod(Method method) {
+	@SneakyThrows(NoSuchMethodException.class)
+	public Method getMethod(Class<?> clazz, String name, Class<?>... params) {
+		Method method = (params != null && !(params.length == 0)) ? clazz.getDeclaredMethod(name, params) : clazz.getDeclaredMethod(name);
 		method.setAccessible(true);
 		return method;
 	}
 
-	public static Object getNMSItem(@NonNull ItemStack item) {
-		try {
-			final Method asNMSCopy = getMethod(CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
-			final Object nms = asNMSCopy.invoke(null, item);
-			return nms;
-		}
-		catch (Exception e) {
-			return null;
-		}
+	@SneakyThrows(value = { InvocationTargetException.class, IllegalAccessException.class })
+	public Object getNMSItem(@NonNull ItemStack item) {
+		return getMethod(CraftItemStack, "asNMSCopy", ItemStack.class).invoke(null, item);
 	}
 
-	@SneakyThrows
-	public static ItemStack getBukkitItem(@NonNull Object nms) {
-		Method asCraftMirror = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asCraftMirror", Reflect.ItemStack));
-		ItemStack itemStack = (ItemStack) asCraftMirror.invoke(null, nms);
-		return itemStack;
+	@SneakyThrows(value = { InvocationTargetException.class, IllegalAccessException.class })
+	public ItemStack getBukkitItem(@NonNull Object nms) {
+		return (ItemStack) getMethod(CraftItemStack, "asCraftMirror", ItemStack).invoke(null, nms);
 	}
 
-	public static Field getField(final Field field) {
+	@SneakyThrows(NoSuchFieldException.class)
+	public Field getField(@NonNull Class<?> clazz, String name) {
+		Field field = clazz.getDeclaredField(name);
 		field.setAccessible(true);
 		return field;
 	}
 
-	public static Class<?> getNMSClass(String nmsName) {
-		try {
-			return Class.forName("net.minecraft.server.".concat(getVersion()).concat(nmsName));
-		}
-		catch (final ClassNotFoundException e) {
-			return null;
-		}
+	public Class<?> getNMSClass(@NonNull String nmsName) {
+		return getClass("net.minecraft.server.".concat(getVersion()).concat(nmsName));
 	}
 
-	public static Class<?> getCBClass(String cbPackage, String cbName) {
-		try {
-			return Class.forName("org.bukkit.craftbukkit.".concat(getVersion()).concat(cbPackage).concat(".").concat(cbName));
-		}
-		catch (final ClassNotFoundException e) {
-			return null;
-		}
+	public Class<?> getCBClass(@NonNull String cbPackage, @NonNull String cbName) {
+		return getClass("org.bukkit.craftbukkit.".concat(getVersion()).concat(cbPackage).concat(".").concat(cbName));
 	}
 
 }

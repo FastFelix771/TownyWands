@@ -3,6 +3,8 @@ package de.fastfelix771.townywands.packets.v1_6;
 import java.util.HashMap;
 import lombok.SneakyThrows;
 import org.bukkit.entity.Player;
+
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import de.fastfelix771.townywands.main.TownyWands;
@@ -13,7 +15,7 @@ import de.fastfelix771.townywands.utils.ReturningInvoker;
 @SuppressWarnings("deprecation")
 public class ProtocolLibvSign implements VirtualSign {
 
-    private static final HashMap<String, Invoker<String[]>> pending = new HashMap<>();
+    protected static final HashMap<String, Invoker<String[]>> pending = new HashMap<>();
 
     @Override @SneakyThrows
     public void show(Player player, Invoker<String[]> callback) {
@@ -34,12 +36,12 @@ public class ProtocolLibvSign implements VirtualSign {
     @Override
     public void setup(final Player player) {
 
-        TownyWands.getPacketHandler().addPacketListener(player, 130, new ReturningInvoker<Object, Boolean>() {
+        TownyWands.getPacketHandler().addPacketListener(player, PacketType.Play.Client.UPDATE_SIGN, new ReturningInvoker<PacketContainer, Boolean>() {
             
             @Override
-            public Boolean invoke(Object packet) {
+            public Boolean invoke(PacketContainer packet) {
                 if(!pending.containsKey(player.getName())) return false;
-                pending.remove(player.getName()).invoke(((PacketContainer) packet).getStringArrays().read(0));
+                pending.remove(player.getName()).invoke(packet.getStringArrays().read(0));
                 return true;
             }
         }, true);

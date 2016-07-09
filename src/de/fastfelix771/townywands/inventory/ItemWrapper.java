@@ -90,7 +90,7 @@ public class ItemWrapper {
 	@SneakyThrows
 	public void hideFlags(boolean hide) {
 		final Object tag = getTag();
-		final Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
+		final Method setString = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "setString", String.class, String.class);
 		setString.invoke(tag, "HideFlags", (hide ? "1" : "0"));
 		setTag(tag);
 	}
@@ -98,11 +98,11 @@ public class ItemWrapper {
 	@SneakyThrows
 	public void setEnchanted(boolean enchanted) {
 		Object tag = getTag();
-		Method set = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("set", String.class, Reflect.NBTBase));
-		Method hasKey = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("hasKey", String.class));
-		Method remove = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("remove", String.class));
+		Method set = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "set", String.class, Reflect.NBTBase);
+		Method hasKey = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "hasKey", String.class);
+		Method remove = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "remove", String.class);
 		if (enchanted) {
-			set.invoke(tag, "ench", Reflect.getConstructor(Reflect.getNMSClass("NBTTagList")).newInstance());
+			set.invoke(tag, "ench", Reflect.getInstance().getConstructor(Reflect.getInstance().getNMSClass("NBTTagList")).newInstance());
 		}
 		else {
 			if ((boolean) hasKey.invoke(tag, "ench")) remove.invoke(tag, "ench");
@@ -112,7 +112,7 @@ public class ItemWrapper {
 
 	@SneakyThrows
 	public void setNBTKey(@NonNull String key, @NonNull Object value) {
-		Method setString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("setString", String.class, String.class));
+		Method setString = Reflect.getInstance().getMethod(Reflect.NBTTagCompound,"setString", String.class, String.class);
 		Object tag = getTag();
 		setString.invoke(tag, key, value);
 		setTag(tag);
@@ -121,7 +121,7 @@ public class ItemWrapper {
 	@SuppressWarnings("unchecked")
 	@SneakyThrows
 	public <T> T getNBTKey(@NonNull String key) {
-		Method getString = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("getString", String.class));
+		Method getString = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "getString", String.class);
 		Object tag = getTag();
 
 		String data = (String) getString.invoke(tag, key);
@@ -132,7 +132,7 @@ public class ItemWrapper {
 
 	@SneakyThrows
 	public boolean hasNBTKey(@NonNull String key) {
-		Method hasKey = Reflect.getMethod(Reflect.NBTTagCompound.getDeclaredMethod("hasKey", String.class));
+		Method hasKey = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "hasKey", String.class);
 		return (boolean) hasKey.invoke(getTag(), key);
 	}
 
@@ -146,18 +146,18 @@ public class ItemWrapper {
 
 	@SneakyThrows
 	public void setTag(@NonNull Object tag) {
-		Object nms = Reflect.getNMSItem(item);
-		final Method setTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("setTag", Reflect.NBTTagCompound));
+		Object nms = Reflect.getInstance().getNMSItem(item);
+		final Method setTag = Reflect.getInstance().getMethod(Reflect.ItemStack, "setTag", Reflect.NBTTagCompound);
 		setTag.invoke(nms, tag);
-		this.item = Reflect.getBukkitItem(nms);
+		this.item = Reflect.getInstance().getBukkitItem(nms);
 	}
 
 	@SneakyThrows
 	public Object getTag() {
-		Object nms = Reflect.getNMSItem(item);
-		Constructor<?> NBTTagCompound = Reflect.getConstructor(Reflect.NBTTagCompound);
-		Method hasTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("hasTag"));
-		Method getTag = Reflect.getMethod(Reflect.ItemStack.getDeclaredMethod("getTag"));
+		Object nms = Reflect.getInstance().getNMSItem(item);
+		Constructor<?> NBTTagCompound = Reflect.getInstance().getConstructor(Reflect.NBTTagCompound);
+		Method hasTag = Reflect.getInstance().getMethod(Reflect.ItemStack, "hasTag");
+		Method getTag = Reflect.getInstance().getMethod(Reflect.ItemStack, "getTag");
 		Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
 		return tag;
 	}

@@ -60,17 +60,17 @@ public enum Language implements Serializable {
 	SIMPLIFIED_CHINESE("简体中文", "zh_CN"), 
 	TRADITIONAL_CHINESE("繁體中文", "zh_TW"), 
 	POLISH("Polski", "pl_PL");
-	
+
 	@Getter
 	private String name;
-	
+
 	@Getter
 	private String code;
 
 	public static Language getLanguage(Player p) {
 		try {
-			Object player = Reflect.getNMSPlayer(p);
-			Field localeField = Reflect.getField(player.getClass().getDeclaredField("locale"));
+			Object player = Reflect.getInstance().getNMSPlayer(p);
+			Field localeField = Reflect.getInstance().getField(player.getClass(), "locale");
 			String language = (String) localeField.get(player);
 			return getByCode(language);
 		} catch (Exception e) {
