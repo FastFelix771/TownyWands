@@ -15,8 +15,8 @@ import org.bukkit.configuration.file.YamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import de.fastfelix771.townywands.packets.Version;
 import de.fastfelix771.townywands.utils.Reflect;
+import de.unitygaming.bukkit.vsign.Version;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
@@ -30,7 +30,7 @@ public final class ConfigManager {
 	public static YamlConfiguration loadYAML(@NonNull File file) {
 		if (!file.exists()) return null;
 
-		if(Reflect.getServerVersion().isNewerThan(Version.v1_6)) {
+		if(Version.getCurrent().isNewerThan(Version.v1_6)) {
 			return YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 		}
 

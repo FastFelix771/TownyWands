@@ -20,12 +20,11 @@ import de.fastfelix771.townywands.dao.EntityItem;
 import de.fastfelix771.townywands.inventory.HybridParser;
 import de.fastfelix771.townywands.listeners.TownyWandsListener;
 import de.fastfelix771.townywands.metrics.Metrics;
-import de.fastfelix771.townywands.packets.PacketHandler;
-import de.fastfelix771.townywands.packets.VirtualSign;
-import de.fastfelix771.townywands.utils.Invoker;
-import de.fastfelix771.townywands.utils.Reflect;
 import de.fastfelix771.townywands.utils.Updater;
 import de.fastfelix771.townywands.utils.Updater.Result;
+import de.unitygaming.bukkit.vsign.Version;
+import de.unitygaming.bukkit.vsign.api.vSignAPI;
+import de.unitygaming.bukkit.vsign.invoker.Invoker;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,17 +47,11 @@ public final class TownyWands extends JavaPlugin {
 	private static ExecutorService pool;
 
 	@Getter 
-	private static PacketHandler packetHandler = Reflect.getServerVersion().getPacketHandler();
-
-	@Getter 
-	private static VirtualSign virtualSign = Reflect.getServerVersion().getVirtualSign();
-
+	private static vSignAPI signAPI;
+	
 	@Getter 
 	private static boolean bungeecord;
-
-	@Getter 
-	private static boolean protocolLibEnabled;
-
+	
 	@Getter 
 	private static boolean updateCheckingEnabled;
 
@@ -82,7 +75,8 @@ public final class TownyWands extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new TownyWandsListener(), this);
 		CommandController.registerCommands(this, new Commands());
 
-		log.info("vSign's does ".concat((virtualSign != null ? "work on this version!".concat(String.format(" (Using: %s)", Reflect.getServerVersion().toString())) : String.format("not work on this version! (Detected: %s)", Reflect.getServerVersion().toString()))));
+		signAPI = new vSignAPI(this);
+		log.info("vSign's does ".concat(vSignAPI.check() ? "work on this version! " : "not work on this version! ").concat("Version: " + Version.getCurrent().toString()));
 
 		metrics(this.getConfig().getBoolean("metrics"));
 		autotranslate = this.getConfig().getBoolean("auto-translate");

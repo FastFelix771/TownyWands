@@ -62,7 +62,7 @@
 			<id>unitygaming-repo</id>
 			<url>https://services.unitygaming.de/artifactory/maven-repo</url>
 		</repository>
-	</repositories> 
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -87,6 +87,11 @@
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.unitygaming.bukkit</groupId>
+			<artifactId>vSign-API</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

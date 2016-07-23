@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,9 +20,9 @@ import de.fastfelix771.townywands.api.events.GuiOpenEvent;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
 import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.main.TownyWands;
-import de.fastfelix771.townywands.packets.Version;
 import de.fastfelix771.townywands.utils.Reflect;
 import de.fastfelix771.townywands.utils.Updater.State;
+import de.unitygaming.bukkit.vsign.Version;
 
 public class TownyWandsListener implements Listener {
 
@@ -32,22 +31,18 @@ public class TownyWandsListener implements Listener {
 
 		Player p = e.getPlayer();
 
-		if(TownyWands.getVirtualSign() != null) {
-			TownyWands.getVirtualSign().setup(p);
-		}
-
 		if(!TownyWands.isUpdateCheckingEnabled() || TownyWands.getUpdateResult() == null || TownyWands.getUpdateResult().getState() != State.UPDATE_FOUND) return;
 		if ((p.isOp() || p.hasPermission("townywands.msg.update"))) {
 			p.sendMessage("§4!UPDATE! §6-> TownyWands has found an update!");
 			p.sendMessage("§4!UPDATE! §6-> You are currently on version §c" + TownyWands.getInstance().getDescription().getVersion());
 			p.sendMessage("§4!UPDATE! §6-> Newest version is §c" + TownyWands.getUpdateResult().getLatestVersion());
 
-			if (Reflect.getServerVersion().isOlderThan(Version.v1_8)) {
+			if (Version.getCurrent().isOlderThan(Version.v1_8)) {
 				p.sendMessage("§4!UPDATE! §6-> Download latest: §a" + TownyWands.getUpdateResult().getLatestURL());
 				return;
 			}
 
-			if(Reflect.getServerVersion().isNewerThan(Version.v1_7)) {
+			if(Version.getCurrent().isNewerThan(Version.v1_7)) {
 				if(Reflect.getInstance().getClass("net.md_5.bungee.api.chat.TextComponent") == null || Reflect.getInstance().getClass("net.md_5.bungee.api.chat.BaseComponent") == null) return;
 
 				net.md_5.bungee.api.chat.TextComponent text = new net.md_5.bungee.api.chat.TextComponent("§4!UPDATE! §6-> Download latest: §a§l[Click Me]");
@@ -56,11 +51,6 @@ public class TownyWandsListener implements Listener {
 			}
 
 		}
-	}
-
-	@EventHandler
-	public void onQuit(PlayerQuitEvent e) {
-		TownyWands.getVirtualSign().unsetup(e.getPlayer());
 	}
 
 	@EventHandler

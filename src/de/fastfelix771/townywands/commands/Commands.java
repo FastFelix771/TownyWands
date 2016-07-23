@@ -14,8 +14,8 @@ import de.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import de.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
 import de.fastfelix771.townywands.main.Debug;
 import de.fastfelix771.townywands.main.TownyWands;
-import de.fastfelix771.townywands.utils.Invoker;
 import de.fastfelix771.townywands.utils.Utils;
+import de.unitygaming.bukkit.vsign.invoker.Invoker;
 
 public class Commands {
 
@@ -99,15 +99,12 @@ public class Commands {
 	public void vsign(CommandSender sender, final String[] args) {
 		if ((args.length == 0) || (Bukkit.getPlayerExact(args[0]) == null)) return;
 
-		// If this version is not compatible, do nothing.
-		if (TownyWands.getVirtualSign() == null) return;
-
 		final StringBuilder sb = new StringBuilder();
 		for (int i = 1; i < args.length; i++) {
 			if(!args[i].trim().isEmpty()) sb.append(args[i]).append(" ");
 		}
 
-		TownyWands.getVirtualSign().show(Bukkit.getPlayerExact(args[0]), new Invoker<String[]>() {
+		TownyWands.getSignAPI().open(Bukkit.getPlayerExact(args[0]), new Invoker<String[]>() {
 
 			@Override
 			public void invoke(String[] lines) {

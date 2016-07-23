@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import de.fastfelix771.townywands.packets.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +25,6 @@ public class Reflect {
 	public static final Class<?> NBTBase = getInstance().getNMSClass("NBTBase");
 	public static final Class<?> CraftItemStack = getInstance().getCBClass("inventory", "CraftItemStack");
 	public static final Class<?> ItemStack = getInstance().getNMSClass("ItemStack");
-
-	@Getter(lazy = true) 
-	private static final Version serverVersion = Version.fromString(getVersion());
 
 	private static String getVersion() {
 		return Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".";

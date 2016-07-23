@@ -16,7 +16,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import de.fastfelix771.townywands.main.Debug;
-import de.fastfelix771.townywands.packets.Version;
+import de.unitygaming.bukkit.vsign.Version;
+import de.unitygaming.bukkit.vsign.invoker.Invoker;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
 import lombok.Data;
