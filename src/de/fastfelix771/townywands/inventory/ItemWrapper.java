@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE) 
-@SuppressWarnings("all")
+@SuppressWarnings("all") // TODO: this class needs some rework.. it looks terrible. maybe protocollib can help here with some NBT tools :)
 public class ItemWrapper {
 
 	@NonNull

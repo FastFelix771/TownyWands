@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
  * @specialThanks to mymemory.translated.net for its awesome API, without this feature wouldnt be possible with the same awesome translation-quality!
  */
 @SuppressWarnings("all")
+@Deprecated // TODO: Rewrite the Translator. Until this is done, there will be no auto-translation anymore.
 public class Translator {
 
     private static final String USER_AGENT = "Mozilla/5.0";

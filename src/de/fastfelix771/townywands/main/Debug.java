@@ -7,7 +7,7 @@ import lombok.Synchronized;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 
-@Log
+@Log // TODO: Use this class MUCH more to give "/tws debug" more power.
 public final class Debug {
 
     public static final HashSet<String> players = new HashSet<>();
