@@ -164,16 +164,4 @@ public class Commands {
 
 	}
 
-	@CommandHandler(
-			// TODO: register command to plugin.yml
-			name = "modify",
-			permission = "townywands.cmd.modify",
-			permissionMessage = "§cYou are missing the permission §atownywands.cmd.modify§c!")
-	public void modify(Player sender, String[] args) {
-		// Command to control item behaivour with the new ItemWrapper.
-		// TODO: Create a full-featured but simple /modify help menu.
-		// TODO: Create a modify system via SubCommandHandlers.
-
-	}
-
 }

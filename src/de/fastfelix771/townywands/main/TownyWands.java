@@ -10,8 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.comphenix.protocol.ProtocolLibrary;
-
 import de.fastfelix771.townywands.commands.CommandController;
 import de.fastfelix771.townywands.commands.Commands;
 import de.fastfelix771.townywands.inventory.ConfigurationParser;
@@ -78,10 +76,6 @@ public final class TownyWands extends JavaPlugin {
 
 		});;
 
-		log.warning("----> " + Version.fromString(ProtocolLibrary.getProtocolManager().getMinecraftVersion().getVersion()));
-		log.warning("----> " + Bukkit.getVersion());
-		log.warning("----> " + Bukkit.getBukkitVersion());
-		log.warning("-------> " + ProtocolLibrary.getProtocolManager().getMinecraftVersion().getVersion());
 		log.info("Update-Checking is " + (updateCheckingEnabled ? "enabled" : "disabled"));
 		log.info("Auto-Translation is " + (autotranslate ? "enabled" : "disabled"));
 		log.info("Using " + threads + " of " + Runtime.getRuntime().availableProcessors() + " threads.");
