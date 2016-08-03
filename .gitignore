@@ -5,3 +5,4 @@
 /.settings/
 src/main/resources/rebel.xml
 src/rebel.xml
+dependency-reduced-pom.xml

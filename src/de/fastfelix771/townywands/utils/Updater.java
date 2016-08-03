@@ -9,18 +9,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
+import de.fastfelix771.townywands.main.Debug;
+import de.unitygaming.bukkit.vsign.Version;
+import de.unitygaming.bukkit.vsign.invoker.Invoker;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-import de.fastfelix771.townywands.main.Debug;
-import de.fastfelix771.townywands.utils.Reflect.Version;
 
 /**
  * This Updater shouldn't hurt the ToS of CurseForge as it only uses their API.

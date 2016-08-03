@@ -10,18 +10,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.comphenix.protocol.ProtocolLibrary;
+
 import de.fastfelix771.townywands.commands.CommandController;
 import de.fastfelix771.townywands.commands.Commands;
 import de.fastfelix771.townywands.inventory.ConfigurationParser;
 import de.fastfelix771.townywands.listeners.TownyWandsListener;
 import de.fastfelix771.townywands.metrics.Metrics;
-import de.fastfelix771.townywands.packets.PacketHandler;
-import de.fastfelix771.townywands.packets.VirtualSign;
 import de.fastfelix771.townywands.utils.Database;
-import de.fastfelix771.townywands.utils.Invoker;
-import de.fastfelix771.townywands.utils.Reflect;
 import de.fastfelix771.townywands.utils.Updater;
 import de.fastfelix771.townywands.utils.Updater.Result;
+import de.unitygaming.bukkit.vsign.Version;
+import de.unitygaming.bukkit.vsign.api.vSignAPI;
+import de.unitygaming.bukkit.vsign.invoker.Invoker;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,12 +37,8 @@ public final class TownyWands extends JavaPlugin {
 	@Getter private static ConfigurationParser parser;
 	@Getter private static boolean autotranslate;
 	@Getter private static ExecutorService pool;
-
-	@Getter private static VirtualSign virtualSign;
-	@Getter private static PacketHandler packetHandler;
-
+	@Getter private static vSignAPI signAPI;
 	@Getter private static boolean bungeecord;
-	@Getter private static boolean protocolLibEnabled;
 	@Getter private static boolean updateCheckingEnabled;
 	@Getter @Setter(value=AccessLevel.PRIVATE) private static Result updateResult;
 	private static int threads;
@@ -61,19 +58,8 @@ public final class TownyWands extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new TownyWandsListener(), this);
 		CommandController.registerCommands(this, new Commands());
 
-		protocolLibEnabled = Bukkit.getPluginManager().getPlugin("ProtocolLib") != null && Bukkit.getPluginManager().isPluginEnabled("ProtocolLib");
-
-		Class<?> vsignclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.ProtocolLibvSign", Reflect.getServerVersion().toString()));
-		if(vsignclazz != null) {
-			virtualSign = (VirtualSign) vsignclazz.newInstance();
-		}
-
-		Class<?> packethandlerclazz = Reflect.getClass(String.format("de.fastfelix771.townywands.packets.%s.ProtocolLibHandler", Reflect.getServerVersion().toString()));
-		if(packethandlerclazz != null) {
-			packetHandler = (PacketHandler) packethandlerclazz.newInstance();
-		}
-
-		log.info("vSign's does ".concat((virtualSign != null ? "work on this version!".concat(String.format(" (Using: %s)", Reflect.getServerVersion().toString())) : String.format("not work on this version! (Detected: %s)", Reflect.getServerVersion().toString()))));
+		signAPI = new vSignAPI(this);
+		log.info("vSign's does ".concat(vSignAPI.check() ? "work on this version! " : "not work on this version! ").concat("Version: ".concat(Version.getCurrent().toString())));
 
 		metrics(this.getConfig().getBoolean("metrics"));
 		autotranslate = this.getConfig().getBoolean("auto-translate");
@@ -92,6 +78,10 @@ public final class TownyWands extends JavaPlugin {
 
 		});;
 
+		log.warning("----> " + Version.fromString(ProtocolLibrary.getProtocolManager().getMinecraftVersion().getVersion()));
+		log.warning("----> " + Bukkit.getVersion());
+		log.warning("----> " + Bukkit.getBukkitVersion());
+		log.warning("-------> " + ProtocolLibrary.getProtocolManager().getMinecraftVersion().getVersion());
 		log.info("Update-Checking is " + (updateCheckingEnabled ? "enabled" : "disabled"));
 		log.info("Auto-Translation is " + (autotranslate ? "enabled" : "disabled"));
 		log.info("Using " + threads + " of " + Runtime.getRuntime().availableProcessors() + " threads.");
@@ -101,7 +91,7 @@ public final class TownyWands extends JavaPlugin {
 		parser = new ConfigurationParser(ConfigManager.loadYAML(new File(this.getDataFolder().getAbsolutePath() + "/inventories.yml")), Level.WARNING, true, new File(this.getDataFolder().getAbsolutePath() + "/inventories.yml"));
 		getParser().parse();
 	}
-
+	
 	@Override
 	public void onDisable() {
 		parser = null;
