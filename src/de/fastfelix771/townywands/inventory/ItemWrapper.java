@@ -1,165 +1,125 @@
 package de.fastfelix771.townywands.inventory;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.fastfelix771.townywands.utils.Reflect;
-import lombok.AccessLevel;
+import com.comphenix.protocol.wrappers.nbt.NbtCompound;
+import com.comphenix.protocol.wrappers.nbt.NbtFactory;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE) 
-@SuppressWarnings("all") // TODO: this class needs some rework.. it looks terrible. maybe protocollib can help here with some NBT tools :)
+@RequiredArgsConstructor(staticName = "wrap") 
 public class ItemWrapper {
 
-	@NonNull
 	@Getter
-	private ItemStack item;
+	private final ItemStack item;
 
-	public static ItemWrapper wrap(@NonNull ItemStack item) {
-		return new ItemWrapper(item);
-	}
 
-	// FEATURES //
-
-	public void setDisplayName(String string) {
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', string));
-		item.setItemMeta(meta);
+	public void setDisplayName(@NonNull String displayName) {
+		ItemMeta meta = this.item.getItemMeta();
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+		this.item.setItemMeta(meta);
 	}
 
 	public void setAmount(int amount) {
-		item.setAmount(amount);
+		this.item.setAmount((amount >= 1 && amount <= 64) ? amount : 1);
 	}
 
-	public void setMaterial(Material mat) {
-		item.setType(mat);
+	public void setMaterial(@NonNull Material mat) {
+		this.item.setType(mat);
 	}
 
-	public void setID(int id) {
-		item.setTypeId(id);
+	public void setMetaID(int id) {
+		this.item.setDurability((short) id);
 	}
 
-	public void setMetaID(short meta) {
-		item.setDurability(meta);
-	}
+	public void setLore(@NonNull String... lore) {
+		ItemMeta meta = this.item.getItemMeta();
 
-	public void setLore(String... strings) {
-		ItemMeta meta = item.getItemMeta();
-		for (int i = 0; i < strings.length; i++) {
-			strings[i] = ChatColor.translateAlternateColorCodes('&', strings[i]);
+		for (int i = 0; i < lore.length; i++) {
+			lore[i] = ChatColor.translateAlternateColorCodes('&', lore[i]);
 		}
-		meta.setLore(Arrays.asList(strings));
-		item.setItemMeta(meta);
+
+		meta.setLore(Arrays.asList(lore));
+		this.item.setItemMeta(meta);
 	}
 
-	public void setLore(List<String> strings) {
-		ItemMeta meta = item.getItemMeta();
+	public void setLore(@NonNull List<String> strings) {
+		ItemMeta meta = this.item.getItemMeta();
+
 		for (int i = 0; i < strings.size(); i++) {
 			strings.set(i, ChatColor.translateAlternateColorCodes('&', strings.get(i)));
 		}
+
 		meta.setLore(strings);
-		item.setItemMeta(meta);
+		this.item.setItemMeta(meta);
 	}
 
-	public void setLore(Set<String> strings) {
-		setLore(strings.toArray(new String[strings.size()]));
-	}
-
-	public void addLore(String... strings) {
-		ItemMeta meta = item.getItemMeta();
+	public void addLore(@NonNull String... strings) {
+		ItemMeta meta = this.item.getItemMeta();
 		List<String> lore = meta.getLore();
+
 		for (int i = 0; i < strings.length; i++) {
 			strings[i] = ChatColor.translateAlternateColorCodes('&', strings[i]);
 		}
+
 		lore.addAll(Arrays.asList(strings));
 		meta.setLore(lore);
-		item.setItemMeta(meta);
+		this.item.setItemMeta(meta);
 	}
 
-	@SneakyThrows
 	public void hideFlags(boolean hide) {
-		final Object tag = getTag();
-		final Method setString = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "setString", String.class, String.class);
-		setString.invoke(tag, "HideFlags", (hide ? "1" : "0"));
-		setTag(tag);
+		this.getTag().put("HideFlags", hide ? 1 : 0);
 	}
 
-	@SneakyThrows
 	public void setEnchanted(boolean enchanted) {
-		Object tag = getTag();
-		Method set = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "set", String.class, Reflect.NBTBase);
-		Method hasKey = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "hasKey", String.class);
-		Method remove = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "remove", String.class);
-		if (enchanted) {
-			set.invoke(tag, "ench", Reflect.getInstance().getConstructor(Reflect.getInstance().getNMSClass("NBTTagList")).newInstance());
+		if(enchanted) {
+			if(!hasNBTKey("ench")) {
+				setNBTKey("ench", NbtFactory.ofList("ench"));
+			}
+			return;
 		}
-		else {
-			if ((boolean) hasKey.invoke(tag, "ench")) remove.invoke(tag, "ench");
+
+		if(hasNBTKey("ench")) {
+			removeNBTKey("ench");
 		}
-		setTag(tag);
 	}
 
-	@SneakyThrows
-	public void setNBTKey(@NonNull String key, @NonNull Object value) {
-		Method setString = Reflect.getInstance().getMethod(Reflect.NBTTagCompound,"setString", String.class, String.class);
-		Object tag = getTag();
-		setString.invoke(tag, key, value);
-		setTag(tag);
+	public void setNBTKey(@NonNull String key, Object value) {
+		this.getTag().putObject(key, value);
 	}
 
 	@SuppressWarnings("unchecked")
-	@SneakyThrows
 	public <T> T getNBTKey(@NonNull String key) {
-		Method getString = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "getString", String.class);
-		Object tag = getTag();
-
-		String data = (String) getString.invoke(tag, key);
-		if (data == null || data.trim().isEmpty()) return null;
-
-		return (T) data;
-	}
-
-	@SneakyThrows
-	public boolean hasNBTKey(@NonNull String key) {
-		Method hasKey = Reflect.getInstance().getMethod(Reflect.NBTTagCompound, "hasKey", String.class);
-		return (boolean) hasKey.invoke(getTag(), key);
+		return (T) this.getTag().getObject(key);
 	}
 
 	@SuppressWarnings("unchecked")
-	@SneakyThrows
 	public <T> T getNBTKey(@NonNull String key, @NonNull Class<T> returnType) {
 		return (T) getNBTKey(key);
 	}
 
-	// TODO: Add remove method.
-
-	@SneakyThrows
-	public void setTag(@NonNull Object tag) {
-		Object nms = Reflect.getInstance().getNMSItem(item);
-		final Method setTag = Reflect.getInstance().getMethod(Reflect.ItemStack, "setTag", Reflect.NBTTagCompound);
-		setTag.invoke(nms, tag);
-		this.item = Reflect.getInstance().getBukkitItem(nms);
+	public boolean hasNBTKey(@NonNull String key) {
+		return this.getTag().containsKey(key);
 	}
 
-	@SneakyThrows
-	public Object getTag() {
-		Object nms = Reflect.getInstance().getNMSItem(item);
-		Constructor<?> NBTTagCompound = Reflect.getInstance().getConstructor(Reflect.NBTTagCompound);
-		Method hasTag = Reflect.getInstance().getMethod(Reflect.ItemStack, "hasTag");
-		Method getTag = Reflect.getInstance().getMethod(Reflect.ItemStack, "getTag");
-		Object tag = ((boolean) hasTag.invoke(nms) ? getTag.invoke(nms) : NBTTagCompound.newInstance());
-		return tag;
+	public void removeNBTKey(@NonNull String key) {
+		this.getTag().remove(key);
+	}
+
+	public void setTag(@NonNull NbtCompound tag) {
+		NbtFactory.setItemTag(this.item, tag);
+	}
+
+	public NbtCompound getTag() {
+		return NbtFactory.asCompound(NbtFactory.fromItemTag(this.item));
 	}
 
 }

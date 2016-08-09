@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+//TODO: Add complete JavaDocs for all methods!
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ModularInventory {
 

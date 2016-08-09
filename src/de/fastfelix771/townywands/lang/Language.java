@@ -68,10 +68,14 @@ public enum Language implements Serializable {
 	private String code;
 
 	public static Language getLanguage(Player p) {
+		if(Reflect.getInstance().getClass("org.bukkit.entity.Player.Spigot") != null) {
+			return getByCode(p.spigot().getLocale());
+		}
+
 		try {
-			Object player = Reflect.getInstance().getNMSPlayer(p);
-			Field localeField = Reflect.getInstance().getField(player.getClass(), "locale");
-			String language = (String) localeField.get(player);
+			Object nms = Reflect.getInstance().getMethod(p.getClass(), "getHandle").invoke(p);
+			Field localeField = Reflect.getInstance().getField(nms.getClass(), "locale");
+			String language = (String) localeField.get(nms);
 			return getByCode(language);
 		} catch (Exception e) {
 			return Language.ENGLISH;
@@ -79,8 +83,10 @@ public enum Language implements Serializable {
 	}
 
 	public static Language getByCode(String code) {
-		for (Language l : values())
+		for (Language l : values()) {
 			if (l.getCode().equalsIgnoreCase(code)) return l;
+		}
+		
 		return Language.ENGLISH;
 	}
 

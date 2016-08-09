@@ -58,6 +58,7 @@ public class HybridParser {
 		entity.setGui(inv.getName());
 		entity.setTitle(title);
 		entity.setSlots(slots);
+		entity.setEnabled(true); // Theres only 1 Inventory available with the old config system - no sense in disabling the single inventory.
 
 		TownyWands.getInstance().getDatabase().save(entity);
 
