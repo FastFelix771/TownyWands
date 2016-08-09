@@ -1,5 +1,6 @@
 package de.fastfelix771.townywands.inventory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,12 +9,15 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 
+import de.fastfelix771.townywands.utils.Reflect;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @RequiredArgsConstructor(staticName = "wrap") 
 public class ItemWrapper {
@@ -118,8 +122,9 @@ public class ItemWrapper {
 		NbtFactory.setItemTag(this.item, tag);
 	}
 
+	@SneakyThrows( {InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class} )
 	public NbtCompound getTag() {
-		return NbtFactory.asCompound(NbtFactory.fromItemTag(this.item));
+		return NbtFactory.asCompound(NbtFactory.fromItemTag((ItemStack) Reflect.getConstructor(MinecraftReflection.getCraftItemStackClass(), ItemStack.class).newInstance(this.item)));
 	}
 
 }

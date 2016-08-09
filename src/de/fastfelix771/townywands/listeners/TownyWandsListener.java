@@ -43,7 +43,7 @@ public class TownyWandsListener implements Listener {
 			}
 
 			if(Version.getCurrent().isNewerThan(Version.v1_7)) {
-				if(Reflect.getInstance().getClass("net.md_5.bungee.api.chat.TextComponent") == null || Reflect.getInstance().getClass("net.md_5.bungee.api.chat.BaseComponent") == null) return;
+				if(Reflect.getClass("net.md_5.bungee.api.chat.TextComponent") == null || Reflect.getClass("net.md_5.bungee.api.chat.BaseComponent") == null) return;
 
 				net.md_5.bungee.api.chat.TextComponent text = new net.md_5.bungee.api.chat.TextComponent("§4!UPDATE! §6-> Download latest: §a§l[Click Me]");
 				text.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL, TownyWands.getUpdateResult().getLatestURL()));

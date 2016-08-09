@@ -68,13 +68,13 @@ public enum Language implements Serializable {
 	private String code;
 
 	public static Language getLanguage(Player p) {
-		if(Reflect.getInstance().getClass("org.bukkit.entity.Player.Spigot") != null) {
+		if(Reflect.getClass("org.bukkit.entity.Player.Spigot") != null) {
 			return getByCode(p.spigot().getLocale());
 		}
 
 		try {
-			Object nms = Reflect.getInstance().getMethod(p.getClass(), "getHandle").invoke(p);
-			Field localeField = Reflect.getInstance().getField(nms.getClass(), "locale");
+			Object nms = Reflect.getMethod(p.getClass(), "getHandle").invoke(p);
+			Field localeField = Reflect.getField(nms.getClass(), "locale");
 			String language = (String) localeField.get(nms);
 			return getByCode(language);
 		} catch (Exception e) {

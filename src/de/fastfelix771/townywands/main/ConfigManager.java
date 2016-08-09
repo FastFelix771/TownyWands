@@ -41,11 +41,11 @@ public final class ConfigManager {
 	@SneakyThrows
 	public static void saveYAML(@NonNull YamlConfiguration config, @NonNull File file) {
 
-		Method buildHeader = Reflect.getInstance().getMethod(config.getClass(), "buildHeader");
+		Method buildHeader = Reflect.getMethod(config.getClass(), "buildHeader");
 
-		DumperOptions yamlOptions = (DumperOptions) Reflect.getInstance().getField(config.getClass(), "yamlOptions").get(config);
-		YamlRepresenter yamlRepresenter = (YamlRepresenter) Reflect.getInstance().getField(config.getClass(), "yamlRepresenter").get(config);
-		Yaml yaml = (Yaml) Reflect.getInstance().getField(config.getClass(), "yaml").get(config);
+		DumperOptions yamlOptions = (DumperOptions) Reflect.getField(config.getClass(), "yamlOptions").get(config);
+		YamlRepresenter yamlRepresenter = (YamlRepresenter) Reflect.getField(config.getClass(), "yamlRepresenter").get(config);
+		Yaml yaml = (Yaml) Reflect.getField(config.getClass(), "yaml").get(config);
 
 		yamlOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 		yamlRepresenter.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
@@ -55,7 +55,7 @@ public final class ConfigManager {
 
 		String configHeader = (String) buildHeader.invoke(config);
 		String yamlDump = yaml.dump(config.getValues(false));
-		String blankConfig = (String) Reflect.getInstance().getField(config.getClass(), "BLANK_CONFIG").get(null);
+		String blankConfig = (String) Reflect.getField(config.getClass(), "BLANK_CONFIG").get(null);
 
 		if (yamlDump.equalsIgnoreCase(blankConfig)) yamlDump = "";
 		String data = StringEscapeUtils.unescapeJava(new String(new StringBuilder(configHeader).append(yamlDump).toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
