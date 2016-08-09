@@ -14,16 +14,26 @@ import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 
 import de.fastfelix771.townywands.utils.Reflect;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-@RequiredArgsConstructor(staticName = "wrap") 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE) 
 public class ItemWrapper {
 
 	@Getter
 	private final ItemStack item;
+
+	@SneakyThrows( {InvocationTargetException.class, IllegalAccessException.class} )
+	public static ItemWrapper wrap(@NonNull ItemStack source) {
+		if(!MinecraftReflection.isCraftItemStack(source)) {
+			return new ItemWrapper((ItemStack) Reflect.getMethod(MinecraftReflection.getCraftItemStackClass(), "asCraftCopy", ItemStack.class).invoke(Reflect.STATIC, source));
+		}
+
+		return new ItemWrapper(source);
+	}
 
 
 	public void setDisplayName(@NonNull String displayName) {
@@ -122,9 +132,8 @@ public class ItemWrapper {
 		NbtFactory.setItemTag(this.item, tag);
 	}
 
-	@SneakyThrows( {InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class} )
-	public NbtCompound getTag() {
-		return NbtFactory.asCompound(NbtFactory.fromItemTag((ItemStack) Reflect.getConstructor(MinecraftReflection.getCraftItemStackClass(), ItemStack.class).newInstance(this.item)));
+	public NbtCompound getTag() {		
+		return NbtFactory.asCompound(NbtFactory.fromItemTag(this.item));
 	}
 
 }
