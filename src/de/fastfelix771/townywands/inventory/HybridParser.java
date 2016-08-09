@@ -1,6 +1,5 @@
 package de.fastfelix771.townywands.inventory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +14,6 @@ import de.fastfelix771.townywands.dao.EntityInventory;
 import de.fastfelix771.townywands.dao.EntityItem;
 import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.main.TownyWands;
-import de.fastfelix771.townywands.utils.Base64;
-import de.fastfelix771.townywands.utils.Compressor;
 import de.fastfelix771.townywands.utils.Utils;
 import lombok.Getter;
 import lombok.NonNull;
@@ -108,9 +105,9 @@ public class HybridParser {
 			entity.setSlot(slot);
 			entity.setMetaID(metaID);
 
-			if(!commands.isEmpty()) entity.setCommands(Base64.getInstance().print(Compressor.getInstance().compress(commands.toJSONString().getBytes(StandardCharsets.UTF_8))));
-			if(!consoleCommands.isEmpty()) entity.setConsoleCommands(Base64.getInstance().print(Compressor.getInstance().compress(consoleCommands.toJSONString().getBytes(StandardCharsets.UTF_8))));
-			if(loreList != null && !itemLore.isEmpty()) entity.setLore(Base64.getInstance().print(Compressor.getInstance().compress(itemLore.toJSONString().getBytes(StandardCharsets.UTF_8))));
+			if(!commands.isEmpty()) entity.setCommands(commands.toJSONString());
+			if(!consoleCommands.isEmpty()) entity.setConsoleCommands(consoleCommands.toJSONString());
+			if(loreList != null && !itemLore.isEmpty()) entity.setLore(itemLore.toJSONString());
 
 			entity.setInventory(inventory.getId());
 			TownyWands.getInstance().getDatabase().save(entity);

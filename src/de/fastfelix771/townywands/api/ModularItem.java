@@ -1,8 +1,8 @@
 package de.fastfelix771.townywands.api;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,8 +20,6 @@ import de.fastfelix771.townywands.dao.EntityItem;
 import de.fastfelix771.townywands.inventory.ItemWrapper;
 import de.fastfelix771.townywands.lang.Language;
 import de.fastfelix771.townywands.main.TownyWands;
-import de.fastfelix771.townywands.utils.Base64;
-import de.fastfelix771.townywands.utils.Compressor;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -150,60 +148,42 @@ public final class ModularItem {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setCommands(String... commands) {
+	public void setCommands(Collection<String> commands) {
 		JSONArray json = new JSONArray();
-
-		for(String line : commands) {
-			json.add(line);
-		}
-
-		dao.setCommands(Base64.getInstance().print(Compressor.getInstance().compress(json.toJSONString().getBytes(StandardCharsets.UTF_8))));
+		json.addAll(commands);
+		dao.setCommands(json.toJSONString());
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<String> getCommands() {
-		Set<String> commands = new HashSet<>();
-		JSONArray json = (JSONArray) JSONValue.parse(new String(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getCommands())), StandardCharsets.UTF_8));
-		commands.addAll(json);
-		return commands;
+	public Collection<String> getCommands() {
+		JSONArray json = (JSONArray) JSONValue.parse(dao.getCommands());
+		return (Collection<String>) (List<?>) Arrays.asList(json.toArray(new String[json.size()]));
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setConsoleCommands(String... consoleCommands) {
+	public void setConsoleCommands(Collection<String> consoleCommands) {
 		JSONArray json = new JSONArray();
-
-		for(String line : consoleCommands) {
-			json.add(line);
-		}
-
-		dao.setConsoleCommands(Base64.getInstance().print(Compressor.getInstance().compress(json.toJSONString().getBytes(StandardCharsets.UTF_8))));
+		json.addAll(consoleCommands);
+		dao.setConsoleCommands(json.toJSONString());
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<String> getConsoleCommands() {
-		Set<String> consoleCommands = new HashSet<>();
-		JSONArray json = (JSONArray) JSONValue.parse(new String(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getConsoleCommands())), StandardCharsets.UTF_8));
-		consoleCommands.addAll(json);
-		return consoleCommands;
+	public Collection<String> getConsoleCommands() {
+		JSONArray json = (JSONArray) JSONValue.parse(dao.getConsoleCommands());
+		return (Collection<String>) (List<?>) Arrays.asList(json.toArray(new String[json.size()]));
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setLore(List<String> list) {
+	public void setLore(List<String> lore) {
 		JSONArray json = new JSONArray();
-
-		for(String line : list) {
-			json.add(line);
-		}
-
-		dao.setLore(Base64.getInstance().print(Compressor.getInstance().compress(json.toJSONString().getBytes(StandardCharsets.UTF_8))));
+		json.addAll(lore);
+		dao.setLore(json.toJSONString());
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<String> getLore() {
-		List<String> lore = new ArrayList<String>();
-		JSONArray json = (JSONArray) JSONValue.parse(new String(Compressor.getInstance().decompress(Base64.getInstance().parse(dao.getLore())), StandardCharsets.UTF_8));
-		lore.addAll(json);
-		return lore;
+		JSONArray json = (JSONArray) JSONValue.parse(dao.getLore());
+		return (List<String>) (List<?>) Arrays.asList(json.toArray(new String[json.size()]));
 	}
 
 	public void setBinaryTag(NbtCompound tag) {
@@ -249,7 +229,7 @@ public final class ModularItem {
 		this.wrapper.setEnchanted(isEnchanted());
 		this.wrapper.hideFlags(isHideFlags());
 		this.wrapper.setAmount(getAmount());
-		
+
 		if(this.getLore() != null && !this.getLore().isEmpty()) {
 			this.wrapper.setLore(this.getLore());
 		}
@@ -273,7 +253,7 @@ public final class ModularItem {
 		this.setAmount(source.getAmount());
 		this.setEnchanted(this.wrapper.hasNBTKey("ench"));
 		this.setHideFlags(this.wrapper.hasNBTKey("HideFlags") && this.wrapper.getNBTKey("HideFlags", int.class) == 1);
-		
+
 		if(source.hasItemMeta()) {
 			if(source.getItemMeta().hasDisplayName()) this.setDisplayName(source.getItemMeta().getDisplayName());
 			if(source.getItemMeta().hasLore()) this.setLore(source.getItemMeta().getLore());

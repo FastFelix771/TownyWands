@@ -1,6 +1,6 @@
 package de.fastfelix771.townywands.listeners;
 
-import java.util.Set;
+import java.util.Collection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -115,8 +115,8 @@ public class TownyWandsListener implements Listener {
 
 		Player p = e.getPlayer();
 
-		Set<String> commands = e.getItem().getCommands();
-		Set<String> console_commands = e.getItem().getConsoleCommands();
+		Collection<String> commands = e.getItem().getCommands();
+		Collection<String> console_commands = e.getItem().getConsoleCommands();
 
 		if (commands != null && !commands.isEmpty()) {
 			for (String cmd : commands) {
