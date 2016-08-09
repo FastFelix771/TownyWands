@@ -3,6 +3,7 @@ package de.fastfelix771.townywands.api;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -149,6 +150,8 @@ public final class ModularItem {
 
 	@SuppressWarnings("unchecked")
 	public void setCommands(Collection<String> commands) {
+		if(commands == null || commands.isEmpty()) return;
+		
 		JSONArray json = new JSONArray();
 		json.addAll(commands);
 		dao.setCommands(json.toJSONString());
@@ -156,12 +159,16 @@ public final class ModularItem {
 
 	@SuppressWarnings("unchecked")
 	public Collection<String> getCommands() {
+		if(dao.getCommands() == null || dao.getCommands().trim().isEmpty()) return Collections.EMPTY_LIST;
+		
 		JSONArray json = (JSONArray) JSONValue.parse(dao.getCommands());
 		return (Collection<String>) (List<?>) Arrays.asList(json.toArray(new String[json.size()]));
 	}
 
 	@SuppressWarnings("unchecked")
 	public void setConsoleCommands(Collection<String> consoleCommands) {
+		if(consoleCommands == null || consoleCommands.isEmpty()) return;
+		
 		JSONArray json = new JSONArray();
 		json.addAll(consoleCommands);
 		dao.setConsoleCommands(json.toJSONString());
@@ -169,12 +176,16 @@ public final class ModularItem {
 
 	@SuppressWarnings("unchecked")
 	public Collection<String> getConsoleCommands() {
+		if(dao.getConsoleCommands() == null || dao.getConsoleCommands().trim().isEmpty()) return Collections.EMPTY_LIST;
+		
 		JSONArray json = (JSONArray) JSONValue.parse(dao.getConsoleCommands());
 		return (Collection<String>) (List<?>) Arrays.asList(json.toArray(new String[json.size()]));
 	}
 
 	@SuppressWarnings("unchecked")
 	public void setLore(List<String> lore) {
+		if(lore == null || lore.isEmpty()) return;
+		
 		JSONArray json = new JSONArray();
 		json.addAll(lore);
 		dao.setLore(json.toJSONString());
@@ -182,6 +193,8 @@ public final class ModularItem {
 
 	@SuppressWarnings("unchecked")
 	public List<String> getLore() {
+		if(dao.getLore() == null || dao.getLore().trim().isEmpty()) return Collections.EMPTY_LIST;
+		
 		JSONArray json = (JSONArray) JSONValue.parse(dao.getLore());
 		return (List<String>) (List<?>) Arrays.asList(json.toArray(new String[json.size()]));
 	}
