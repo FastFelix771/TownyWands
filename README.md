@@ -1,4 +1,4 @@
-![alt text](http://i.epvpimg.com/OoCLe.png "TownyWands - Modular Inventory GUI's for Minecraft")
+![alt text](https://i.epvpimg.com/OoCLe.png "TownyWands - Modular Inventory GUI's for Minecraft")
 
 TownyWands is an Minecraft plugin that allows you to create highly customized GUI's (Inventories) that allows you to set custom items and bind commands to it.
 You can add as many GUI's as you wan't, set the commands and permissions to whatever you wan't! 
