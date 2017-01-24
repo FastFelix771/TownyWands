@@ -58,7 +58,7 @@
 		</repository>
 		<repository>
 			<id>unitygaming-repo</id>
-			<url>https://services.unitygaming.de/artifactory/maven-repo/</url>
+			<url>https://repo.unitygaming.de/repository/public-snapshots/</url>
 		</repository>
 	</repositories>
 	<dependencies>
