@@ -45,6 +45,8 @@
 									<mainClass>de.fastfelix771.townywands.main.TownyWands</mainClass>
 								</transformer>
 							</transformers>
+							<outputFile>${project.artifactId}-${project.version}.jar</outputFile>
+							<shadedArtifactAttached>false</shadedArtifactAttached>
 						</configuration>
 					</execution>
 				</executions>
