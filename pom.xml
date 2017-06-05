@@ -79,8 +79,8 @@
 			<url>http://repo.dmulloy2.net/content/groups/public/</url>
 		</repository>
 		<repository>
-			<id>unitygaming-repo</id>
-			<url>https://services.unitygaming.de/artifactory/maven-repo/</url>
+			<id>PublicSnapshots</id>
+			<url>https://repo.unitygaming.de/repository/public-snapshots/</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -93,7 +93,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.10.2-R0.1-SNAPSHOT</version>
+			<version>1.11.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -103,15 +103,15 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>de.unitygaming.bukkit</groupId>
 			<artifactId>vSign-API</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

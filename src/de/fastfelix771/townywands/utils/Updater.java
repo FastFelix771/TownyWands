@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (C) 2017 Felix Drescher-Hackel
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package de.fastfelix771.townywands.utils;
 
 import java.io.BufferedReader;
@@ -26,8 +42,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 /**
- * This Updater shouldn't hurt the ToS of CurseForge as it only uses their API.
- * @author FastFelix771
+ * An Updater which shouldn't hurt the ToS of CurseForge as it only uses their API.
  */
 @RequiredArgsConstructor
 @AllArgsConstructor 
@@ -61,7 +76,7 @@ public final class Updater {
 						else throw new NullPointerException("id is null");
 					} catch(Exception e) {
 						e.printStackTrace();
-						Debug.msg(String.format("§cThe Updater has failed to fetch the Curse Project ID of %s!", plugin.getDescription().getName()), "§c".concat(e.getLocalizedMessage()));
+						Debug.log(String.format("§cThe Updater has failed to fetch the Curse Project ID of %s!", plugin.getDescription().getName()), "§c".concat(e.getLocalizedMessage()));
 						return;
 					}
 				}
@@ -98,11 +113,11 @@ public final class Updater {
 
 				} catch(Throwable e) {
 					e.printStackTrace();
-					Debug.msg(String.format("§cThe Updater has failed to fetch updates for %s!", plugin.getDescription().getName()), "§c".concat(e.getLocalizedMessage()));
+					Debug.log(String.format("§cThe Updater has failed to fetch updates for %s!", plugin.getDescription().getName()), "§c".concat(e.getLocalizedMessage()));
 					return;
 				}
 
-				Debug.msg(String.format("§aThe Updater has successfully fetched plugin updates for %s!", plugin.getDescription().getName()));
+				Debug.log(String.format("§aThe Updater has successfully fetched plugin updates for %s!", plugin.getDescription().getName()));
 
 			}
 		});

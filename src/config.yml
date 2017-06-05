@@ -23,7 +23,7 @@ cpu-threads: 4
 checkForUpdates: true
 
 # If you have a BungeeCord Proxy connected to this server, you can enable this feature to make /bungeetp working!
-bungeecord: true
+bungeecord: false
 
 ## HOW DOES THE COMMANDS WORK ##
 # 

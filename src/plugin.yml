@@ -1,8 +1,7 @@
 name: TownyWands
-version: 2.1.0-SNAPSHOT
+version: 2.1.0
 author: FastFelix771
 main: de.fastfelix771.townywands.main.TownyWands
-database: true
 depend: [ProtocolLib]
 commands:
    townywands:
@@ -16,7 +15,7 @@ commands:
      description: Teleports a player to another server in your bungeecord network.
      usage: /bungeetp <player> <servername>
    fakecmd:
-     description: Let players execute fake commands, wich most alias plugins and TownyChat uses.
+     description: Let players execute fake commands, which most alias plugins and TownyChat uses.
      usage: /fakecmd <player> <command>
    modify:
      description: Modify Items!
