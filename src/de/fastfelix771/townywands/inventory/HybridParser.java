@@ -16,75 +16,83 @@
  ******************************************************************************/
 package de.fastfelix771.townywands.inventory;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBException;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.json.simple.JSONArray;
 
-import de.fastfelix771.townywands.dao.EntityGUI;
-import de.fastfelix771.townywands.dao.EntityInventory;
-import de.fastfelix771.townywands.dao.EntityItem;
+import de.fastfelix771.townywands.files.InventoryCommand;
+import de.fastfelix771.townywands.files.ModularInventory;
+import de.fastfelix771.townywands.files.ModularItem;
 import de.fastfelix771.townywands.lang.Language;
-import de.fastfelix771.townywands.main.TownyWands;
+import de.fastfelix771.townywands.main.Debug;
+import de.fastfelix771.townywands.utils.Documents;
 import de.fastfelix771.townywands.utils.Utils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@RequiredArgsConstructor @SuppressWarnings("all")
+@RequiredArgsConstructor 
+@SuppressWarnings("all")
 public class HybridParser {
 
 	@NonNull
 	@Getter @Setter
 	private YamlConfiguration config;
 
-	private void parseGUI(ConfigurationSection gui) {
-		String command = gui.getString("command");
-		String permission = gui.getString("permission");
+	private final File file;
 
-		EntityGUI entity = new EntityGUI();
-
-		entity.setName(gui.getName());
-		entity.setCommand(command);
-		entity.setPermission(permission);
-
-		TownyWands.getInstance().getDatabase().save(entity);
-
-		parseInventory(gui);
-	}
 
 	private void parseInventory(ConfigurationSection inv) {
+		String command = inv.getString("command");
+		String permission = inv.getString("permission");
 		String title = inv.getString("name");
 		int slots = inv.getInt("slots");
 
-		if (title.length() > 32 || !Utils.isValidSlotCount(slots)) {
+		if (title.length() > 32) {
+			Debug.log(title + " has an invalid title! Maximum allow length is 32 characters!");
 			return;
 		}
 
-		EntityInventory entity = new EntityInventory();
+		if (!Utils.isValidSlotCount(slots)) {
+			Debug.log(title + " has an invalid slot count! It can only be either 9, 18, 27, 36, 45 or 54!");
+			return;
+		}
 
-		entity.setGui(inv.getName());
-		entity.setTitle(title);
-		entity.setSlots(slots);
-		entity.setEnabled(true); // Theres only 1 Inventory available with the old config system - no sense in disabling the single inventory.
+		ModularInventory inventory = new ModularInventory();
 
-		TownyWands.getInstance().getDatabase().save(entity);
+		inventory.setCommand(command);
+		inventory.setPermission(permission);
+		inventory.setTitle(title);
+		inventory.setSize(slots);
 
 		ConfigurationSection items = inv.getConfigurationSection("items");
 		Map<String, Object> values = items.getValues(false);
 
 		for(String itemName : values.keySet()) {
-			parseItem(items.getConfigurationSection(itemName), inv.getName());
+			parseItem(items.getConfigurationSection(itemName), inventory);
 		}
 
+		try {
+			Documents.saveDefault("inventories", ChatColor.stripColor(title).trim(), inventory);
+			file.renameTo(Paths.get(file.getAbsolutePath().concat(".converted")).toFile());
+		} catch (JAXBException e) {
+			Debug.log("Failed to convert old inventories to XML!");
+			Debug.log("Exception: " + e.toString());
+		}
 	}
 
-	private void parseItem(ConfigurationSection item, String guiName) {
+	private void parseItem(ConfigurationSection item, ModularInventory inventory) {
 		Material material = Material.getMaterial(item.getInt("itemID"));
 		short metaID = (short) item.getInt("metaID");
 		int slot = item.getInt("slot") - 1;
@@ -99,49 +107,61 @@ public class HybridParser {
 		if(item.getStringList("commands") != null) commands.addAll(item.getStringList("commands"));
 		if(item.getStringList("console_commands") != null) consoleCommands.addAll(item.getStringList("console_commands"));
 
-		EntityInventory inventory = TownyWands.getInstance().getDatabase().find(EntityInventory.class).where().eq("gui", guiName).findUnique();
-		
-		for (Language language : Language.values()) {			
+		for (Language language : Language.values()) {
+			if (language != Language.ENGLISH) continue;
+
 			String displayName = item.getString("name_" + language.getCode());
 			List<String> loreList = item.getStringList("lore_" + language.getCode());
-			
-			if(displayName == null || loreList == null || loreList.isEmpty()) continue;
 
-			JSONArray itemLore = new JSONArray();
-			itemLore.addAll(loreList);
+			if(displayName == null || loreList == null || loreList.isEmpty()) {
+				Debug.log(inventory.getTitle() + "'s Item at slot " + slot + " is missing a DisplayName or Lore!");	
+				continue;
+			}
 
-			EntityItem entity = new EntityItem();
+			if (!(slot >= 0 && slot < 54)) {
+				Debug.log(inventory.getTitle() + "'s Item at slot " + slot + " has an invalid slot number! It must be between 0 and 53 (including these)!");
+				continue;
+			}
 
-			entity.setLanguage(language);
-			entity.setAmount(quantity);
-			if(displayName != null) entity.setDisplayname(displayName);
-			entity.setEnchanted(enchanted);
-			entity.setHideFlags(true);
-			entity.setMaterial(material);
-			entity.setSlot(slot);
-			entity.setMetaID(metaID);
+			ModularItem modularItem = new ModularItem();
 
-			if(!commands.isEmpty()) entity.setCommands(commands.toJSONString());
-			if(!consoleCommands.isEmpty()) entity.setConsoleCommands(consoleCommands.toJSONString());
-			if(loreList != null && !itemLore.isEmpty()) entity.setLore(itemLore.toJSONString());
+			modularItem.setAmount(quantity);
+			modularItem.setDisplayName(displayName);
+			modularItem.setEnchanted(enchanted);
+			modularItem.setHideFlags(true);
+			modularItem.setMaterial(material);
+			modularItem.setSlot(slot);
+			modularItem.setMetaID(metaID);
+			modularItem.getLore().addAll(loreList);
 
-			entity.setInventory(inventory.getId());
-			TownyWands.getInstance().getDatabase().save(entity);
+			if (!commands.isEmpty()) {
+				for (Object command : commands) {
+					String cmd = (String) command;
+					modularItem.getCommands().add(new InventoryCommand(false, cmd));
+				}
+			}
+
+			if (!consoleCommands.isEmpty()) {
+				for (Object command : consoleCommands) {
+					String cmd = (String) command;
+					modularItem.getCommands().add(new InventoryCommand(true, cmd));
+				}
+			}
 		}
 	}
 
 	public void parse() {
 		ConfigurationSection inventories = this.config.getConfigurationSection("inventories");
 
-		for (String guiName : inventories.getValues(false).keySet()) {
+		for (String invName : inventories.getValues(false).keySet()) {
 			long start = System.currentTimeMillis();
-			Bukkit.getConsoleSender().sendMessage("§cTownyWands | §bSetup of inventory §3" + guiName + " §bhas started");
+			Bukkit.getConsoleSender().sendMessage("§cTownyWands | §bConverting of inventory §3" + invName + " §bto new XML format!");
 
-			ConfigurationSection gui = inventories.getConfigurationSection(guiName);
-			parseGUI(gui);
+			ConfigurationSection inv = inventories.getConfigurationSection(invName);
+			parseInventory(inv);
 
 			long end = System.currentTimeMillis();
-			Bukkit.getConsoleSender().sendMessage("§cTownyWands | §bMigration of inventory §3" + guiName + " §btook §3" + (end - start) + "§bms");
+			Bukkit.getConsoleSender().sendMessage("§cTownyWands | §bConversion of inventory §3" + invName + " §btook §3" + (end - start) + "§bms");
 		}
 
 	}

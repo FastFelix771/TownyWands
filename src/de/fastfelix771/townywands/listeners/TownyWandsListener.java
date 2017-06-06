@@ -16,25 +16,16 @@
  ******************************************************************************/
 package de.fastfelix771.townywands.listeners;
 
-import java.util.Collection;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
-import de.fastfelix771.townywands.api.ModularGUI;
-import de.fastfelix771.townywands.api.ModularItem;
 import de.fastfelix771.townywands.api.events.GuiClickEvent;
-import de.fastfelix771.townywands.api.events.GuiOpenEvent;
-import de.fastfelix771.townywands.inventory.ItemWrapper;
-import de.fastfelix771.townywands.lang.Language;
+import de.fastfelix771.townywands.files.InventoryCommand;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Reflect;
 import de.fastfelix771.townywands.utils.Updater.State;
@@ -75,89 +66,42 @@ public class TownyWandsListener implements Listener {
 
 		String command = e.getMessage().substring(1, e.getMessage().length());
 		Player p = e.getPlayer();
-		Language language = Language.getLanguage(p);
-		ModularGUI gui = ModularGUI.fromCommand(command);
 
-		if(gui == null) return;
-		e.setCancelled(true);
 
-		if (!p.hasPermission(gui.getPermission())) {
-			p.sendMessage("§cYou are missing the permission '§a" + gui.getPermission() + "§c'.");
-			return;
-		}
-
-		if(gui.getInventory() == null) {
-			p.sendMessage("§cThis GUI has no inventory enabled at the moment!");
-			p.sendMessage(String.format("§a%d §cdisabled inventories has been found, though!", gui.getInventories().size()));
-			return;
-		}
-
-		GuiOpenEvent event = new GuiOpenEvent(p, gui, gui.getInventory(), language);
-		Bukkit.getPluginManager().callEvent(event);
-		if(event.isCancelled()) return;
-
-		Inventory inv = event.getInventory().toInventory(event.getItemLanguage());
-
-		if(inv.getContents().length <= 0) {
-			if((inv = event.getInventory().toInventory(Language.ENGLISH)).getContents().length <= 0) {
-				p.sendMessage("§cTownyWands | §aThere is no inventory in your language nor the default one (§6ENGLISH§a)!");
-				p.sendMessage("§cPlease report this to an administrator!");
-				return;
-			}
-		}
-
-		if(inv != null) p.openInventory(inv);
 	}
 
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e) {
-		Player p = (Player) e.getWhoClicked();
-		ItemStack item = e.getCurrentItem();
-
-		if ((item == null) || item.getType().equals(Material.AIR)) return;
-		ItemWrapper wrapper = ItemWrapper.wrap(item);
-
-		if(!wrapper.hasNBTKey("townywands_id")) return;
-		e.setCancelled(true);
-
-		GuiClickEvent event = new GuiClickEvent(p, ModularItem.fromID(wrapper.getNBTKey("townywands_id", int.class)));
-		Bukkit.getPluginManager().callEvent(event);
-		if(event.isCancelled()) return;
-
-		onGuiClick(event);
+		//		Player p = (Player) e.getWhoClicked();
+		//		ItemStack item = e.getCurrentItem();
+		//
+		//		if ((item == null) || item.getType().equals(Material.AIR)) return;
+		//		ItemWrapper wrapper = ItemWrapper.wrap(item);
+		//
+		//		if(!wrapper.hasNBTKey("townywands_id")) return;
+		//		e.setCancelled(true);
+		//
+		//		GuiClickEvent event = new GuiClickEvent(p, ModularItem.fromID(wrapper.getNBTKey("townywands_id", int.class)));
+		//		Bukkit.getPluginManager().callEvent(event);
+		//		if(event.isCancelled()) return;
+		//
+		//		onGuiClick(event);
 	}
 
 	private void onGuiClick(GuiClickEvent e) {
-
 		Player p = e.getPlayer();
 
-		Collection<String> commands = e.getItem().getCommands();
-		Collection<String> console_commands = e.getItem().getConsoleCommands();
+		for (InventoryCommand command : e.getItem().getCommands()) {
+			if (command.getValue().trim().isEmpty()) continue;
 
-		if (commands != null && !commands.isEmpty()) {
-			for (String cmd : commands) {
-				if (cmd.trim().isEmpty()) continue;
+			String cmd = command.getValue();
 
-				cmd = cmd.replace("{playername}", p.getName());
-				cmd = cmd.replace("{uuid}", p.getUniqueId().toString());
-				cmd = cmd.replace("{world}", p.getWorld().getName());
-				cmd = cmd.replace("{displayname}", p.getDisplayName());
+			cmd = cmd.replace("{playername}", p.getName());
+			cmd = cmd.replace("{uuid}", p.getUniqueId().toString());
+			cmd = cmd.replace("{world}", p.getWorld().getName());
+			cmd = cmd.replace("{displayname}", p.getDisplayName());
 
-				Bukkit.dispatchCommand(p, cmd);
-			}
-		}
-
-		if (console_commands != null && console_commands.isEmpty()) {
-			for (String cmd : console_commands) {
-				if (cmd.trim().isEmpty()) continue;
-
-				cmd = cmd.replace("{playername}", p.getName());
-				cmd = cmd.replace("{uuid}", p.getUniqueId().toString());
-				cmd = cmd.replace("{world}", p.getWorld().getName());
-				cmd = cmd.replace("{displayname}", p.getDisplayName());
-
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
-			}
+			Bukkit.dispatchCommand(command.isConsole() ? Bukkit.getConsoleSender() : p, cmd);
 		}
 
 	}

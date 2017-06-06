@@ -21,8 +21,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.fastfelix771.townywands.api.ModularGUI;
-import de.fastfelix771.townywands.api.ModularInventory;
+import de.fastfelix771.townywands.files.ModularInventory;
 import de.fastfelix771.townywands.lang.Language;
 import lombok.Getter;
 import lombok.NonNull;
@@ -32,31 +31,28 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class GuiOpenEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
-    
-    
-    @Getter @Setter
-    private boolean cancelled = false;
-    
-    @Getter
-    private final Player player;
-    
-    @Getter @NonNull
-    private ModularGUI gui;
-    
-    @Getter @NonNull
-    private ModularInventory inventory;
-    
-    @Getter @NonNull
-    private Language itemLanguage;
+	private static final HandlerList handlers = new HandlerList();
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
+	@Getter @Setter
+	private boolean cancelled = false;
+
+	@Getter
+	private final Player player;
+
+	@Getter @NonNull
+	private ModularInventory inventory;
+
+	@Getter @NonNull
+	private Language itemLanguage;
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
 
 }

@@ -25,11 +25,13 @@ import java.util.concurrent.Executors;
 import javax.xml.bind.JAXBException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.fastfelix771.townywands.commands.CommandController;
 import de.fastfelix771.townywands.commands.Commands;
 import de.fastfelix771.townywands.files.Config;
+import de.fastfelix771.townywands.inventory.HybridParser;
 import de.fastfelix771.townywands.listeners.TownyWandsListener;
 import de.fastfelix771.townywands.metrics.Metrics;
 import de.fastfelix771.townywands.utils.Documents;
@@ -37,7 +39,7 @@ import de.fastfelix771.townywands.utils.Updater;
 import de.fastfelix771.townywands.utils.Updater.Result;
 import de.unitygaming.bukkit.vsign.Version;
 import de.unitygaming.bukkit.vsign.api.vSignAPI;
-import de.unitygaming.bukkit.vsign.invoker.Invoker;
+import de.unitygaming.bukkit.vsign.util.Invoker;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
@@ -65,7 +67,12 @@ public final class TownyWands extends JavaPlugin {
 		getDataFolder().mkdirs();
 
 		updateConfig();
-		ConfigManager.saveResource("inventories.yml", Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml").toFile(), false);
+		
+		File file = Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml").toFile();
+		ConfigManager.saveResource("inventories.yml", file, false);
+		
+		YamlConfiguration inventories = ConfigManager.loadYAML(file);
+		new HybridParser(inventories, file).parse();
 	}
 
 	@Override

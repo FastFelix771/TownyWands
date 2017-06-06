@@ -23,15 +23,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.fastfelix771.townywands.api.ModularGUI;
-import de.fastfelix771.townywands.api.ModularInventory;
-import de.fastfelix771.townywands.api.ModularItem;
 import de.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import de.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
 import de.fastfelix771.townywands.main.Debug;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Utils;
-import de.unitygaming.bukkit.vsign.invoker.Invoker;
+import de.unitygaming.bukkit.vsign.util.Invoker;
 
 public class Commands {
 
@@ -217,9 +214,9 @@ public class Commands {
 	public void gui_list(Player sender, String[] args) {
 		sender.sendMessage("§6=====================================================");
 
-		for(ModularGUI gui : ModularGUI.loadAll()) {
-			sender.sendMessage(String.format("§6<§3%s§6> - §a%d §6Storages - §a/%s §6- §c%s", gui.getName(), gui.getInventories().size(), gui.getCommand(), gui.getPermission()));
-		}
+		//		for(ModularGUI gui : ModularGUI.loadAll()) {
+		//			sender.sendMessage(String.format("§6<§3%s§6> - §a%d §6Storages - §a/%s §6- §c%s", gui.getName(), gui.getInventories().size(), gui.getCommand(), gui.getPermission()));
+		//		}
 
 		sender.sendMessage("§6=====================================================");
 	}
@@ -234,9 +231,9 @@ public class Commands {
 	public void inv(Player sender, String[] args) {
 		sender.sendMessage("§6=====================================================");
 
-		for(ModularInventory inv : ModularInventory.loadAll()) {
-			sender.sendMessage(String.format("§6<§3%d§6> - §6GUI: §a%s§6 - §a%d §6Slots - §a%d §6Items", inv.getID(), inv.getGUI().getName(), inv.getSlots(), ModularItem.loadAll(inv).size()));
-		}
+		//		for(ModularInventory inv : ModularInventory.loadAll()) {
+		//			sender.sendMessage(String.format("§6<§3%d§6> - §6GUI: §a%s§6 - §a%d §6Slots - §a%d §6Items", inv.getID(), inv.getGUI().getName(), inv.getSlots(), ModularItem.loadAll(inv).size()));
+		//		}
 
 		sender.sendMessage("§6=====================================================");
 	}

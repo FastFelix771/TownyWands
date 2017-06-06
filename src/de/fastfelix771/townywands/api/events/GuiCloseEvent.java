@@ -21,8 +21,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.fastfelix771.townywands.api.ModularGUI;
-import de.fastfelix771.townywands.api.ModularInventory;
+import de.fastfelix771.townywands.files.ModularInventory;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +35,9 @@ public class GuiCloseEvent extends Event implements Cancellable {
 
 	@Getter @Setter
 	private boolean cancelled = false;
-	
-    @Getter
-    private final Player player;
 
-	@Getter @NonNull
-	private ModularGUI gui;
+	@Getter
+	private final Player player;
 
 	@Getter @NonNull
 	private ModularInventory inventory;
