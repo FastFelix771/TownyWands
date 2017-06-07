@@ -84,7 +84,7 @@ public class HybridParser {
 		}
 
 		try {
-			Documents.saveDefault("inventories", ChatColor.stripColor(title).trim(), inventory);
+			Documents.saveDefault("inventories", ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', title)).trim(), inventory);
 			file.renameTo(Paths.get(file.getAbsolutePath().concat(".converted")).toFile());
 		} catch (JAXBException e) {
 			Debug.log("Failed to convert old inventories to XML!");

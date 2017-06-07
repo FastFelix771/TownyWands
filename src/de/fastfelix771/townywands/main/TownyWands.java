@@ -70,9 +70,6 @@ public final class TownyWands extends JavaPlugin {
 		
 		File file = Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml").toFile();
 		ConfigManager.saveResource("inventories.yml", file, false);
-		
-		YamlConfiguration inventories = ConfigManager.loadYAML(file);
-		new HybridParser(inventories, file).parse();
 	}
 
 	@Override
@@ -80,6 +77,9 @@ public final class TownyWands extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new TownyWandsListener(), this);
 		CommandController.registerCommands(this, new Commands());
 
+		File file = Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml").toFile();
+		YamlConfiguration inventories = ConfigManager.loadYAML(file);
+		new HybridParser(inventories, file).parse();
 
 		log.info("vSign's does ".concat(vSignAPI.check() ? "work on this version! " : "not work on this version! ").concat("Version: " + Version.getCurrent().toString()));
 		signAPI = new vSignAPI(this);

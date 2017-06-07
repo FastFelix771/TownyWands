@@ -41,11 +41,11 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>de.fastfelix771.townywands.main.TownyWands</mainClass>
 								</transformer>
 							</transformers>
+							<outputDirectory>target/</outputDirectory>
 							<outputFile>${project.artifactId}-${project.version}.jar</outputFile>
 							<shadedArtifactAttached>false</shadedArtifactAttached>
 						</configuration>
@@ -90,7 +90,8 @@
 		<dependency>
 			<groupId>de.unitygaming.bukkit</groupId>
 			<artifactId>vSign-API</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.2-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

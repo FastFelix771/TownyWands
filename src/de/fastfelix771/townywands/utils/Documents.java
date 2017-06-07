@@ -44,7 +44,7 @@ public final class Documents {
 	 * @throws JAXBException if the de-serialization fails for any reason
 	 */
 	public static <T> T load(String namespace, String name, Class<T> type) throws JAXBException {
-		File file = Paths.get(namespace, name.concat(XML_SUFFIX)).toFile();
+		File file = Paths.get("plugins", "TownyWands", namespace, name.concat(XML_SUFFIX)).toFile();
 		if (!file.exists()) return null;
 
 		return JAXB.unmarshal(file, type);
@@ -65,7 +65,7 @@ public final class Documents {
 		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-		File file = Paths.get(namespace, name.concat(XML_SUFFIX)).toFile();
+		File file = Paths.get("plugins", "TownyWands", namespace, name.concat(XML_SUFFIX)).toFile();
 		if (!file.exists()) file.getParentFile().mkdirs();
 
 		marshaller.marshal(document, file);
@@ -79,7 +79,7 @@ public final class Documents {
 	 * @throws JAXBException if anything goes wrong while persisting the object to disk
 	 */
 	public static <T> void saveDefault(String namespace, String name, T document) throws JAXBException {
-		File file = Paths.get(namespace, name.concat(XML_SUFFIX)).toFile();
+		File file = Paths.get("plugins", "TownyWands", namespace, name.concat(XML_SUFFIX)).toFile();
 		if (file.exists()) return;
 
 		save(namespace, name, document);

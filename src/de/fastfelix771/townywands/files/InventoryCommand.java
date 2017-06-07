@@ -1,9 +1,6 @@
 package de.fastfelix771.townywands.files;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +9,6 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "command")
 public class InventoryCommand {
 
 	@Getter @Setter
