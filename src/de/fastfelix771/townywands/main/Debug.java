@@ -16,37 +16,56 @@
  ******************************************************************************/
 package de.fastfelix771.townywands.main;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.concurrent.Callable;
-import lombok.NonNull;
-import lombok.Synchronized;
-import lombok.extern.java.Log;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+
+import lombok.NonNull;
+import lombok.extern.java.Log;
 
 @Log
 public final class Debug {
 
-    public static final HashSet<String> players = new HashSet<>();
-    public static boolean console = false;
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	public static final HashSet<String> players = new HashSet<>();
+	public static boolean console = false;
 
-    public static void log(@NonNull final String... strings) {
-        Bukkit.getScheduler().callSyncMethod(TownyWands.getInstance(), new Callable<Void>() {
+	public static synchronized void log(@NonNull final String... strings) {
+		Bukkit.getScheduler().callSyncMethod(TownyWands.getInstance(), new Callable<Void>() {
 
-            @Override @Synchronized
-            public Void call() throws Exception {
-                if (console) for (String string : strings)
-                    log.warning(string);
-                for (String name : players) {
-                    if (Bukkit.getPlayer(name) == null) players.remove(name);
-                    else {
-                        for (String string : strings)
-                            Bukkit.getPlayer(name).sendMessage(string);
-                    }
-                }
-                return null;
-            }
+			@Override
+			public Void call() throws Exception {
+				File logFile = Paths.get("plugins", "TownyWands", "logs", String.format("debug-%s.log", DATE_FORMAT.format(new Date()))).toFile();
+				if (!logFile.exists()) logFile.getParentFile().mkdirs();
+				
+				try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true))) {
+					for (String string : strings) {
+						writer.write(ChatColor.stripColor(string).concat("\n"));
+					}
+				}
 
-        });
-    }
+				if (console) for (String string : strings)
+					log.warning(string);
+				for (String name : players) {
+					if (Bukkit.getPlayer(name) == null) players.remove(name);
+					else {
+						for (String string : strings)
+							Bukkit.getPlayer(name).sendMessage(string);
+					}
+				}
+				return null;
+			}
+
+		});
+	}
 
 }

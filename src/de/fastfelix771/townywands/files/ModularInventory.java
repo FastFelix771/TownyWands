@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "inventory")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ModularInventory {
 
 	@Getter @Setter
@@ -28,11 +28,11 @@ public class ModularInventory {
 	private int size = 54;
 
 	@Getter @Setter
-	@XmlElement(name = "command")
+	@XmlAttribute(name = "command")
 	private String command = "gui-" + new BigInteger(16, new Random()).toString();
 
 	@Getter @Setter
-	@XmlElement(name = "permission")
+	@XmlAttribute(name = "permission")
 	private String permission = "townywands.use.".concat(command);
 
 	@Getter

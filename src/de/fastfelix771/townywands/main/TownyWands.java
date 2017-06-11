@@ -87,6 +87,7 @@ public final class TownyWands extends JavaPlugin {
 		checkUpdates();
 		setupMetrics();
 		setupBungee();
+		readInventories();
 
 		log.info("Update-Checking is " + (configuration.updateChecking ? "enabled" : "disabled"));
 		log.info("Auto-Translation is " + (configuration.autoTranslate ? "enabled" : "disabled"));
@@ -154,6 +155,10 @@ public final class TownyWands extends JavaPlugin {
 
 	private void setupBungee() {
 		if (configuration.bungee) this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+	}
+	
+	private void readInventories() {
+		
 	}
 
 }

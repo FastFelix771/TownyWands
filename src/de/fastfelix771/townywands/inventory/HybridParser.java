@@ -113,7 +113,7 @@ public class HybridParser {
 			String displayName = item.getString("name_" + language.getCode());
 			List<String> loreList = item.getStringList("lore_" + language.getCode());
 
-			if(displayName == null || loreList == null || loreList.isEmpty()) {
+			if(displayName == null || loreList == null) {
 				Debug.log(inventory.getTitle() + "'s Item at slot " + slot + " is missing a DisplayName or Lore!");	
 				continue;
 			}
@@ -121,6 +121,13 @@ public class HybridParser {
 			if (!(slot >= 0 && slot < 54)) {
 				Debug.log(inventory.getTitle() + "'s Item at slot " + slot + " has an invalid slot number! It must be between 0 and 53 (including these)!");
 				continue;
+			}
+			
+			// Translate color codes
+			displayName = displayName.replace('&', '§');
+			
+			for (int i = 0; i < loreList.size(); i++) {
+				loreList.set(i, loreList.get(i).replace('&', '§'));
 			}
 
 			ModularItem modularItem = new ModularItem();
@@ -137,16 +144,18 @@ public class HybridParser {
 			if (!commands.isEmpty()) {
 				for (Object command : commands) {
 					String cmd = (String) command;
-					modularItem.getCommands().add(new InventoryCommand(false, cmd));
+					modularItem.getCommands().add(new InventoryCommand(cmd, false));
 				}
 			}
 
 			if (!consoleCommands.isEmpty()) {
 				for (Object command : consoleCommands) {
 					String cmd = (String) command;
-					modularItem.getCommands().add(new InventoryCommand(true, cmd));
+					modularItem.getCommands().add(new InventoryCommand(cmd, true));
 				}
 			}
+
+			inventory.getItems().add(modularItem);
 		}
 	}
 
