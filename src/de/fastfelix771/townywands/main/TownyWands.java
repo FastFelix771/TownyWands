@@ -19,8 +19,6 @@ package de.fastfelix771.townywands.main;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.xml.bind.JAXBException;
 
@@ -28,11 +26,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.fastfelix771.townywands.api.inventories.Inventories;
 import de.fastfelix771.townywands.commands.CommandController;
 import de.fastfelix771.townywands.commands.Commands;
 import de.fastfelix771.townywands.files.Config;
-import de.fastfelix771.townywands.inventory.HybridParser;
-import de.fastfelix771.townywands.inventory.Inventories;
+import de.fastfelix771.townywands.files.ConfigManager;
+import de.fastfelix771.townywands.files.HybridParser;
 import de.fastfelix771.townywands.listeners.TownyWandsListener;
 import de.fastfelix771.townywands.metrics.Metrics;
 import de.fastfelix771.townywands.utils.Documents;
@@ -52,9 +51,6 @@ public final class TownyWands extends JavaPlugin {
 
 	@Getter
 	private static Config configuration;
-
-	@Getter 
-	private static ExecutorService pool;
 
 	@Getter 
 	private static vSignAPI signAPI;
@@ -96,10 +92,6 @@ public final class TownyWands extends JavaPlugin {
 		readInventories();
 
 		log.info("Update-Checking is " + (configuration.updateChecking ? "enabled" : "disabled"));
-		log.info("Auto-Translation is " + (configuration.autoTranslate ? "enabled" : "disabled"));
-		log.info("Using " + configuration.threads + " of " + Runtime.getRuntime().availableProcessors() + " threads.");
-
-		pool = Executors.newFixedThreadPool(configuration.threads);
 	}
 
 	@Override

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package de.fastfelix771.townywands.main;
+package de.fastfelix771.townywands.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import de.fastfelix771.townywands.main.TownyWands;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 

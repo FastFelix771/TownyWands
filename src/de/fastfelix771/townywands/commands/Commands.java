@@ -23,11 +23,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.fastfelix771.townywands.api.inventories.Inventories;
 import de.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import de.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
-import de.fastfelix771.townywands.inventory.Inventories;
-import de.fastfelix771.townywands.main.Debug;
 import de.fastfelix771.townywands.main.TownyWands;
+import de.fastfelix771.townywands.utils.Debug;
 import de.fastfelix771.townywands.utils.Utils;
 import de.unitygaming.bukkit.vsign.util.Invoker;
 

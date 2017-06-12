@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package de.fastfelix771.townywands.inventory;
+package de.fastfelix771.townywands.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -29,7 +29,6 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 
-import de.fastfelix771.townywands.utils.Reflect;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;

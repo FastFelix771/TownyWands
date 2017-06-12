@@ -21,7 +21,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.fastfelix771.townywands.files.ModularInventory;
+import de.fastfelix771.townywands.api.inventories.ModularInventory;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package de.fastfelix771.townywands.inventory;
+package de.fastfelix771.townywands.files;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -30,11 +30,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.json.simple.JSONArray;
 
-import de.fastfelix771.townywands.files.InventoryCommand;
-import de.fastfelix771.townywands.files.ModularInventory;
-import de.fastfelix771.townywands.files.ModularItem;
+import de.fastfelix771.townywands.api.inventories.InventoryCommand;
+import de.fastfelix771.townywands.api.inventories.ModularInventory;
+import de.fastfelix771.townywands.api.inventories.ModularItem;
 import de.fastfelix771.townywands.lang.Language;
-import de.fastfelix771.townywands.main.Debug;
+import de.fastfelix771.townywands.utils.Debug;
 import de.fastfelix771.townywands.utils.Documents;
 import de.fastfelix771.townywands.utils.Utils;
 import lombok.Getter;

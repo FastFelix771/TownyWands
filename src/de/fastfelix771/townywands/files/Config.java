@@ -16,8 +16,6 @@
  ******************************************************************************/
 package de.fastfelix771.townywands.files;
 
-import static java.lang.Math.max;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -30,19 +28,13 @@ public final class Config {
 
 	@XmlAttribute(name = "config-version", required = true)
 	public int version = 2100;
-	
+
 	@XmlAttribute(name = "check-for-updates", required = true)
 	public boolean updateChecking = true;
 
 	@XmlElement(name = "metrics", required = true)
 	public boolean useMetrics = true;
-	
-	@XmlElement(name = "auto-translate", required = true)
-	public boolean autoTranslate = false;
-	
-	@XmlElement(name = "cpu-threads", required = true)
-	public int threads = max(1, Runtime.getRuntime().availableProcessors() - 1);
-	
+
 	@XmlElement(name = "bungeecord", required = true)
 	public boolean bungee = false;
 

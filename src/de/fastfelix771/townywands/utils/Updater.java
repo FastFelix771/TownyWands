@@ -31,7 +31,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import de.fastfelix771.townywands.main.Debug;
 import de.unitygaming.bukkit.vsign.Version;
 import de.unitygaming.bukkit.vsign.util.Invoker;
 import lombok.AllArgsConstructor;

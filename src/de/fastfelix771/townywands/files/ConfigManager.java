@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package de.fastfelix771.townywands.main;
+package de.fastfelix771.townywands.files;
 
 import java.io.File;
 import java.io.FileInputStream;
