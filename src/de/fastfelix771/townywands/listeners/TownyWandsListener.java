@@ -17,15 +17,22 @@
 package de.fastfelix771.townywands.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 
 import de.fastfelix771.townywands.api.events.GuiClickEvent;
 import de.fastfelix771.townywands.files.InventoryCommand;
+import de.fastfelix771.townywands.files.ModularInventory;
+import de.fastfelix771.townywands.files.ModularItem;
+import de.fastfelix771.townywands.inventory.Inventories;
+import de.fastfelix771.townywands.inventory.ItemWrapper;
+import de.fastfelix771.townywands.main.Debug;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Reflect;
 import de.fastfelix771.townywands.utils.Updater.State;
@@ -67,25 +74,61 @@ public class TownyWandsListener implements Listener {
 		String command = e.getMessage().substring(1, e.getMessage().length());
 		Player p = e.getPlayer();
 
+		if (!Inventories.exist(command)) return;
+		e.setCancelled(true);
 
+		ModularInventory inventory = Inventories.get(command);
+
+		if (!p.hasPermission(inventory.getPermission())) {
+			p.sendMessage(String.format("§cYou require the permission §a%s§c to be able to open the GUI §6'§r%s§6'§c!", inventory.getPermission(), inventory.getTitle()));
+			return;
+		}
+
+		Inventories.display(inventory, p);
 	}
 
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e) {
-		//		Player p = (Player) e.getWhoClicked();
-		//		ItemStack item = e.getCurrentItem();
-		//
-		//		if ((item == null) || item.getType().equals(Material.AIR)) return;
-		//		ItemWrapper wrapper = ItemWrapper.wrap(item);
-		//
-		//		if(!wrapper.hasNBTKey("townywands_id")) return;
-		//		e.setCancelled(true);
-		//
-		//		GuiClickEvent event = new GuiClickEvent(p, ModularItem.fromID(wrapper.getNBTKey("townywands_id", int.class)));
-		//		Bukkit.getPluginManager().callEvent(event);
-		//		if(event.isCancelled()) return;
-		//
-		//		onGuiClick(event);
+		Player p = (Player) e.getWhoClicked();
+		ItemStack item = e.getCurrentItem();
+		ItemWrapper wrapper = null;
+
+		if ((item == null) || item.getType().equals(Material.AIR)) return;
+		wrapper = ItemWrapper.wrap(item);
+
+		if(!wrapper.hasNBTKey("townywands.properties.marker")) return;
+		if((int) wrapper.getNBTKey("townywands.properties.marker") != 1) return;
+		e.setCancelled(true);
+
+		String command = wrapper.getNBTKey("townywands.properties.command");
+		int slot = wrapper.getNBTKey("townywands.properties.slot");
+
+		if (command == null || slot <= 0 || slot > 54) {
+			Debug.log("Invalid or missing NBT properties detected!");
+			return;
+		}
+
+		if (!Inventories.exist(command)) {
+			Debug.log("Items cycling arround with an Inventory attached to it, that cannot be found in memory!");
+			Debug.log("This could be a hint that another plugin interferes with TownyWands, please send the following line to the developer:");
+			Debug.log(String.format("<%s | %s>", wrapper.getTag().toString(), Inventories.dump()));
+			return;
+		}
+
+		ModularItem i = Inventories.get(command).getItems().stream()
+				.filter(modularItem -> modularItem.getSlot() == slot)
+				.findFirst().orElse(null); // thats not how its meant to be used xD *temporary quick&dirty solution*
+
+		if (i == null) {
+			Debug.log("null Item while clicking! Something must be wrong with the /".concat(command).concat(" GUI!"));
+			return;
+		}
+
+		GuiClickEvent event = new GuiClickEvent(p, i);
+		Bukkit.getPluginManager().callEvent(event);
+		if(event.isCancelled()) return;
+
+		onGuiClick(event);
 	}
 
 	private void onGuiClick(GuiClickEvent e) {

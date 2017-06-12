@@ -25,6 +25,7 @@ import org.bukkit.entity.Player;
 
 import de.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import de.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
+import de.fastfelix771.townywands.inventory.Inventories;
 import de.fastfelix771.townywands.main.Debug;
 import de.fastfelix771.townywands.main.TownyWands;
 import de.fastfelix771.townywands.utils.Utils;
@@ -32,7 +33,7 @@ import de.unitygaming.bukkit.vsign.util.Invoker;
 
 public class Commands {
 
-	private static final List<String> commands = Arrays.asList("§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §areload", "§c/townywands §adebug");
+	private static final List<String> commands = Arrays.asList("§c/vsign §a<player> [some command using {data}]", "§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §alist", "§c/townywands §adebug");
 
 	@CommandHandler(
 			name = "townywands",
@@ -91,6 +92,16 @@ public class Commands {
 		Debug.console = Debug.console ? false : true;
 		sender.sendMessage(String.format("§6TownyWands DebugMode: §4%s", String.valueOf(Debug.console).toLowerCase()));
 
+	}
+	
+	@SubCommandHandler(
+			name = "list",
+			parent = "townywands",
+			permission = "townywands.cmd.list",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.list§c!")
+	public void townywands_list(CommandSender sender, String[] args) {
+		sender.sendMessage("Not yet implemented.");
+		sender.sendMessage("§cdev-Edition: §6" + Inventories.dump());
 	}
 
 	@CommandHandler(

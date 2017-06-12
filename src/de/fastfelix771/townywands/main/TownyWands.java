@@ -32,6 +32,7 @@ import de.fastfelix771.townywands.commands.CommandController;
 import de.fastfelix771.townywands.commands.Commands;
 import de.fastfelix771.townywands.files.Config;
 import de.fastfelix771.townywands.inventory.HybridParser;
+import de.fastfelix771.townywands.inventory.Inventories;
 import de.fastfelix771.townywands.listeners.TownyWandsListener;
 import de.fastfelix771.townywands.metrics.Metrics;
 import de.fastfelix771.townywands.utils.Documents;
@@ -67,8 +68,10 @@ public final class TownyWands extends JavaPlugin {
 		getDataFolder().mkdirs();
 
 		updateConfig();
-		
+
 		File file = Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml").toFile();
+
+		if (Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml.converted").toFile().exists()) return;
 		ConfigManager.saveResource("inventories.yml", file, false);
 	}
 
@@ -78,8 +81,11 @@ public final class TownyWands extends JavaPlugin {
 		CommandController.registerCommands(this, new Commands());
 
 		File file = Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml").toFile();
-		YamlConfiguration inventories = ConfigManager.loadYAML(file);
-		new HybridParser(inventories, file).parse();
+
+		if (file.exists()) {
+			YamlConfiguration inventories = ConfigManager.loadYAML(file);
+			new HybridParser(inventories, file).parse();
+		}
 
 		log.info("vSign's does ".concat(vSignAPI.check() ? "work on this version! " : "not work on this version! ").concat("Version: " + Version.getCurrent().toString()));
 		signAPI = new vSignAPI(this);
@@ -156,9 +162,9 @@ public final class TownyWands extends JavaPlugin {
 	private void setupBungee() {
 		if (configuration.bungee) this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
-	
+
 	private void readInventories() {
-		
+		Inventories.loadAll();
 	}
 
 }

@@ -68,6 +68,9 @@ public class HybridParser {
 			Debug.log(title + " has an invalid slot count! It can only be either 9, 18, 27, 36, 45 or 54!");
 			return;
 		}
+		
+		// replace color codes
+		title = title.replace('&', '§');
 
 		ModularInventory inventory = new ModularInventory();
 

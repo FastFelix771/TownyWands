@@ -22,7 +22,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import de.fastfelix771.townywands.files.ModularInventory;
-import de.fastfelix771.townywands.lang.Language;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -42,9 +41,6 @@ public class GuiOpenEvent extends Event implements Cancellable {
 
 	@Getter @NonNull
 	private ModularInventory inventory;
-
-	@Getter @NonNull
-	private Language itemLanguage;
 
 	@Override
 	public HandlerList getHandlers() {
