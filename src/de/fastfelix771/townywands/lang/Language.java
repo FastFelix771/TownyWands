@@ -83,6 +83,7 @@ public enum Language implements Serializable {
 	@Getter
 	private String code;
 
+	@SuppressWarnings("deprecation")
 	public static Language getLanguage(Player p) {
 		if(Reflect.getClass("org.bukkit.entity.Player.Spigot") != null) {
 			return getByCode(p.spigot().getLocale());
