@@ -1,5 +1,5 @@
 name: TownyWands
-version: 2.1.0
+version: 2.1.1
 author: FastFelix771
 main: de.fastfelix771.townywands.main.TownyWands
 depend: [ProtocolLib]
