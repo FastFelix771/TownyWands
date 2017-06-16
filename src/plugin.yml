@@ -1,5 +1,5 @@
 name: TownyWands
-version: 2.0.9-SNAPSHOT
+version: 2.1.1
 author: FastFelix771
 main: de.fastfelix771.townywands.main.TownyWands
 depend: [ProtocolLib]
@@ -10,10 +10,19 @@ commands:
      aliases: [tws]
    vsign:
      description: Creates a virtual Sign and executes commands from the given input.
-     usage: /vsign playername command {data}
+     usage: /vsign <player> <command {data}>
    bungeetp:
      description: Teleports a player to another server in your bungeecord network.
-     usage: /bungeetp playername servername
+     usage: /bungeetp <player> <servername>
    fakecmd:
-     description: Let players execute fake commands, wich most alias plugins and TownyChat uses.
-     usage: /fakecmd playername commandToExecute
+     description: Let players execute fake commands, which most alias plugins and TownyChat uses.
+     usage: /fakecmd <player> <command>
+   modify:
+     description: Modify Items!
+     usage: /modify help
+   gui:
+     description: Modify GUIs!
+     usage: /gui help
+   inv:
+     description: Modify Inventories!
+     usage: /inv help

@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (C) 2017 Felix Drescher-Hackel
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package de.fastfelix771.townywands.listeners;
 
 import org.bukkit.Bukkit;
@@ -8,134 +24,129 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import de.fastfelix771.townywands.api.GuiClickEvent;
-import de.fastfelix771.townywands.inventory.ItemWrapper;
-import de.fastfelix771.townywands.inventory.ModularGUI;
-import de.fastfelix771.townywands.lang.Language;
+import de.fastfelix771.townywands.api.events.GuiClickEvent;
+import de.fastfelix771.townywands.api.inventories.Inventories;
+import de.fastfelix771.townywands.api.inventories.InventoryCommand;
+import de.fastfelix771.townywands.api.inventories.ModularInventory;
+import de.fastfelix771.townywands.api.inventories.ModularItem;
 import de.fastfelix771.townywands.main.TownyWands;
-import de.fastfelix771.townywands.utils.Database;
+import de.fastfelix771.townywands.utils.Debug;
+import de.fastfelix771.townywands.utils.ItemWrapper;
+import de.fastfelix771.townywands.utils.Reflect;
 import de.fastfelix771.townywands.utils.Updater.State;
+import de.unitygaming.bukkit.vsign.Version;
 
 public class TownyWandsListener implements Listener {
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
+	@EventHandler
+	public void onJoin(PlayerJoinEvent e) {
 
-        Player p = e.getPlayer();
+		Player p = e.getPlayer();
 
-        if(!TownyWands.isUpdateCheckingEnabled() || TownyWands.getUpdateResult() == null || TownyWands.getUpdateResult().getState() != State.UPDATE_FOUND) return;
-        if ((p.isOp() || p.hasPermission("townywands.msg.update"))) {
-            p.sendMessage("§4!UPDATE! §6-> TownyWands has found an update!");
-            p.sendMessage("§4!UPDATE! §6-> You are currently on version §c" + TownyWands.getInstance().getDescription().getVersion());
-            p.sendMessage("§4!UPDATE! §6-> Newest version is §c" + TownyWands.getUpdateResult().getLatestVersion());
-/*
-            if (Version.getCurrent().isOlderThan(Version.v1_8)) {
-                p.sendMessage("§4!UPDATE! §6-> Download latest: §a" + TownyWands.getUpdateResult().getLatestURL());
-                return;
-            }
+		if(!TownyWands.getConfiguration().updateChecking || TownyWands.getUpdateResult() == null || TownyWands.getUpdateResult().getState() != State.UPDATE_FOUND) return;
+		if ((p.isOp() || p.hasPermission("townywands.msg.update"))) {
+			p.sendMessage("§4!UPDATE! §6-> TownyWands has found an update!");
+			p.sendMessage("§4!UPDATE! §6-> You are currently on version §c" + TownyWands.getInstance().getDescription().getVersion());
+			p.sendMessage("§4!UPDATE! §6-> Newest version is §c" + TownyWands.getUpdateResult().getLatestVersion());
 
-            if(Version.getCurrent().isNewerThan(Version.v1_7)) {
-                if(Reflect.getClass("net.md_5.bungee.api.chat.TextComponent") == null) return;
+			if (Version.getCurrent().isOlderThan(Version.v1_8)) {
+				p.sendMessage("§4!UPDATE! §6-> Download latest: §a" + TownyWands.getUpdateResult().getLatestURL());
+				return;
+			}
 
-                net.md_5.bungee.api.chat.TextComponent text = new net.md_5.bungee.api.chat.TextComponent("§4!UPDATE! §6-> Download latest: §a§l[Click Me]");
-                text.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL, TownyWands.getUpdateResult().getLatestURL()));
-                p.spigot().sendMessage(text);
-            }*/
+			if(Version.getCurrent().isNewerThan(Version.v1_7)) {
+				if(Reflect.getClass("net.md_5.bungee.api.chat.TextComponent") == null || Reflect.getClass("net.md_5.bungee.api.chat.BaseComponent") == null) return;
 
-        }
-    }
+				net.md_5.bungee.api.chat.TextComponent text = new net.md_5.bungee.api.chat.TextComponent("§4!UPDATE! §6-> Download latest: §a§l[Click Me]");
+				text.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL, TownyWands.getUpdateResult().getLatestURL()));
+				p.spigot().sendMessage(text);
+			}
 
-    @EventHandler
-    public void onCommand(final PlayerCommandPreprocessEvent e) { // add GuiOpenEvent & GuiCloseEvent
-        final String command = e.getMessage().substring(1, e.getMessage().length());
-        final Player p = e.getPlayer();
+		}
+	}
 
-        if (!Database.contains(command)) return;
-        e.setCancelled(true);
+	@EventHandler
+	public void onCommand(PlayerCommandPreprocessEvent e) {
+		if(e.getMessage().trim().isEmpty() || e.getMessage().trim().length() < 2) return;
 
-        Language lang = Language.getLanguage(p);
-        ModularGUI gui = Database.get(command);
+		String command = e.getMessage().substring(1, e.getMessage().length());
+		Player p = e.getPlayer();
 
-        final String permission = gui.getPermission();
-        if (!p.hasPermission(permission)) {
-            p.sendMessage("§cYou are missing the permission '§a" + permission + "§c'.");
-            return;
-        }
+		if (!Inventories.exist(command)) return;
+		e.setCancelled(true);
 
-        Inventory inv = null;
+		ModularInventory inventory = Inventories.get(command);
 
-        if (gui.contains(lang)) inv = gui.get(lang);
-        else {
-            if (!gui.contains(Language.ENGLISH)) {
-                p.sendMessage("§cTownyWands | §aThere is no GUI registered in your language nor the default one (§6ENGLISH§a)!");
-                p.sendMessage("§cPlease report this to an administrator!");
-                return;
-            }
-            inv = gui.get(Language.ENGLISH);
-        }
+		if (!p.hasPermission(inventory.getPermission())) {
+			p.sendMessage(String.format("§cYou require the permission §a%s§c to be able to open the GUI §6'§r%s§6'§c!", inventory.getPermission(), inventory.getTitle()));
+			return;
+		}
 
-        if(inv != null) p.openInventory(inv);
+		Inventories.display(inventory, p);
+	}
 
-    }
+	@EventHandler
+	public void onInvClick(InventoryClickEvent e) {
+		Player p = (Player) e.getWhoClicked();
+		ItemStack item = e.getCurrentItem();
+		ItemWrapper wrapper = null;
 
-    @EventHandler
-    public void onInvClick(InventoryClickEvent e) {
-        Player p = (Player) e.getWhoClicked();
-        ItemStack item = e.getCurrentItem();
+		if ((item == null) || item.getType().equals(Material.AIR)) return;
+		wrapper = ItemWrapper.wrap(item);
 
-        if ((item == null) || item.getType().equals(Material.AIR)) return;
-        ItemWrapper wrapper = ItemWrapper.wrap(item);
+		if(!wrapper.hasNBTKey("townywands.properties.marker")) return;
+		if((int) wrapper.getNBTKey("townywands.properties.marker") != 1) return;
+		e.setCancelled(true);
 
-        if (!(wrapper.hasValue("key") && Database.contains(wrapper.getValue("key", String.class)))) return;
-        e.setCancelled(true);
+		String command = wrapper.getNBTKey("townywands.properties.command");
+		int slot = wrapper.getNBTKey("townywands.properties.slot");
 
-        ItemWrapper eventWrapper = wrapper.clone(); // Prevents GUI modifications on accident, and allows for adding commands etc. on-the-fly.
-        GuiClickEvent event = new GuiClickEvent(eventWrapper, p, Database.get(wrapper.getValue("key", String.class)), Database.get(wrapper.getValue("key", String.class), Language.getLanguage(p)));
-        Bukkit.getPluginManager().callEvent(event);
-        if(event.isCancelled()) return;
+		if (command == null || slot <= 0 || slot > 54) {
+			Debug.log("Invalid or missing NBT properties detected!");
+			return;
+		}
 
-        onGuiClick(event);
-    }
+		if (!Inventories.exist(command)) {
+			Debug.log("Items cycling arround with an Inventory attached to it, that cannot be found in memory!");
+			Debug.log("This could be a hint that another plugin interferes with TownyWands, please send the following line to the developer:");
+			Debug.log(String.format("<%s | %s>", wrapper.getTag().toString(), Inventories.dump()));
+			return;
+		}
 
-    // INTERNAL //
+		ModularItem i = Inventories.get(command).getItems().stream()
+				.filter(modularItem -> modularItem.getSlot() == slot)
+				.findFirst().orElse(null); // thats not how its meant to be used xD *temporary quick&dirty solution*
 
-    public void onGuiClick(GuiClickEvent e) {
+		if (i == null) {
+			Debug.log("null Item while clicking! Something must be wrong with the /".concat(command).concat(" GUI!"));
+			return;
+		}
 
-        Player p = e.getPlayer();
-        // Add anti-spam click check maybe?
+		GuiClickEvent event = new GuiClickEvent(p, i);
+		Bukkit.getPluginManager().callEvent(event);
+		if(event.isCancelled()) return;
 
-        String[] commands = e.getItemWrapper().getValue("commands");
-        String[] console_commands = e.getItemWrapper().getValue("console_commands");
+		onGuiClick(event);
+	}
 
-        if (commands != null && commands.length > 0) {
-            for (String cmd : commands) {
-                if (cmd.trim().isEmpty()) continue;
+	private void onGuiClick(GuiClickEvent e) {
+		Player p = e.getPlayer();
 
-                cmd = cmd.replace("{playername}", p.getName());
-                cmd = cmd.replace("{uuid}", p.getUniqueId().toString());
-                cmd = cmd.replace("{world}", p.getWorld().getName());
-                cmd = cmd.replace("{displayname}", p.getDisplayName());
+		for (InventoryCommand command : e.getItem().getCommands()) {
+			if (command.getValue().trim().isEmpty()) continue;
 
-                Bukkit.dispatchCommand(p, cmd);
-            }
-        }
+			String cmd = command.getValue();
 
-        if (console_commands != null && console_commands.length > 0) {
-            for (String cmd : console_commands) {
-                if (cmd.trim().isEmpty()) continue;
+			cmd = cmd.replace("{playername}", p.getName());
+			cmd = cmd.replace("{uuid}", p.getUniqueId().toString());
+			cmd = cmd.replace("{world}", p.getWorld().getName());
+			cmd = cmd.replace("{displayname}", p.getDisplayName());
 
-                cmd = cmd.replace("{playername}", p.getName());
-                cmd = cmd.replace("{uuid}", p.getUniqueId().toString());
-                cmd = cmd.replace("{world}", p.getWorld().getName());
-                cmd = cmd.replace("{displayname}", p.getDisplayName());
+			Bukkit.dispatchCommand(command.isConsole() ? Bukkit.getConsoleSender() : p, cmd);
+		}
 
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
-            }
-        }
-
-    }
+	}
 
 }

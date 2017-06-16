@@ -1,136 +1,162 @@
+/*******************************************************************************
+ * Copyright (C) 2017 Felix Drescher-Hackel
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package de.fastfelix771.townywands.main;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
+import java.nio.file.Paths;
+
+import javax.xml.bind.JAXBException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.fastfelix771.townywands.api.inventories.Inventories;
 import de.fastfelix771.townywands.commands.CommandController;
 import de.fastfelix771.townywands.commands.Commands;
-import de.fastfelix771.townywands.inventory.ConfigurationParser;
+import de.fastfelix771.townywands.files.Config;
+import de.fastfelix771.townywands.files.ConfigManager;
+import de.fastfelix771.townywands.files.HybridParser;
 import de.fastfelix771.townywands.listeners.TownyWandsListener;
 import de.fastfelix771.townywands.metrics.Metrics;
-import de.fastfelix771.townywands.utils.Database;
+import de.fastfelix771.townywands.utils.Documents;
 import de.fastfelix771.townywands.utils.Updater;
 import de.fastfelix771.townywands.utils.Updater.Result;
 import de.unitygaming.bukkit.vsign.Version;
 import de.unitygaming.bukkit.vsign.api.vSignAPI;
-import de.unitygaming.bukkit.vsign.invoker.Invoker;
-import lombok.AccessLevel;
+import de.unitygaming.bukkit.vsign.util.Invoker;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
 @Log(topic = "TownyWands")
 public final class TownyWands extends JavaPlugin {
 
-	private static final int CONFIG_VERSION = 1800;
-	@Getter private static TownyWands instance;
-	@Getter private static ConfigurationParser parser;
-	@Getter private static boolean autotranslate;
-	@Getter private static ExecutorService pool;
-	@Getter private static vSignAPI signAPI;
-	@Getter private static boolean bungeecord;
-	@Getter private static boolean updateCheckingEnabled;
-	@Getter @Setter(value=AccessLevel.PRIVATE) private static Result updateResult;
-	private static int threads;
+	@Getter 
+	private static TownyWands instance;
+
+	@Getter
+	private static Config configuration;
+
+	@Getter 
+	private static vSignAPI signAPI;
+
+	@Getter
+	private volatile static Result updateResult;
 
 	@Override
 	public void onLoad() {
 		instance = this;
 		getDataFolder().mkdirs();
-		ConfigManager.saveResource("config.yml", new File(this.getDataFolder().getAbsolutePath() + "/config.yml"), false);
-		ConfigManager.saveResource("inventories.yml", new File(this.getDataFolder().getAbsolutePath() + "/inventories.yml"), false);
 
 		updateConfig();
+
+		File file = Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml").toFile();
+
+		if (Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml.converted").toFile().exists()) return;
+		ConfigManager.saveResource("inventories.yml", file, false);
 	}
 
-	@Override @SneakyThrows
+	@Override
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(new TownyWandsListener(), this);
 		CommandController.registerCommands(this, new Commands());
 
+		File file = Paths.get(this.getDataFolder().getAbsolutePath(), "inventories.yml").toFile();
+
+		if (file.exists()) {
+			YamlConfiguration inventories = ConfigManager.loadYAML(file);
+			new HybridParser(inventories, file).parse();
+		}
+
+		log.info("vSign's does ".concat(vSignAPI.check() ? "work on this version! " : "not work on this version! ").concat("Version: " + Version.getCurrent().toString()));
 		signAPI = new vSignAPI(this);
-		log.info("vSign's does ".concat(vSignAPI.check() ? "work on this version! " : "not work on this version! ").concat("Version: ".concat(Version.getCurrent().toString())));
 
-		metrics(this.getConfig().getBoolean("metrics"));
-		autotranslate = this.getConfig().getBoolean("auto-translate");
-		threads = this.getConfig().getInt("cpu-threads");
-		updateCheckingEnabled = this.getConfig().getBoolean("checkForUpdates");
-		bungeecord = this.getConfig().getBoolean("bungeecord");
+		checkUpdates();
+		setupMetrics();
+		setupBungee();
+		readInventories();
 
-		if (bungeecord) this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-
-		if (updateCheckingEnabled) new Updater(this, 89537).check(new Invoker<Result>() {
-
-			@Override
-			public void invoke(Result result) {
-				setUpdateResult(result);
-			}
-
-		});;
-
-		log.info("Update-Checking is " + (updateCheckingEnabled ? "enabled" : "disabled"));
-		log.info("Auto-Translation is " + (autotranslate ? "enabled" : "disabled"));
-		log.info("Using " + threads + " of " + Runtime.getRuntime().availableProcessors() + " threads.");
-
-		pool = Executors.newFixedThreadPool(threads);
-
-		parser = new ConfigurationParser(ConfigManager.loadYAML(new File(this.getDataFolder().getAbsolutePath() + "/inventories.yml")), Level.WARNING, true, new File(this.getDataFolder().getAbsolutePath() + "/inventories.yml"));
-		getParser().parse();
+		log.info("Update-Checking is " + (configuration.updateChecking ? "enabled" : "disabled"));
 	}
-	
+
 	@Override
 	public void onDisable() {
-		parser = null;
-		Database.clear();
 		instance = null;
 	}
 
-	public static void reload() {
-		Database.clear();
-		getInstance().reloadConfig();
-		getParser().getInventoryTokens().clear();
-		parser.setConfig(YamlConfiguration.loadConfiguration(new File(getInstance().getDataFolder().getAbsolutePath() + "/inventories.yml")));
-		getParser().parse();
-	}
-
-	private void metrics(final boolean bool) {
-		if (bool) try {
-			final Metrics metrics = new Metrics(this);
+	private void setupMetrics() {
+		if (configuration.useMetrics) try {
+			Metrics metrics = new Metrics(this);
 			metrics.start();
 		}
-		catch (final IOException e) {
+		catch (IOException e) {
 			log.warning("Failed to start plugin metrics! Error: " + e.getLocalizedMessage());
 		}
-		log.info("Metrics are " + (bool ? "enabled" : "disabled"));
+		log.info("Metrics are " + (configuration.useMetrics ? "enabled" : "disabled"));
 	}
 
 	private void updateConfig() {
-		saveDefaultConfig();
+		loadConfig();
 
-		int currentVersion = getConfig().getInt("configVersion");
-		if(currentVersion == CONFIG_VERSION) return;
+		int currentVersion = new Config().version;
+		if(currentVersion == configuration.version) return;
 
-		log.info(String.format("%s configuration file...", currentVersion < CONFIG_VERSION ? "Updating" : "Downgrading"));
+		log.info(String.format("%s configuration file...", currentVersion < configuration.version ? "Downgrading" : "Upgrading"));
 
-		File file = new File(getDataFolder().getAbsolutePath().concat("/config.yml"));
-		if(!file.exists()) return;
+		File file = Paths.get("configs", "configuration.xml").toFile();
+		File dest = Paths.get("configs", String.format("configuration_%d.xml", currentVersion)).toFile();
 
-		if(file.renameTo(new File(getDataFolder().getAbsolutePath().concat(String.format("/config_%d.yml", currentVersion))))) {
-			saveDefaultConfig();
-			reloadConfig();
-			return;
+		if(file.renameTo(dest)) loadConfig();
+	}
+
+	private void loadConfig() {
+		try {
+			Documents.saveDefault("configs", "configuration", new Config());
+			configuration = (Config) Documents.load("configs", "configuration", Config.class);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+
+			log.warning("Failed to read or create the configuration file!");
+			log.warning("Using the default configuration...");
+
+			configuration = new Config();
 		}
+	}
 
-		log.severe("Renaming of the old configuration file has failed, continue using the old one...");
+	private void checkUpdates() {
+		if (configuration.updateChecking) {
+			new Updater(this, 89537).check(new Invoker<Result>() {
 
+				@Override
+				public void invoke(Result result) {
+					updateResult = result;
+				}
+
+			});
+		}
+	}
+
+	private void setupBungee() {
+		if (configuration.bungee) this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+	}
+
+	private void readInventories() {
+		Inventories.loadAll();
 	}
 
 }

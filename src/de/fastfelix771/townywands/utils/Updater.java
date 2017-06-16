@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (C) 2017 Felix Drescher-Hackel
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package de.fastfelix771.townywands.utils;
 
 import java.io.BufferedReader;
@@ -15,9 +31,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import de.fastfelix771.townywands.main.Debug;
 import de.unitygaming.bukkit.vsign.Version;
-import de.unitygaming.bukkit.vsign.invoker.Invoker;
+import de.unitygaming.bukkit.vsign.util.Invoker;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
 import lombok.Data;
@@ -26,115 +41,114 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 /**
- * This Updater shouldn't hurt the ToS of CurseForge as it only uses their API.
- * @author FastFelix771
+ * An Updater which shouldn't hurt the ToS of CurseForge as it only uses their API.
  */
 @RequiredArgsConstructor
 @AllArgsConstructor 
 public final class Updater {
 
-    private static final String URL_FETCH_ID = "https://api.curseforge.com/servermods/projects?search=%s";
-    private static final String URL_FETCH_UPDATES = "https://api.curseforge.com/servermods/files?projectIds=%d";
-    private static final Pattern VERSION_PATTERN = Pattern.compile("(\\bv((\\d.)+)?\\b).");
+	private static final String URL_FETCH_ID = "https://api.curseforge.com/servermods/projects?search=%s";
+	private static final String URL_FETCH_UPDATES = "https://api.curseforge.com/servermods/files?projectIds=%d";
+	private static final Pattern VERSION_PATTERN = Pattern.compile("(\\bv((\\d.)+)?\\b).");
 
-    private final Plugin plugin;
-    private volatile long curseID = -1;
+	private final Plugin plugin;
+	private volatile long curseID = -1;
 
-    public void check(@NonNull final Invoker<Result> invoker) {
+	public void check(@NonNull final Invoker<Result> invoker) {
 
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
+		Executors.newSingleThreadExecutor().execute(new Runnable() {
 
-            @Override
-            public void run() {
-                if(curseID == -1) {
-                    try {
-                        String raw = request(String.format(URL_FETCH_ID, plugin.getDescription().getName().toLowerCase()), 10);
+			@Override
+			public void run() {
+				if(curseID == -1) {
+					try {
+						String raw = request(String.format(URL_FETCH_ID, plugin.getDescription().getName().toLowerCase()), 10);
 
-                        JSONArray array = (JSONArray) JSONValue.parse(raw);
-                        if(array == null || array.isEmpty()) throw new NullPointerException("array is null or empty");
+						JSONArray array = (JSONArray) JSONValue.parse(raw);
+						if(array == null || array.isEmpty()) throw new NullPointerException("array is null or empty");
 
-                        JSONObject json = (JSONObject) array.get(0);
-                        if(json == null || json.isEmpty()) throw new NullPointerException("json is null or empty");
+						JSONObject json = (JSONObject) array.get(0);
+						if(json == null || json.isEmpty()) throw new NullPointerException("json is null or empty");
 
-                        long id = (long) json.get("id");
-                        if(id != -1 && id != 0) curseID = id;
-                        else throw new NullPointerException("id is null");
-                    } catch(Exception e) {
-                        e.printStackTrace();
-                        Debug.msg(String.format("§cThe Updater has failed to fetch the Curse Project ID of %s!", plugin.getDescription().getName()), "§c".concat(e.getLocalizedMessage()));
-                        return;
-                    }
-                }
+						long id = (long) json.get("id");
+						if(id != -1 && id != 0) curseID = id;
+						else throw new NullPointerException("id is null");
+					} catch(Exception e) {
+						e.printStackTrace();
+						Debug.log(String.format("§cThe Updater has failed to fetch the Curse Project ID of %s!", plugin.getDescription().getName()), "§c".concat(e.getLocalizedMessage()));
+						return;
+					}
+				}
 
-                try {
-                    String raw = request(String.format(URL_FETCH_UPDATES, curseID), 10);
+				try {
+					String raw = request(String.format(URL_FETCH_UPDATES, curseID), 10);
 
-                    JSONArray array = (JSONArray) JSONValue.parse(raw);
-                    if(array == null || array.isEmpty()) throw new NullPointerException("array is null");
+					JSONArray array = (JSONArray) JSONValue.parse(raw);
+					if(array == null || array.isEmpty()) throw new NullPointerException("array is null");
 
-                    JSONObject json = (JSONObject) array.get(array.size() - 1);
-                    if(json == null || json.isEmpty()) throw new NullPointerException("json is null");
+					JSONObject json = (JSONObject) array.get(array.size() - 1);
+					if(json == null || json.isEmpty()) throw new NullPointerException("json is null");
 
-                    String latestVersion = null;
-                    Matcher matcher = VERSION_PATTERN.matcher((String) json.get("name"));
-                    if(matcher.find()) {
-                        latestVersion = matcher.toMatchResult().group(0).split(" ")[0]; // the version pattern isnt perfect yet, this is a small work-arround for one of its weaknesses
-                    } else throw new IllegalStateException("version pattern did not match");
-                    if(latestVersion == null || latestVersion.isEmpty()) throw new NullPointerException("latestVersion is null after pattern match");
+					String latestVersion = null;
+					Matcher matcher = VERSION_PATTERN.matcher((String) json.get("name"));
+					if(matcher.find()) {
+						latestVersion = matcher.toMatchResult().group(0).split(" ")[0]; // the version pattern isnt perfect yet, this is a small work-arround for one of its weaknesses
+					} else throw new IllegalStateException("version pattern did not match");
+					if(latestVersion == null || latestVersion.isEmpty()) throw new NullPointerException("latestVersion is null after pattern match");
 
-                    String latestURL = (String) json.get("downloadUrl");
-                    Version gameVersion = Version.fromString(((String) json.get("gameVersion")).replace('.', '_'));
+					String latestURL = (String) json.get("downloadUrl");
+					Version gameVersion = Version.fromString(((String) json.get("gameVersion")).replace('.', '_'));
 
-                    int latest = Integer.parseInt(latestVersion.replaceAll("[^0-9]+", ""));
-                    int current = Integer.parseInt(plugin.getDescription().getVersion().replaceAll("[^0-9]+", ""));
+					int latest = Integer.parseInt(latestVersion.replaceAll("[^0-9]+", ""));
+					int current = Integer.parseInt(plugin.getDescription().getVersion().replaceAll("[^0-9]+", ""));
 
-                    Result result = null;
+					Result result = null;
 
-                    if (latest == current) result = new Result(State.NO_UPDATE, latestVersion, latestURL, gameVersion);
-                    else if (latest > current) result = new Result(State.UPDATE_FOUND, latestVersion, latestURL, gameVersion);
-                    else result = new Result(State.ERROR, latestVersion, latestURL, gameVersion);
+					if (latest == current) result = new Result(State.NO_UPDATE, latestVersion, latestURL, gameVersion);
+					else if (latest > current) result = new Result(State.UPDATE_FOUND, latestVersion, latestURL, gameVersion);
+					else result = new Result(State.ERROR, latestVersion, latestURL, gameVersion);
 
-                    invoker.invoke(result);
+					invoker.invoke(result);
 
-                } catch(Throwable e) {
-                    e.printStackTrace();
-                    Debug.msg(String.format("§cThe Updater has failed to fetch updates for %s!", plugin.getDescription().getName()), "§c".concat(e.getLocalizedMessage()));
-                    return;
-                }
+				} catch(Throwable e) {
+					e.printStackTrace();
+					Debug.log(String.format("§cThe Updater has failed to fetch updates for %s!", plugin.getDescription().getName()), "§c".concat(e.getLocalizedMessage()));
+					return;
+				}
 
-                Debug.msg(String.format("§aThe Updater has successfully fetched plugin updates for %s!", plugin.getDescription().getName()));
+				Debug.log(String.format("§aThe Updater has successfully fetched plugin updates for %s!", plugin.getDescription().getName()));
 
-            }
-        });
-    }
+			}
+		});
+	}
 
-    @SneakyThrows
-    private static String request(@NonNull String webAddress, final int timeout) {
-        URL url = new URL(webAddress);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+	@SneakyThrows
+	private static String request(@NonNull String webAddress, final int timeout) {
+		URL url = new URL(webAddress);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
 
-        connection.setReadTimeout(timeout * 1000);
-        connection.setRequestMethod("GET");
-        connection.setInstanceFollowRedirects(true);
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-        connection.setRequestProperty("Accept-Charset", "UTF-8");
+		connection.setReadTimeout(timeout * 1000);
+		connection.setRequestMethod("GET");
+		connection.setInstanceFollowRedirects(true);
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+		connection.setRequestProperty("Accept-Charset", "UTF-8");
 
-        @Cleanup BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-        return reader.readLine();
-    }
+		@Cleanup BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+		return reader.readLine();
+	}
 
-    @Data
-    public class Result {
+	@Data
+	public class Result {
 
-        private final State state;
-        private final String latestVersion;
-        private final String latestURL;
-        private final Version gameVersion;
+		private final State state;
+		private final String latestVersion;
+		private final String latestURL;
+		private final Version gameVersion;
 
-    }
+	}
 
-    public enum State {
-        UPDATE_FOUND, NO_UPDATE, ERROR;
-    }
+	public enum State {
+		UPDATE_FOUND, NO_UPDATE, ERROR;
+	}
 
 }

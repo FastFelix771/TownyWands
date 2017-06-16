@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (C) 2017 Felix Drescher-Hackel
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ ******************************************************************************/
 package de.fastfelix771.townywands.utils;
 
 import java.lang.reflect.Constructor;
@@ -5,102 +21,71 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reflect {
 
-	public static final Class<?> NBTTagCompound = getNMSClass("NBTTagCompound");
-	public static final Class<?> NBTBase = getNMSClass("NBTBase");
-	public static final Class<?> CraftItemStack = getCBClass("inventory", "CraftItemStack");
-	public static final Class<?> ItemStack = getNMSClass("ItemStack");
-
-	// PACKETS //
-	public static final Class<?> PacketPlayInUpdateSign = getNMSClass("PacketPlayInUpdateSign");
-
-	public static String getVersion() {
+	/**
+	 * Placeholder for accessing static fields and methods
+	 */
+	public static final Object STATIC = null;
+	
+	/**
+	 * Fetch the package version to build the correct class paths
+	 * @return the package version part
+	 */
+	private static String getVersion() {
 		return Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".";
 	}
 
-	public static Class<?> getClass(@NonNull String clazz) {
+	/**
+	 * Loads the requested class
+	 * @param name the full path of the class
+	 * @return the requested class or <code>null</code> if it doesn't exist or fails to load for any reason
+	 */
+	public static Class<?> getClass(String name) {
 		try {
-			return Class.forName(clazz);
-		}
-		catch (final ClassNotFoundException e) {
+			return Class.forName(name);
+		} catch(ClassNotFoundException e) {
 			return null;
 		}
 	}
 
-	public static Constructor<?> getConstructor(final Class<?> clazz, final Class<?>... params) {
-		try {
-			final Constructor<?> constructor = clazz.getConstructor(params);
-			constructor.setAccessible(true);
-			return constructor;
-		}
-		catch (final NoSuchMethodException e) {
-			System.out.println("");
-			return null;
-		}
+	@SneakyThrows(NoSuchMethodException.class)
+	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) {
+		Constructor<?> constructor = clazz.getConstructor(params);
+		constructor.setAccessible(true);
+		
+		return constructor;
 	}
 
-	public static Object getNMSPlayer(final Player player) {
-		try {
-			final Method getHandle = player.getClass().getMethod("getHandle");
-			final Object nms = getHandle.invoke(player);
-			return nms;
-		}
-		catch (final Exception e) {
-			return null;
-		}
-	}
-
-	public static Method getMethod(Method method) {
+	@SneakyThrows(NoSuchMethodException.class)
+	public static Method getMethod(Class<?> clazz, String name, Class<?>... params) {
+		Method method = (params != null && !(params.length == 0)) ? clazz.getDeclaredMethod(name, params) : clazz.getDeclaredMethod(name);
 		method.setAccessible(true);
+		
 		return method;
 	}
 
-	public static Object getNMSItem(@NonNull ItemStack item) {
-		try {
-			final Method asNMSCopy = getMethod(CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class));
-			final Object nms = asNMSCopy.invoke(null, item);
-			return nms;
-		}
-		catch (Exception e) {
-			return null;
-		}
-	}
-
-	@SneakyThrows
-	public static ItemStack getBukkitItem(@NonNull Object nms) {
-		Method asCraftMirror = Reflect.getMethod(Reflect.CraftItemStack.getDeclaredMethod("asCraftMirror", Reflect.ItemStack));
-		ItemStack itemStack = (ItemStack) asCraftMirror.invoke(null, nms);
-		return itemStack;
-	}
-
-	public static Field getField(final Field field) {
+	@SneakyThrows(NoSuchFieldException.class)
+	public static Field getField(@NonNull Class<?> clazz, String name) {
+		Field field = clazz.getDeclaredField(name);
 		field.setAccessible(true);
+		
 		return field;
 	}
 
-	public static Class<?> getNMSClass(String nmsName) {
-		try {
-			return Class.forName("net.minecraft.server.".concat(getVersion()).concat(nmsName));
-		}
-		catch (final ClassNotFoundException e) {
-			return null;
-		}
+	public static Class<?> getNMSClass(@NonNull String nmsName) {
+		return getClass("net.minecraft.server.".concat(getVersion()).concat(nmsName));
 	}
 
-	public static Class<?> getCBClass(String cbPackage, String cbName) {
-		try {
-			return Class.forName("org.bukkit.craftbukkit.".concat(getVersion()).concat(cbPackage).concat(".").concat(cbName));
-		}
-		catch (final ClassNotFoundException e) {
-			return null;
-		}
+	public static Class<?> getCBClass(@NonNull String cbPackage, @NonNull String cbName) {
+		return getClass("org.bukkit.craftbukkit.".concat(getVersion()).concat(cbPackage).concat(".").concat(cbName));
 	}
 
 }
