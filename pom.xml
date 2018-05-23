@@ -68,10 +68,6 @@
 			<id>dmulloy2-repo</id>
 			<url>http://repo.dmulloy2.net/content/groups/public/</url>
 		</repository>
-		<repository>
-			<id>PublicSnapshots</id>
-			<url>https://repo.unitygaming.de/repository/public-snapshots/</url>
-		</repository>
 	</repositories>
 	
 	<dependencies>
@@ -97,7 +93,6 @@
 			<groupId>de.unitygaming.bukkit</groupId>
 			<artifactId>vSign-API</artifactId>
 			<version>0.0.4-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

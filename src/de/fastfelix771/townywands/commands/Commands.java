@@ -16,6 +16,8 @@
  ******************************************************************************/
 package de.fastfelix771.townywands.commands;
 
+import static java.lang.String.format;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.fastfelix771.townywands.api.inventories.Inventories;
+import de.fastfelix771.townywands.api.inventories.ModularInventory;
 import de.fastfelix771.townywands.commands.CommandController.CommandHandler;
 import de.fastfelix771.townywands.commands.CommandController.SubCommandHandler;
 import de.fastfelix771.townywands.main.TownyWands;
@@ -33,7 +36,7 @@ import de.unitygaming.bukkit.vsign.util.Invoker;
 
 public class Commands {
 
-	private static final List<String> commands = Arrays.asList("§c/vsign §a<player> [some command using {data}]", "§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §alist", "§c/townywands §adebug");
+	private static final List<String> commands = Arrays.asList("§c/vsign §a<player> [some command using {data}]", "§c/townywands §aopen §c<§aGUI§c>", "§c/townywands §ahelp", "§c/townywands §a?", "§c/townywands §alist", "§c/townywands §adebug");
 
 	@CommandHandler(
 			name = "townywands",
@@ -76,6 +79,38 @@ public class Commands {
 	public void townywands_help2(CommandSender sender, String[] args) {
 		this.townywands_help(sender, args);
 	}
+	
+	@SubCommandHandler(
+			name = "open",
+			parent = "townywands",
+			permission = "townywands.cmd.open",
+			permissionMessage = "§cYou are missing the permission §atownywands.cmd.open§c!")
+	public void townywands_open(Player sender, String[] args) {
+		if (args.length < 2) {
+			sender.sendMessage("§cYou need to specify a GUI!");
+			sender.sendMessage("§c/townywands open <§aGUI§c>");
+			return;
+		}
+		
+		String gui = args[1];
+		if (gui == null || gui.trim().isEmpty()) {
+			Debug.log("Invalid GUI name given");
+			return;
+		}
+		
+		ModularInventory inventory = Inventories.get(gui);
+		if (inventory == null) {
+			sender.sendMessage("§cThe specified GUI doesn't exist!");
+			return;
+		}
+		
+		if (!sender.hasPermission(inventory.getPermission())) {
+			sender.sendMessage(format("§cYou are missing permission §a%s§c!", inventory.getPermission()));
+			return;
+		}
+		
+		Inventories.display(inventory, sender);
+	} 
 
 	@SubCommandHandler(
 			name = "debug",
@@ -101,7 +136,7 @@ public class Commands {
 			permissionMessage = "§cYou are missing the permission §atownywands.cmd.list§c!")
 	public void townywands_list(CommandSender sender, String[] args) {
 		sender.sendMessage("Not yet implemented.");
-		sender.sendMessage("§cdev-Edition: §6" + Inventories.dump());
+		Debug.log("§cInventory Dump: §6" + Inventories.dump());
 	}
 
 	@CommandHandler(

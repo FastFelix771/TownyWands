@@ -167,7 +167,7 @@ public class HybridParser {
 
 		for (String invName : inventories.getValues(false).keySet()) {
 			long start = System.currentTimeMillis();
-			Bukkit.getConsoleSender().sendMessage("§cTownyWands | §bConverting of inventory §3" + invName + " §bto new XML format!");
+			Bukkit.getConsoleSender().sendMessage("§cTownyWands | §bConverting inventory §3" + invName + " §binto the new XML format!");
 
 			ConfigurationSection inv = inventories.getConfigurationSection(invName);
 			parseInventory(inv);

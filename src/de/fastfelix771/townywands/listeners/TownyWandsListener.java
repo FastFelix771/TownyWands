@@ -16,6 +16,8 @@
  ******************************************************************************/
 package de.fastfelix771.townywands.listeners;
 
+import static java.lang.String.format;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -103,8 +105,9 @@ public class TownyWandsListener implements Listener {
 		String command = wrapper.getNBTKey("townywands.properties.command");
 		int slot = wrapper.getNBTKey("townywands.properties.slot");
 
-		if (command == null || slot <= 0 || slot > 54) {
+		if (command == null || slot < 0 || slot >= 54) {
 			Debug.log("Invalid or missing NBT properties detected!");
+			Debug.log(format("[command=%s, slot=%s]", command, slot));
 			return;
 		}
 
